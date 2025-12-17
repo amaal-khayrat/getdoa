@@ -15,7 +15,7 @@ export const LANDING_CONTENT = {
     title: 'Find Inner Peace:',
     subtitle: 'Your Personalized Prayer Journey',
     description:
-      'Immerse yourself in a sanctuary of digital serenity. Access authentic Doa, curate your daily supplications, and connect with the divine through a beautifully crafted experience.',
+      'Immerse yourself in a sanctuary of digital serenity. Access authentic Doa and curate your daily supplications.',
     primaryCTA: 'Start Your Journey',
     secondaryCTA: 'Watch Demo',
   },
