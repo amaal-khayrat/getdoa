@@ -1,4 +1,4 @@
-import { Cookie, CreditCard, Eye, Lock, Shield, UserRight } from 'lucide-react'
+import { Cookie, CreditCard, Eye, Lock, Shield, User } from 'lucide-react'
 import { Card, CardContent } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { LANDING_CONTENT } from '@/lib/constants'
@@ -9,7 +9,7 @@ const iconMap = {
   lock: Lock,
   eye: Eye,
   creditCard: CreditCard,
-  userRight: UserRight,
+  userRight: User,
   cookie: Cookie,
 }
 

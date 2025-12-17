@@ -215,86 +215,96 @@ export const LANDING_CONTENT = {
     pricing: {
       hero: {
         title: 'Choose Your Spiritual Journey',
-        subtitle: 'Select the plan that best supports your prayer needs',
+        subtitle: 'Flexible pricing to support your prayer needs',
       },
       plans: [
         {
-          name: 'Basic',
-          price: 'RM4.99',
-          period: 'one-time',
-          description:
-            'Perfect for those starting their digital prayer journey',
+          name: 'Free',
+          price: 'RM0',
+          period: 'forever',
+          description: 'Perfect for starting your spiritual journey',
           features: [
-            'One personalized doa list',
-            'Access to authentic prayers',
-            'Basic customization options',
-            'Email support',
-          ],
-          excluded: ['Custom backgrounds', 'Premium fonts', 'Multiple lists'],
-          popular: false,
-        },
-        {
-          name: 'Premium',
-          price: 'RM4.99',
-          period: 'one-time',
-          description:
-            'Enhance your spiritual experience with beautiful designs',
-          features: [
-            'More choices of doa image backgrounds',
-            'Premium font selections',
-            'Basic prayer collections',
-            'Email support',
-          ],
-          excluded: [
-            'Personalized lists',
-            'Multiple collections',
-            'Priority support',
-          ],
-          popular: false,
-        },
-        {
-          name: 'Bundle',
-          price: 'RM7.99',
-          period: 'one-time',
-          description: 'Complete package for serious prayer practitioners',
-          features: [
-            'One personalized doa list',
-            'More choices of doa image backgrounds',
-            'Premium font selections',
-            'Advanced customization',
-            'Priority email support',
-          ],
-          excluded: ['Multiple lists', 'Cloud sync', 'Advanced analytics'],
-          popular: true,
-        },
-        {
-          name: 'Pro',
-          price: 'RM13.99',
-          period: 'per month',
-          description: 'Ultimate experience for the devoted practitioner',
-          features: [
-            '50 personalized doa lists',
-            'Unlimited background choices',
-            'All premium fonts',
             'Cloud synchronization',
-            'Advanced analytics',
+            'One personalized doa list',
+            'Access to authentic prayers library',
+            'Basic email support',
+          ],
+          excluded: ['Custom backgrounds', 'Premium fonts'],
+          popular: false,
+        },
+        {
+          name: 'Basic',
+          price: 'RM3.99',
+          period: 'per doa',
+          description: 'Add more doa lists to your free account',
+          features: [
+            'Everything in Free',
+            'Additional doa lists',
+            'Access to authentic prayers library',
+            'Cloud synchronization',
+          ],
+          excluded: ['Custom backgrounds', 'Premium fonts'],
+          popular: false,
+        },
+        {
+          name: 'Complete',
+          price: 'RM4.99',
+          period: 'per doa',
+          description: 'Everything you need for beautiful prayers',
+          features: [
+            'Everything in Free',
+            'Additional doa lists',
+            'More background image options',
+            'Access to authentic prayers library',
+            'Cloud synchronization',
+          ],
+          excluded: ['Premium fonts'],
+          popular: true,
+          badge: 'Most Popular',
+        },
+        {
+          name: 'Unlimited Access',
+          price: 'RM9.99',
+          period: 'per month',
+          description: 'Complete freedom to customize your spiritual journey',
+          features: [
+            'Everything in Complete',
+            'Up to 50 doa lists',
+            'Fonts customization',
+            'All premium backgrounds',
             'Priority support',
             'Early access to new features',
           ],
           excluded: [],
           popular: false,
+          badge: 'Best Value',
         },
       ],
       faq: [
         {
-          question: 'Can I change my plan later?',
+          question: 'Which plan is right for me?',
           answer:
-            'Yes, you can upgrade or downgrade your plan at any time. Changes take effect immediately.',
+            'Start with Free - it includes everything you need for basic prayer management! If you need more doa lists, choose Basic (RM3.99/doa). For beautiful designs, get Complete (RM4.99/doa). For maximum customization, go for Unlimited Access (RM9.99/month).',
         },
         {
-          question: 'Is my data secure?',
+          question: 'Is the Free plan really free forever?',
           answer:
-            'Absolutely. We use industry-standard encryption to protect your personal information and prayer data.',
+            "Yes! The Free plan includes cloud sync and one personalized doa list at no cost. It's perfect for starting your spiritual journey without any commitment.",
+        },
+        {
+          question: "What's the difference between Basic and Complete plans?",
+          answer:
+            'Basic (RM3.99) adds more doa lists to your account. Complete (RM4.99) includes everything in Basic PLUS more background image options for your prayers.',
+        },
+        {
+          question: 'Is Unlimited Access worth it?',
+          answer:
+            'Absolutely! You get 50 doa lists, font customization, all premium backgrounds, priority support, and early access to new features for just RM9.99/month.',
+        },
+        {
+          question: 'Is my data secure and synchronized?',
+          answer:
+            'Absolutely! All plans include cloud synchronization with 256-bit encryption. Your prayers and settings are automatically synced across all your devices.',
         },
         {
           question: 'Do you offer refunds?',

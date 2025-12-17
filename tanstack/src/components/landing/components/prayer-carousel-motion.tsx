@@ -1,7 +1,7 @@
 import { Bookmark, ChevronLeft, ChevronRight, Share2, Sun } from 'lucide-react'
 import { motion, useAnimation } from 'framer-motion'
 import { useState } from 'react'
-import type { PanInfo} from 'framer-motion';
+import type { PanInfo } from 'framer-motion'
 import { Card, CardContent } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { LANDING_CONTENT } from '@/lib/constants'

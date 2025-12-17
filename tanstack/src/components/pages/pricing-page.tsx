@@ -24,24 +24,30 @@ export function PricingPage() {
       {/* Pricing Cards */}
       <section className="py-16 bg-background">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
+          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8 mb-12">
             {pricingContent.plans.map((plan, index) => (
-              <Card
+              <div
                 key={index}
-                className={`relative p-8 rounded-2xl border ${
-                  plan.popular
-                    ? 'border-teal-500 shadow-lg shadow-teal-500/20 scale-105'
-                    : 'border-border hover:shadow-lg transition-all duration-300'
-                }`}
+                className={`relative pt-8 ${
+                  plan.popular ? 'scale-105' : ''
+                } transition-all duration-300`}
               >
-                {plan.popular && (
-                  <Badge className="absolute -top-3 left-1/2 transform -translate-x-1/2 bg-gradient-to-r from-teal-500 to-emerald-600 text-white">
+                {plan.badge && (
+                  <Badge className="absolute top-0 left-1/2 transform -translate-x-1/2 bg-gradient-to-r from-teal-500 to-emerald-600 text-white z-10">
                     <Star className="w-3 h-3 mr-1" />
-                    Most Popular
+                    {plan.badge}
                   </Badge>
                 )}
-
-                <CardContent className="p-0">
+                <Card
+                  className={`p-8 rounded-2xl border h-full ${
+                    plan.name === 'Free'
+                      ? 'border-emerald-500 bg-gradient-to-br from-emerald-50/50 to-teal-50/50 dark:from-emerald-950/20 dark:to-teal-950/20'
+                      : plan.popular
+                      ? 'border-teal-500 shadow-lg shadow-teal-500/20'
+                      : 'border-border hover:shadow-lg transition-all duration-300'
+                  }`}
+                >
+                  <CardContent className="p-0 flex flex-col h-full">
                   {/* Plan Header */}
                   <div className="text-center mb-8">
                     <h3 className="text-2xl font-serif font-medium text-foreground mb-2">
@@ -61,7 +67,7 @@ export function PricingPage() {
                   </div>
 
                   {/* Features List */}
-                  <div className="space-y-3 mb-8">
+                  <div className="flex-1 space-y-3 mb-8">
                     {plan.features.map((feature, featureIndex) => (
                       <div
                         key={featureIndex}
@@ -74,7 +80,7 @@ export function PricingPage() {
                       </div>
                     ))}
 
-                    {plan.excluded.map((excluded, excludedIndex) => (
+                    {plan.excluded && plan.excluded.length > 0 && plan.excluded.map((excluded, excludedIndex) => (
                       <div
                         key={excludedIndex}
                         className="flex items-start gap-3 opacity-50"
@@ -88,21 +94,90 @@ export function PricingPage() {
                   </div>
 
                   {/* CTA Button */}
-                  <Button
-                    className={`w-full ${
-                      plan.popular
-                        ? 'bg-gradient-to-r from-teal-500 to-emerald-600 hover:from-teal-600 hover:to-emerald-700 text-white'
-                        : ''
-                    }`}
-                    variant={plan.popular ? 'default' : 'outline'}
-                  >
-                    Get Started
-                    <ArrowRight className="w-4 h-4 ml-2" />
-                  </Button>
+                  <div className="mt-auto">
+                    <Button
+                      className={`w-full ${
+                        plan.name === 'Free'
+                          ? 'bg-emerald-600 hover:bg-emerald-700 text-white'
+                          : plan.popular
+                          ? 'bg-gradient-to-r from-teal-500 to-emerald-600 hover:from-teal-600 hover:to-emerald-700 text-white'
+                          : ''
+                      }`}
+                      variant={plan.name === 'Free' || plan.popular ? 'default' : 'outline'}
+                    >
+                      {plan.name === 'Free' ? 'Get Started Free' : 'Get Started'}
+                      <ArrowRight className="w-4 h-4 ml-2" />
+                    </Button>
+                  </div>
                 </CardContent>
-              </Card>
+                </Card>
+              </div>
             ))}
           </div>
+
+          {/* Free Forever Section */}
+          <Card className="p-8 bg-gradient-to-br from-emerald-50/50 to-teal-50/50 dark:from-emerald-950/20 dark:to-teal-950/20 border-emerald-200 dark:border-emerald-800">
+            <CardContent className="p-0 text-center">
+              <div className="max-w-4xl mx-auto">
+                <h3 className="text-2xl md:text-3xl font-serif font-medium text-foreground mb-4">
+                  Want to have unlimited access for free forever?
+                </h3>
+                <p className="text-lg text-muted-foreground mb-8 leading-relaxed">
+                  Good news! GetDoa is open-source. You can earn unlimited access through:
+                </p>
+                <div className="grid md:grid-cols-2 gap-6 mb-8">
+                  <div className="p-6 rounded-xl bg-white/50 dark:bg-black/20 border border-emerald-200 dark:border-emerald-700">
+                    <div className="w-12 h-12 rounded-lg bg-emerald-100 dark:bg-emerald-900/30 text-emerald-600 dark:text-emerald-400 flex items-center justify-center mx-auto mb-4">
+                      <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" />
+                      </svg>
+                    </div>
+                    <h4 className="font-semibold text-foreground mb-2">Code Contributions</h4>
+                    <p className="text-sm text-muted-foreground">
+                      Help improve GetDoa by contributing to our open-source codebase
+                    </p>
+                  </div>
+                  <div className="p-6 rounded-xl bg-white/50 dark:bg-black/20 border border-emerald-200 dark:border-emerald-700">
+                    <div className="w-12 h-12 rounded-lg bg-emerald-100 dark:bg-emerald-900/30 text-emerald-600 dark:text-emerald-400 flex items-center justify-center mx-auto mb-4">
+                      <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+                      </svg>
+                    </div>
+                    <h4 className="font-semibold text-foreground mb-2">Add Prayers to Library</h4>
+                    <p className="text-sm text-muted-foreground">
+                      Help expand our prayer library by adding 3 authentic doa
+                    </p>
+                  </div>
+                </div>
+                <div className="relative p-6 rounded-2xl bg-gradient-to-r from-teal-50 to-emerald-50 dark:from-teal-950/20 dark:to-emerald-950/20 border border-teal-200 dark:border-teal-800 mb-8 group hover:shadow-lg transition-all duration-300">
+                  <div className="absolute top-0 left-0 w-32 h-32 bg-teal-500/10 rounded-full blur-2xl group-hover:bg-teal-500/20 transition-colors duration-300"></div>
+                  <div className="relative flex items-start gap-4">
+                    <div className="w-12 h-12 rounded-xl bg-teal-100 dark:bg-teal-900/30 flex items-center justify-center flex-shrink-0 mt-1">
+                      <svg className="w-6 h-6 text-teal-600 dark:text-teal-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+                      </svg>
+                    </div>
+                    <div>
+                      <h4 className="font-semibold text-foreground mb-2">
+                        Already a Contributor?
+                      </h4>
+                      <p className="text-sm text-muted-foreground leading-relaxed">
+                        If you've contributed to previous versions of GetDoa, you're eligible for unlimited access too! Your past contributions matter to us.
+                      </p>
+                    </div>
+                  </div>
+                </div>
+                <Button className="bg-emerald-600 hover:bg-emerald-700 text-white">
+                  Contact Us to Claim
+                  <ArrowRight className="w-4 h-4 ml-2" />
+                </Button>
+                <p className="text-sm text-muted-foreground mt-4">
+                  Email us at <a href="mailto:hazqeel@ellzaf.com" className="text-emerald-600 hover:text-emerald-700 dark:text-emerald-400 dark:hover:text-emerald-300 underline">hazqeel@ellzaf.com</a>
+                </p>
+              </div>
+            </CardContent>
+          </Card>
+
         </div>
       </section>
 
@@ -126,16 +201,16 @@ export function PricingPage() {
                     Features
                   </th>
                   <th className="text-center py-4 px-6 font-medium text-foreground">
+                    Free
+                  </th>
+                  <th className="text-center py-4 px-6 font-medium text-foreground">
                     Basic
                   </th>
                   <th className="text-center py-4 px-6 font-medium text-foreground">
-                    Premium
+                    Complete
                   </th>
                   <th className="text-center py-4 px-6 font-medium text-foreground">
-                    Bundle
-                  </th>
-                  <th className="text-center py-4 px-6 font-medium text-foreground">
-                    Pro
+                    Unlimited Access
                   </th>
                 </tr>
               </thead>
@@ -150,40 +225,27 @@ export function PricingPage() {
                     </span>
                   </td>
                   <td className="py-4 px-6 text-center">
-                    <X className="w-5 h-5 text-muted-foreground mx-auto" />
-                  </td>
-                  <td className="py-4 px-6 text-center">
                     <span className="text-emerald-600 dark:text-emerald-400">
-                      1 list
+                      Additional
                     </span>
                   </td>
                   <td className="py-4 px-6 text-center">
                     <span className="text-emerald-600 dark:text-emerald-400">
-                      50 lists
+                      Additional
+                    </span>
+                  </td>
+                  <td className="py-4 px-6 text-center">
+                    <span className="text-emerald-600 dark:text-emerald-400">
+                      Up to 50 lists
                     </span>
                   </td>
                 </tr>
                 <tr className="border-b border-border">
                   <td className="py-4 px-6 text-foreground">
-                    Custom Backgrounds
-                  </td>
-                  <td className="py-4 px-6 text-center">
-                    <X className="w-5 h-5 text-muted-foreground mx-auto" />
+                    Cloud Synchronization
                   </td>
                   <td className="py-4 px-6 text-center">
                     <Check className="w-5 h-5 text-emerald-600 dark:text-emerald-400 mx-auto" />
-                  </td>
-                  <td className="py-4 px-6 text-center">
-                    <Check className="w-5 h-5 text-emerald-600 dark:text-emerald-400 mx-auto" />
-                  </td>
-                  <td className="py-4 px-6 text-center">
-                    <Check className="w-5 h-5 text-emerald-600 dark:text-emerald-400 mx-auto" />
-                  </td>
-                </tr>
-                <tr className="border-b border-border">
-                  <td className="py-4 px-6 text-foreground">Premium Fonts</td>
-                  <td className="py-4 px-6 text-center">
-                    <X className="w-5 h-5 text-muted-foreground mx-auto" />
                   </td>
                   <td className="py-4 px-6 text-center">
                     <Check className="w-5 h-5 text-emerald-600 dark:text-emerald-400 mx-auto" />
@@ -196,7 +258,24 @@ export function PricingPage() {
                   </td>
                 </tr>
                 <tr className="border-b border-border">
-                  <td className="py-4 px-6 text-foreground">Cloud Sync</td>
+                  <td className="py-4 px-6 text-foreground">
+                    Background Images
+                  </td>
+                  <td className="py-4 px-6 text-center">
+                    <X className="w-5 h-5 text-muted-foreground mx-auto" />
+                  </td>
+                  <td className="py-4 px-6 text-center">
+                    <X className="w-5 h-5 text-muted-foreground mx-auto" />
+                  </td>
+                  <td className="py-4 px-6 text-center">
+                    <Check className="w-5 h-5 text-emerald-600 dark:text-emerald-400 mx-auto" />
+                  </td>
+                  <td className="py-4 px-6 text-center">
+                    <Check className="w-5 h-5 text-emerald-600 dark:text-emerald-400 mx-auto" />
+                  </td>
+                </tr>
+                <tr className="border-b border-border">
+                  <td className="py-4 px-6 text-foreground">Fonts Customization</td>
                   <td className="py-4 px-6 text-center">
                     <X className="w-5 h-5 text-muted-foreground mx-auto" />
                   </td>
@@ -221,7 +300,7 @@ export function PricingPage() {
                     <X className="w-5 h-5 text-muted-foreground mx-auto" />
                   </td>
                   <td className="py-4 px-6 text-center">
-                    <Check className="w-5 h-5 text-emerald-600 dark:text-emerald-400 mx-auto" />
+                    <X className="w-5 h-5 text-muted-foreground mx-auto" />
                   </td>
                   <td className="py-4 px-6 text-center">
                     <Check className="w-5 h-5 text-emerald-600 dark:text-emerald-400 mx-auto" />
