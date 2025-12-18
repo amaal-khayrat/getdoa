@@ -187,7 +187,7 @@ export const LANDING_CONTENT = {
 
   footer: {
     tagline: 'Crafting digital experiences for the modern soul.',
-    copyright: '© 2024 GetDoa App. All rights reserved.',
+    copyright: `© ${new Date().getFullYear()} GetDoa App. All rights reserved.`,
     columns: {
       product: {
         title: 'Product',
