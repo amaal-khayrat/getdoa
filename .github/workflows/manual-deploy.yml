@@ -28,7 +28,7 @@ jobs:
       - uses: dorny/paths-filter@v2
         id: filter
         with:
-          base: '${{ steps.get-base-commit.outputs.base_commit }}'
+          base: "${{ steps.get-base-commit.outputs.base_commit }}"
           filters: |
             tanstack:
               - 'tanstack/**/*.ts'
@@ -57,7 +57,7 @@ jobs:
           fetch-depth: 0 # Full history for consistency with detect-changes
 
       - name: Configure AWS credentials
-        uses: aws-actions/configure-aws-credentials@v2
+        uses: aws-actions/configure-aws-credentials@v3
         with:
           role-to-assume: arn:aws:iam::254718381590:role/getdoa
           aws-region: ${{ secrets.AWS_REGION }}
@@ -83,7 +83,7 @@ jobs:
       - name: Transfer docker-compose.yml to EC2
         run: |
           scp -o StrictHostKeyChecking=no -i /home/runner/.ssh/ec2_key \
-            ./docker-compose.yml ubuntu@43.217.8.220:/home/ubuntu/docker-compose.yml
+            ./docker-compose.yml ubuntu@43.217.8.220:/home/ubuntu/getdoa/docker-compose.yml
 
       - name: Deploy TanStack application
         uses: appleboy/ssh-action@v0.1.8
@@ -92,11 +92,14 @@ jobs:
           username: ubuntu
           key: ${{ secrets.EC2_SSH_KEY }}
           script: |
+            # Create getdoa directory if it doesn't exist
+            mkdir -p /home/ubuntu/getdoa
+
             # Fix ownership of docker-compose.yml
-            sudo chown ubuntu:ubuntu /home/ubuntu/docker-compose.yml
+            sudo chown ubuntu:ubuntu /home/ubuntu/getdoa/docker-compose.yml
 
             # Update .env file with required secrets
-            echo "DOCKER_USERNAME=${{ secrets.DOCKER_USERNAME }}" > /home/ubuntu/.env
+            echo "DOCKER_USERNAME=${{ secrets.DOCKER_USERNAME }}" > /home/ubuntu/getdoa/.env
 
             # Clean up any Docker resources to prevent image corruption issues
             sudo docker system prune -f --volumes
@@ -104,12 +107,12 @@ jobs:
             # Deploy TanStack application
             if [ "${{ needs.detect-changes.outputs.compose_changed }}" == "true" ]; then
               # If docker-compose.yml changed, pull and restart all services
-              sudo docker compose -f /home/ubuntu/docker-compose.yml --env-file /home/ubuntu/.env pull
-              sudo docker compose -f /home/ubuntu/docker-compose.yml --env-file /home/ubuntu/.env up -d --remove-orphans
+              sudo docker compose -f /home/ubuntu/getdoa/docker-compose.yml --env-file /home/ubuntu/getdoa/.env pull
+              sudo docker compose -f /home/ubuntu/getdoa/docker-compose.yml --env-file /home/ubuntu/getdoa/.env up -d --remove-orphans
             elif [ "${{ needs.detect-changes.outputs.tanstack_changed }}" == "true" ]; then
               # If only tanstack code changed, restart only tanstack service
-              sudo docker compose -f /home/ubuntu/docker-compose.yml --env-file /home/ubuntu/.env pull tanstack
-              sudo docker compose -f /home/ubuntu/docker-compose.yml --env-file /home/ubuntu/.env up -d --remove-orphans tanstack
+              sudo docker compose -f /home/ubuntu/getdoa/docker-compose.yml --env-file /home/ubuntu/getdoa/.env pull tanstack
+              sudo docker compose -f /home/ubuntu/getdoa/docker-compose.yml --env-file /home/ubuntu/getdoa/.env up -d --remove-orphans tanstack
             fi
 
       - name: Revoke runner IP address
