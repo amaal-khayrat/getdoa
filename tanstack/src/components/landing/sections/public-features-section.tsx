@@ -1,9 +1,4 @@
-import {
-  Edit3,
-  Globe,
-  GraduationCap,
-  ShieldCheck
-} from 'lucide-react'
+import { Edit3, Globe, GraduationCap, ShieldCheck } from 'lucide-react'
 import { LANDING_CONTENT } from '@/lib/constants'
 
 // Map Material Icons to Lucide icons
@@ -16,7 +11,10 @@ const iconMap: Record<string, React.ComponentType<{ className?: string }>> = {
 
 export function PublicFeaturesSection() {
   return (
-    <section className="py-24 bg-slate-50 dark:bg-slate-900 relative z-10" id="features">
+    <section
+      className="py-24 bg-slate-50 dark:bg-slate-900 relative z-10"
+      id="features"
+    >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header */}
         <div className="text-center max-w-3xl mx-auto mb-16">
@@ -38,31 +36,31 @@ export function PublicFeaturesSection() {
 
                 // Exact color mapping from HTML
                 const getIconColors = (color: string) => {
-                  switch(color) {
+                  switch (color) {
                     case 'blue':
                       return {
                         bg: 'bg-blue-50 dark:bg-blue-900/20',
-                        text: 'text-blue-600 dark:text-blue-400'
+                        text: 'text-blue-600 dark:text-blue-400',
                       }
                     case 'purple':
                       return {
                         bg: 'bg-purple-50 dark:bg-purple-900/20',
-                        text: 'text-purple-600 dark:text-purple-400'
+                        text: 'text-purple-600 dark:text-purple-400',
                       }
                     case 'emerald':
                       return {
                         bg: 'bg-emerald-50 dark:bg-emerald-900/20',
-                        text: 'text-emerald-600 dark:text-emerald-400'
+                        text: 'text-emerald-600 dark:text-emerald-400',
                       }
                     case 'amber':
                       return {
                         bg: 'bg-amber-50 dark:bg-amber-900/20',
-                        text: 'text-amber-600 dark:text-amber-400'
+                        text: 'text-amber-600 dark:text-amber-400',
                       }
                     default:
                       return {
                         bg: 'bg-blue-50 dark:bg-blue-900/20',
-                        text: 'text-blue-600 dark:text-blue-400'
+                        text: 'text-blue-600 dark:text-blue-400',
                       }
                   }
                 }
@@ -75,7 +73,9 @@ export function PublicFeaturesSection() {
                     className="bg-white dark:bg-slate-800/50 p-6 rounded-3xl hover:shadow-lg transition-all duration-300 group border border-slate-100 dark:border-slate-700/50"
                   >
                     {/* Icon */}
-                    <div className={`w-12 h-12 rounded-xl ${iconColors.bg} ${iconColors.text} flex items-center justify-center mb-5 group-hover:scale-110 transition-transform`}>
+                    <div
+                      className={`w-12 h-12 rounded-xl ${iconColors.bg} ${iconColors.text} flex items-center justify-center mb-5 group-hover:scale-110 transition-transform`}
+                    >
                       <IconComponent className="w-6 h-6" />
                     </div>
 

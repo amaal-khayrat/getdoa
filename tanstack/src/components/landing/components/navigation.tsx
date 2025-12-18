@@ -18,7 +18,10 @@ export function Navigation() {
     <nav className="fixed top-0 w-full z-50 glass-nav transition-all duration-300">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 md:h-20 flex items-center justify-between">
         {/* Logo */}
-        <a href="/" className="flex items-center gap-2 hover:opacity-80 transition-opacity">
+        <a
+          href="/"
+          className="flex items-center gap-2 hover:opacity-80 transition-opacity"
+        >
           <img
             src={LANDING_CONTENT.navigation.logo}
             alt="GetDoa Logo"

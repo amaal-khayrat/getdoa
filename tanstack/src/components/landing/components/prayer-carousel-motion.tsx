@@ -1,5 +1,5 @@
 import { Bookmark, Heart, Share2, Sun } from 'lucide-react'
-import { motion, AnimatePresence } from 'framer-motion'
+import { AnimatePresence, motion } from 'framer-motion'
 import { useState } from 'react'
 import { Card, CardContent } from '@/components/ui/card'
 import { LANDING_CONTENT } from '@/lib/constants'
@@ -10,7 +10,9 @@ interface PrayerCarouselProps {
 
 export function PrayerCarouselMotion({ className = '' }: PrayerCarouselProps) {
   const [currentIndex, setCurrentIndex] = useState(0)
-  const [bookmarkedPrayers, setBookmarkedPrayers] = useState<Set<number>>(new Set())
+  const [bookmarkedPrayers, setBookmarkedPrayers] = useState<Set<number>>(
+    new Set(),
+  )
 
   const prayers = LANDING_CONTENT.prayerCarousel
   const totalSlides = prayers.length
@@ -31,7 +33,7 @@ export function PrayerCarouselMotion({ className = '' }: PrayerCarouselProps) {
   }
 
   // Share functionality
-  const sharePrayer = (e: React.MouseEvent, prayer: typeof prayers[0]) => {
+  const sharePrayer = (e: React.MouseEvent, prayer: (typeof prayers)[0]) => {
     e.preventDefault()
     e.stopPropagation()
     if (navigator.share) {
@@ -40,7 +42,9 @@ export function PrayerCarouselMotion({ className = '' }: PrayerCarouselProps) {
         text: `${prayer.arabicText}\n\n${prayer.translation}`,
       })
     } else {
-      navigator.clipboard.writeText(`${prayer.title}\n${prayer.arabicText}\n\n${prayer.translation}`)
+      navigator.clipboard.writeText(
+        `${prayer.title}\n${prayer.arabicText}\n\n${prayer.translation}`,
+      )
     }
   }
 
@@ -61,7 +65,6 @@ export function PrayerCarouselMotion({ className = '' }: PrayerCarouselProps) {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         {/* Carousel Container */}
         <div className="relative bg-card dark:bg-card border border-border rounded-2xl shadow-2xl overflow-hidden">
-
           {/* Carousel Track with AnimatePresence */}
           <div className="overflow-hidden" style={{ minHeight: '400px' }}>
             <AnimatePresence mode="wait">

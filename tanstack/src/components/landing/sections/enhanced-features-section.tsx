@@ -6,7 +6,7 @@ import {
   Languages,
   LockOpen,
   QrCode,
-  Sparkles
+  Sparkles,
 } from 'lucide-react'
 import { LANDING_CONTENT } from '@/lib/constants'
 
@@ -47,48 +47,48 @@ export function EnhancedFeaturesSection() {
 
             // Exact color mapping from HTML
             const getIconColors = (color: string) => {
-              switch(color) {
+              switch (color) {
                 case 'violet':
                   return {
                     bg: 'bg-violet-50 dark:bg-violet-900/20',
                     text: 'text-violet-600 dark:text-violet-400',
-                    glowBg: 'bg-violet-500/5'
+                    glowBg: 'bg-violet-500/5',
                   }
                 case 'indigo':
                   return {
                     bg: 'bg-indigo-50 dark:bg-indigo-900/20',
                     text: 'text-indigo-600 dark:text-indigo-400',
-                    glowBg: 'bg-indigo-500/5'
+                    glowBg: 'bg-indigo-500/5',
                   }
                 case 'teal':
                   return {
                     bg: 'bg-teal-50 dark:bg-teal-900/20',
                     text: 'text-teal-600 dark:text-teal-400',
-                    glowBg: 'bg-teal-500/5'
+                    glowBg: 'bg-teal-500/5',
                   }
                 case 'rose':
                   return {
                     bg: 'bg-rose-50 dark:bg-rose-900/20',
                     text: 'text-rose-600 dark:text-rose-400',
-                    glowBg: 'bg-rose-500/5'
+                    glowBg: 'bg-rose-500/5',
                   }
                 case 'cyan':
                   return {
                     bg: 'bg-cyan-50 dark:bg-cyan-900/20',
                     text: 'text-cyan-600 dark:text-cyan-400',
-                    glowBg: 'bg-cyan-500/5'
+                    glowBg: 'bg-cyan-500/5',
                   }
                 case 'orange':
                   return {
                     bg: 'bg-orange-50 dark:bg-orange-900/20',
                     text: 'text-orange-600 dark:text-orange-400',
-                    glowBg: 'bg-orange-500/5'
+                    glowBg: 'bg-orange-500/5',
                   }
                 default:
                   return {
                     bg: 'bg-indigo-50 dark:bg-indigo-900/20',
                     text: 'text-indigo-600 dark:text-indigo-400',
-                    glowBg: 'bg-indigo-500/5'
+                    glowBg: 'bg-indigo-500/5',
                   }
               }
             }
@@ -101,10 +101,14 @@ export function EnhancedFeaturesSection() {
                 className="w-full md:w-[calc(50%-1rem)] lg:w-[calc(33.33%-2rem)] bg-white dark:bg-slate-800 p-8 rounded-3xl shadow-sm hover:shadow-lg transition-all duration-300 border border-slate-100 dark:border-slate-700 group relative overflow-hidden"
               >
                 {/* Background decoration */}
-                <div className={`absolute top-0 right-0 w-24 h-24 ${iconColors.glowBg} rounded-full blur-3xl -mr-10 -mt-10 transition-all group-hover:opacity-100`} />
+                <div
+                  className={`absolute top-0 right-0 w-24 h-24 ${iconColors.glowBg} rounded-full blur-3xl -mr-10 -mt-10 transition-all group-hover:opacity-100`}
+                />
 
                 {/* Icon */}
-                <div className={`w-14 h-14 rounded-2xl ${iconColors.bg} ${iconColors.text} flex items-center justify-center mb-6 group-hover:scale-110 transition-transform`}>
+                <div
+                  className={`w-14 h-14 rounded-2xl ${iconColors.bg} ${iconColors.text} flex items-center justify-center mb-6 group-hover:scale-110 transition-transform`}
+                >
                   <IconComponent className="w-7 h-7" />
                 </div>
 
