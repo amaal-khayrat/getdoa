@@ -32,6 +32,12 @@ export function HeroSection() {
             {LANDING_CONTENT.hero.primaryCTA}
             <ArrowRight className="w-5 h-5" />
           </Button>
+          <Button
+            size="lg"
+            className="w-full sm:w-auto px-8 py-4 text-lg shadow-lg hover:shadow-xl hover:-translate-y-0.5 transition-all duration-300 flex items-center gap-2"
+          >
+            {LANDING_CONTENT.hero.secondaryCTA}
+          </Button>
         </div>
       </div>
     </section>

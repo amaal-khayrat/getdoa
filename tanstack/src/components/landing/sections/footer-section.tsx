@@ -1,4 +1,4 @@
-import { Book, Github } from 'lucide-react'
+import { Github } from 'lucide-react'
 import { LANDING_CONTENT } from '@/lib/constants'
 
 export function FooterSection() {
@@ -10,9 +10,11 @@ export function FooterSection() {
           {/* Brand Column */}
           <div className="col-span-2 md:col-span-1">
             <div className="flex items-center gap-2 mb-4">
-              <div className="w-6 h-6 rounded bg-teal-500 flex items-center justify-center text-white">
-                <Book className="w-3.5 h-3.5" />
-              </div>
+              <img
+                src="/logo.svg"
+                alt="GetDoa Logo"
+                className="w-6 h-6 rounded"
+              />
               <span className="font-serif font-bold text-foreground">
                 GetDoa
               </span>

@@ -1,12 +1,7 @@
 export const LANDING_CONTENT = {
   navigation: {
-    logo: 'GetDoa',
-    links: [
-      { href: '#features', label: 'Features' },
-      { href: '#experience', label: 'Experience' },
-      { href: '#testimonials', label: 'Community' },
-      { href: '/pricing', label: 'Pricing' },
-    ],
+    logo: '/logo.svg',
+    signUpButton: 'Sign Up',
     loginButton: 'Log In',
     getStartedButton: 'Get the App',
   },
@@ -17,19 +12,7 @@ export const LANDING_CONTENT = {
     description:
       'Immerse yourself in a sanctuary of digital serenity. Access authentic Doa and curate your daily supplications.',
     primaryCTA: 'Start Your Journey',
-    secondaryCTA: 'Watch Demo',
-  },
-
-  spiritualGrowth: {
-    title: 'Experience the beauty of prayer wherever you go',
-    description:
-      'Whether you are at home, traveling, or at work, GetDoa ensures your spiritual companion is always within reach. Sync seamlessly across all your devices.',
-    features: [
-      'Offline access to all your saved prayers',
-      'Beautiful dark mode for night reading',
-      'Audio recitations for correct pronunciation',
-    ],
-    craftedFor: 'Crafted for your spiritual growth',
+    secondaryCTA: 'Go To Doa Library',
   },
 
   features: {
@@ -59,6 +42,87 @@ export const LANDING_CONTENT = {
         color: 'amber',
       },
     ],
+  },
+
+  publicFeatures: {
+    title: 'Public Features',
+    subtitle:
+      'Essential tools accessible to everyone, designed to begin your spiritual journey with ease.',
+    items: [
+      {
+        icon: 'public',
+        title: 'Discover Shared Doa',
+        description:
+          'Explore a diverse collection of prayers shared by the community for inspiration.',
+        color: 'purple',
+      },
+      {
+        icon: 'verified',
+        title: 'Trusted References',
+        description:
+          'Access prayers backed by authentic references for peace of mind.',
+        color: 'emerald',
+      },
+      {
+        icon: 'school',
+        title: 'Guided Tutorials',
+        description:
+          'Seamlessly learn to navigate and utilize the app with helpful guidance.',
+        color: 'amber',
+      },
+    ],
+  },
+
+  enhancedFeatures: {
+    badge: 'Upon Sign Up',
+    title: 'Enhanced Features',
+    subtitle:
+      'Create a free account to unlock intelligent tools and personalized experiences designed to deepen your connection.',
+    items: [
+      {
+        icon: 'edit_note',
+        title: 'Compose Your Prayers',
+        description:
+          'Easily create and personalize your own spiritual supplications.',
+        color: 'violet',
+      },
+      {
+        icon: 'auto_awesome',
+        title: 'AI Doa Assistant',
+        description:
+          'Receive intelligent suggestions and verification for your prayer compositions.',
+        color: 'indigo',
+      },
+      {
+        icon: 'download_for_offline',
+        title: 'Download & Offline',
+        description:
+          'Securely download your customized prayers to access them offline.',
+        color: 'teal',
+      },
+      {
+        icon: 'translate',
+        title: 'Write in Your Language',
+        description:
+          'Craft your prayers in Malay or English, expressing yourself freely.',
+        color: 'rose',
+      },
+      {
+        icon: 'qr_code_2',
+        title: 'Share Instantly via QR',
+        description:
+          'Share your unique prayers effortlessly using generated QR codes.',
+        color: 'cyan',
+      },
+      {
+        icon: 'bookmark_added',
+        title: 'Bookmark Favorites',
+        description:
+          'Keep your most beloved prayers organized and readily accessible.',
+        color: 'orange',
+      },
+    ],
+    ctaButton: 'Sign Up for Free',
   },
 
   experience: {
@@ -119,22 +183,6 @@ export const LANDING_CONTENT = {
 
   cta: {
     title: 'Start your journey to inner peace today',
-    description:
-      'Download GetDoa and discover the beauty of a connected heart. Free for the first 30 days.',
-    iosButton: 'Download for iOS',
-    androidButton: 'Download for Android',
-  },
-
-  qrCode: {
-    title: 'Support the Community',
-    description:
-      'Your contributions help us maintain the servers, add more content, and keep the app ad-free for everyone.',
-    organization: 'Masjid Al Hasanah',
-    verification: 'Official Account',
-    instructions:
-      'Scan the QR code with your banking app or e-wallet to donate securely.',
-    qrImageUrl:
-      'https://lh3.googleusercontent.com/aida-public/AB6AXuCkBSZMvhur-aWR_NZIxdH0LAFzj4jbb6WJVgcbknVnYNvzFYk_6eHqIej9u4p0iIPTwSanLfE0prhJD_XjHgXeOuR4zqneVZtPXM-vWrdgbygD6siKPd2e28f0IlXvGjPac6TIfA5TUIS3Ssq6E8gXQ-rIA3i9TxCqfIB4hUlyyC9qZ2VtacSnOroa55JqHJKVMx4QKvanliOSY1b8vKgqRZABZ4-xFJGFKZNqkDcjqDEnyRNun74pDZ2tYo_wcgQe-MToQGFaESY',
   },
 
   footer: {

@@ -1,4 +1,3 @@
-import { Button } from '@/components/ui/button'
 import { LANDING_CONTENT } from '@/lib/constants'
 
 export function CTASection() {
@@ -11,31 +10,10 @@ export function CTASection() {
           <div className="absolute bottom-0 right-0 w-64 h-64 bg-emerald-500/20 rounded-full blur-3xl translate-x-1/2 translate-y-1/2"></div>
 
           {/* Content */}
-          <div className="relative z-10 space-y-6">
+          <div className="relative z-10">
             <h2 className="text-3xl md:text-5xl font-serif font-medium text-foreground">
               {LANDING_CONTENT.cta.title}
             </h2>
-
-            <p className="text-muted-foreground max-w-xl mx-auto text-lg">
-              {LANDING_CONTENT.cta.description}
-            </p>
-
-            <div className="flex flex-col sm:flex-row items-center justify-center gap-4 pt-4">
-              <Button
-                size="lg"
-                className="w-full sm:w-auto px-8 py-3 text-base"
-              >
-                {LANDING_CONTENT.cta.iosButton}
-              </Button>
-
-              <Button
-                variant="outline"
-                size="lg"
-                className="w-full sm:w-auto px-8 py-3 text-base"
-              >
-                {LANDING_CONTENT.cta.androidButton}
-              </Button>
-            </div>
           </div>
         </div>
       </div>
