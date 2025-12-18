@@ -1,8 +1,16 @@
-@import url('https://fonts.googleapis.com/css2?family=Amiri:ital,wght@0,400;0,700;1,400&family=Playfair+Display:ital,wght@0,500;0,600;0,700;1,500&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,500;0,600;0,700;1,500&display=swap');
 @import 'tailwindcss';
 @import 'tw-animate-css';
 @import 'shadcn/tailwind.css';
 @import '@fontsource-variable/roboto';
+
+@font-face {
+  font-family: 'Simpo';
+  src: url('/fonts/simpo.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
 
 @custom-variant dark (&:is(.dark *));
 
@@ -78,7 +86,7 @@
 @theme inline {
   --font-sans: 'Roboto', sans-serif;
   --font-serif: 'Playfair Display', serif;
-  --font-arabic: 'Amiri', serif;
+  --font-arabic: 'Simpo', serif;
   --font-display: 'Playfair Display', serif;
   --color-sidebar-ring: var(--sidebar-ring);
   --color-sidebar-border: var(--sidebar-border);
@@ -140,10 +148,7 @@
     background-image: linear-gradient(to right, #0f766e, #0d9488, #14b8a6);
   }
 
-  .font-display {
-    font-family: 'Playfair Display', serif;
-  }
-
+  
   .blob {
     position: absolute;
     filter: blur(60px);

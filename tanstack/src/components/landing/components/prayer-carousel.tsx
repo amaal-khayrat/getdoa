@@ -67,6 +67,7 @@ export function PrayerCarousel({ className = '' }: PrayerCarouselProps) {
                       <p
                         className="font-arabic text-3xl md:text-4xl text-foreground leading-loose"
                         dir="rtl"
+                        lang="ar"
                       >
                         {prayer.arabicText}
                       </p>

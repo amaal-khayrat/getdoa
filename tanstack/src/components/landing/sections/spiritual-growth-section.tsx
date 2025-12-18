@@ -108,6 +108,7 @@ export function SpiritualGrowthSection() {
                     <p
                       className="text-sm font-arabic text-foreground flex-1"
                       dir="rtl"
+                      lang="ar"
                     >
                       {prayer}
                     </p>

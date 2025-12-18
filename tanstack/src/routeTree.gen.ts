@@ -13,10 +13,12 @@ import { Route as TermsRouteImport } from './routes/terms'
 import { Route as RefundRouteImport } from './routes/refund'
 import { Route as PrivacyRouteImport } from './routes/privacy'
 import { Route as PricingRouteImport } from './routes/pricing'
-import { Route as DoaRouteImport } from './routes/doa'
 import { Route as ContactRouteImport } from './routes/contact'
 import { Route as AboutRouteImport } from './routes/about'
+import { Route as DoaRouteRouteImport } from './routes/doa.route'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as DoaIndexRouteImport } from './routes/doa.index'
+import { Route as DoaSlugRouteImport } from './routes/doa.$slug'
 
 const TermsRoute = TermsRouteImport.update({
   id: '/terms',
@@ -38,11 +40,6 @@ const PricingRoute = PricingRouteImport.update({
   path: '/pricing',
   getParentRoute: () => rootRouteImport,
 } as any)
-const DoaRoute = DoaRouteImport.update({
-  id: '/doa',
-  path: '/doa',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const ContactRoute = ContactRouteImport.update({
   id: '/contact',
   path: '/contact',
@@ -53,81 +50,106 @@ const AboutRoute = AboutRouteImport.update({
   path: '/about',
   getParentRoute: () => rootRouteImport,
 } as any)
+const DoaRouteRoute = DoaRouteRouteImport.update({
+  id: '/doa',
+  path: '/doa',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const DoaIndexRoute = DoaIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => DoaRouteRoute,
+} as any)
+const DoaSlugRoute = DoaSlugRouteImport.update({
+  id: '/$slug',
+  path: '/$slug',
+  getParentRoute: () => DoaRouteRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/doa': typeof DoaRouteRouteWithChildren
   '/about': typeof AboutRoute
   '/contact': typeof ContactRoute
-  '/doa': typeof DoaRoute
   '/pricing': typeof PricingRoute
   '/privacy': typeof PrivacyRoute
   '/refund': typeof RefundRoute
   '/terms': typeof TermsRoute
+  '/doa/$slug': typeof DoaSlugRoute
+  '/doa/': typeof DoaIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
   '/contact': typeof ContactRoute
-  '/doa': typeof DoaRoute
   '/pricing': typeof PricingRoute
   '/privacy': typeof PrivacyRoute
   '/refund': typeof RefundRoute
   '/terms': typeof TermsRoute
+  '/doa/$slug': typeof DoaSlugRoute
+  '/doa': typeof DoaIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/doa': typeof DoaRouteRouteWithChildren
   '/about': typeof AboutRoute
   '/contact': typeof ContactRoute
-  '/doa': typeof DoaRoute
   '/pricing': typeof PricingRoute
   '/privacy': typeof PrivacyRoute
   '/refund': typeof RefundRoute
   '/terms': typeof TermsRoute
+  '/doa/$slug': typeof DoaSlugRoute
+  '/doa/': typeof DoaIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/doa'
     | '/about'
     | '/contact'
-    | '/doa'
     | '/pricing'
     | '/privacy'
     | '/refund'
     | '/terms'
+    | '/doa/$slug'
+    | '/doa/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
     | '/about'
     | '/contact'
-    | '/doa'
     | '/pricing'
     | '/privacy'
     | '/refund'
     | '/terms'
+    | '/doa/$slug'
+    | '/doa'
   id:
     | '__root__'
     | '/'
+    | '/doa'
     | '/about'
     | '/contact'
-    | '/doa'
     | '/pricing'
     | '/privacy'
     | '/refund'
     | '/terms'
+    | '/doa/$slug'
+    | '/doa/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  DoaRouteRoute: typeof DoaRouteRouteWithChildren
   AboutRoute: typeof AboutRoute
   ContactRoute: typeof ContactRoute
-  DoaRoute: typeof DoaRoute
   PricingRoute: typeof PricingRoute
   PrivacyRoute: typeof PrivacyRoute
   RefundRoute: typeof RefundRoute
@@ -164,13 +186,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PricingRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/doa': {
-      id: '/doa'
-      path: '/doa'
-      fullPath: '/doa'
-      preLoaderRoute: typeof DoaRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/contact': {
       id: '/contact'
       path: '/contact'
@@ -185,6 +200,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AboutRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/doa': {
+      id: '/doa'
+      path: '/doa'
+      fullPath: '/doa'
+      preLoaderRoute: typeof DoaRouteRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/': {
       id: '/'
       path: '/'
@@ -192,14 +214,42 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/doa/': {
+      id: '/doa/'
+      path: '/'
+      fullPath: '/doa/'
+      preLoaderRoute: typeof DoaIndexRouteImport
+      parentRoute: typeof DoaRouteRoute
+    }
+    '/doa/$slug': {
+      id: '/doa/$slug'
+      path: '/$slug'
+      fullPath: '/doa/$slug'
+      preLoaderRoute: typeof DoaSlugRouteImport
+      parentRoute: typeof DoaRouteRoute
+    }
   }
 }
 
+interface DoaRouteRouteChildren {
+  DoaSlugRoute: typeof DoaSlugRoute
+  DoaIndexRoute: typeof DoaIndexRoute
+}
+
+const DoaRouteRouteChildren: DoaRouteRouteChildren = {
+  DoaSlugRoute: DoaSlugRoute,
+  DoaIndexRoute: DoaIndexRoute,
+}
+
+const DoaRouteRouteWithChildren = DoaRouteRoute._addFileChildren(
+  DoaRouteRouteChildren,
+)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  DoaRouteRoute: DoaRouteRouteWithChildren,
   AboutRoute: AboutRoute,
   ContactRoute: ContactRoute,
-  DoaRoute: DoaRoute,
   PricingRoute: PricingRoute,
   PrivacyRoute: PrivacyRoute,
   RefundRoute: RefundRoute,

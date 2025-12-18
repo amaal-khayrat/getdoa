@@ -1,4 +1,5 @@
 import { useMemo, useState } from 'react'
+import { Link } from '@tanstack/react-router'
 import {
   BookOpen,
   ChevronLeft,
@@ -7,6 +8,7 @@ import {
   Heart,
   Search,
   Share,
+  ExternalLink,
 } from 'lucide-react'
 import doaDataRaw from '../../../data/doa.json'
 import { Button } from '@/components/ui/button'
@@ -72,7 +74,6 @@ const isDoaItem = (item: any): item is DoaItem => {
 // Constants
 const DOAS_PER_PAGE = 10
 
-
 // Prayer Card Component
 function PrayerCard({
   doa,
@@ -81,7 +82,6 @@ function PrayerCard({
   doa: DoaItem
   language: 'en' | 'my'
 }) {
-
   // Get localized content
   const getTitle = () => {
     if (language === 'my') {
@@ -123,7 +123,8 @@ function PrayerCard({
   }
 
   return (
-    <article className="bg-card dark:bg-card rounded-3xl p-6 md:p-8 shadow-sm hover:shadow-md border border-transparent hover:border-primary-100 dark:hover:border-primary-900/50 transition-all duration-300 group">
+    <Link to="/doa/$slug" params={{ slug: doa.slug }}>
+      <article className="bg-card dark:bg-card rounded-3xl p-6 md:p-8 shadow-sm hover:shadow-md border border-transparent hover:border-primary-100 dark:hover:border-primary-900/50 transition-all duration-300 group cursor-pointer">
       <div className="flex justify-between items-start mb-6">
         <div className="flex flex-col gap-1">
           <h2 className="text-xl md:text-2xl font-bold text-foreground font-sans tracking-tight">
@@ -158,6 +159,7 @@ function PrayerCard({
           <p
             className="text-center font-arabic text-foreground text-2xl md:text-3xl leading-relaxed"
             dir="rtl"
+            lang="ar"
           >
             {doa.content}
           </p>
@@ -192,7 +194,8 @@ function PrayerCard({
             ))}
         </div>
       </div>
-    </article>
+      </article>
+    </Link>
   )
 }
 
@@ -407,11 +410,7 @@ export function DoaLibraryContent() {
 
         <div className="space-y-8">
           {currentDoas.map((doa) => (
-            <PrayerCard
-              key={doa.slug}
-              doa={doa}
-              language={language}
-            />
+            <PrayerCard key={doa.slug} doa={doa} language={language} />
           ))}
         </div>
 

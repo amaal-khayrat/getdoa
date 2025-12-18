@@ -31,6 +31,7 @@ export function PrayerCard({ className = '' }: PrayerCardProps) {
           <p
             className="font-arabic text-2xl leading-loose text-foreground"
             dir="rtl"
+            lang="ar"
           >
             {LANDING_CONTENT.prayerCard.arabicText}
           </p>
