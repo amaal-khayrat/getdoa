@@ -247,7 +247,7 @@ function Pagination({
           size="icon"
           onClick={() => onPageChange(currentPage - 1)}
           disabled={currentPage === 1}
-          className="rounded-full"
+          className="rounded-full border-teal-200 hover:bg-teal-50 hover:text-teal-600 hover:border-teal-300 dark:border-teal-700 dark:hover:bg-teal-900/30 dark:hover:text-teal-400 disabled:opacity-50"
         >
           <ChevronLeft className="w-5 h-5" />
         </Button>
@@ -268,7 +268,9 @@ function Pagination({
                 size="icon"
                 onClick={() => onPageChange(page as number)}
                 className={`w-9 h-9 rounded-full ${
-                  page === currentPage ? 'shadow-md shadow-primary/30' : ''
+                  page === currentPage
+                    ? 'bg-gradient-to-r from-teal-500 to-emerald-600 hover:from-teal-600 hover:to-emerald-700 shadow-md shadow-teal-500/30 text-white'
+                    : 'hover:bg-teal-50 hover:text-teal-600 dark:hover:bg-teal-900/30 dark:hover:text-teal-400'
                 }`}
               >
                 {page}
@@ -282,7 +284,7 @@ function Pagination({
           size="icon"
           onClick={() => onPageChange(currentPage + 1)}
           disabled={currentPage === totalPages}
-          className="rounded-full"
+          className="rounded-full border-teal-200 hover:bg-teal-50 hover:text-teal-600 hover:border-teal-300 dark:border-teal-700 dark:hover:bg-teal-900/30 dark:hover:text-teal-400 disabled:opacity-50"
         >
           <ChevronRight className="w-5 h-5" />
         </Button>
