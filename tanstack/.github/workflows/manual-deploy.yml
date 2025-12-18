@@ -1,0 +1,121 @@
+name: Manual Deploy to EC2
+
+on:
+  workflow_dispatch:
+
+jobs:
+  detect-changes:
+    runs-on: ubuntu-latest
+    outputs:
+      tanstack_changed: ${{ steps.filter.outputs.tanstack }}
+      compose_changed: ${{ steps.filter.outputs.compose }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Get base commit (previous deploy or 24 hours ago)
+        id: get-base-commit
+        run: |
+          # Get timestamp from 24 hours ago
+          TIMESTAMP=$(date -d "24 hours ago" +%s)
+          # Find the nearest commit before that timestamp on the current branch
+          BASE_COMMIT=$(git log --before=@$TIMESTAMP -n 1 --format=%H)
+          if [ -z "$BASE_COMMIT" ]; then
+            echo "No base commit found, using initial commit"
+            BASE_COMMIT=$(git rev-list --max-parents=0 HEAD)
+          fi
+          echo "base_commit=$BASE_COMMIT" >> $GITHUB_OUTPUT
+      - uses: dorny/paths-filter@v2
+        id: filter
+        with:
+          base: '${{ steps.get-base-commit.outputs.base_commit }}'
+          filters: |
+            tanstack:
+              - 'tanstack/**/*.ts'
+              - 'tanstack/**/*.tsx'
+              - 'tanstack/**/*.js'
+              - 'tanstack/**/*.jsx'
+            compose:
+              - 'docker-compose.yml'
+
+  deploy:
+    needs: detect-changes
+    if: |
+      needs.detect-changes.outputs.tanstack_changed == 'true' ||
+      needs.detect-changes.outputs.compose_changed == 'true'
+    runs-on: ubuntu-latest
+    permissions:
+      id-token: write
+      contents: read
+    env:
+      AWS_INSTANCE_SG_ID: ${{ secrets.AWS_INSTANCE_SG_ID }} # security group id for EC2 instance
+
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 0 # Full history for consistency with detect-changes
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v2
+        with:
+          role-to-assume: arn:aws:iam::254718381590:role/getdoa
+          aws-region: ${{ secrets.AWS_REGION }}
+
+      - name: Get runner IP address
+        id: ip
+        uses: haythem/public-ip@v1.2
+
+      - name: Whitelist runner IP address
+        run: |
+          aws ec2 authorize-security-group-ingress \
+            --group-id $AWS_INSTANCE_SG_ID \
+            --protocol tcp \
+            --port 22 \
+            --cidr ${{ steps.ip.outputs.ipv4 }}/32
+
+      - name: Create .ssh directory and SSH key file
+        run: |
+          mkdir -p /home/runner/.ssh
+          echo "${{ secrets.EC2_SSH_KEY }}" > /home/runner/.ssh/ec2_key
+          chmod 600 /home/runner/.ssh/ec2_key
+
+      - name: Transfer docker-compose.yml to EC2
+        run: |
+          scp -o StrictHostKeyChecking=no -i /home/runner/.ssh/ec2_key \
+            ./docker-compose.yml ubuntu@43.217.8.220:/home/ubuntu/docker-compose.yml
+
+      - name: Deploy TanStack application
+        uses: appleboy/ssh-action@v0.1.8
+        with:
+          host: 43.217.8.220
+          username: ubuntu
+          key: ${{ secrets.EC2_SSH_KEY }}
+          script: |
+            # Fix ownership of docker-compose.yml
+            sudo chown ubuntu:ubuntu /home/ubuntu/docker-compose.yml
+
+            # Update .env file with required secrets
+            echo "DOCKER_USERNAME=${{ secrets.DOCKER_USERNAME }}" > /home/ubuntu/.env
+
+            # Clean up any Docker resources to prevent image corruption issues
+            sudo docker system prune -f --volumes
+
+            # Deploy TanStack application
+            if [ "${{ needs.detect-changes.outputs.compose_changed }}" == "true" ]; then
+              # If docker-compose.yml changed, pull and restart all services
+              sudo docker compose -f /home/ubuntu/docker-compose.yml --env-file /home/ubuntu/.env pull
+              sudo docker compose -f /home/ubuntu/docker-compose.yml --env-file /home/ubuntu/.env up -d --remove-orphans
+            elif [ "${{ needs.detect-changes.outputs.tanstack_changed }}" == "true" ]; then
+              # If only tanstack code changed, restart only tanstack service
+              sudo docker compose -f /home/ubuntu/docker-compose.yml --env-file /home/ubuntu/.env pull tanstack
+              sudo docker compose -f /home/ubuntu/docker-compose.yml --env-file /home/ubuntu/.env up -d --remove-orphans tanstack
+            fi
+
+      - name: Revoke runner IP address
+        run: |
+          aws ec2 revoke-security-group-ingress \
+            --group-id $AWS_INSTANCE_SG_ID \
+            --protocol tcp \
+            --port 22 \
+            --cidr ${{ steps.ip.outputs.ipv4 }}/32

@@ -39,9 +39,9 @@ WORKDIR /app
 # Set environment to production
 ENV NODE_ENV=production
 ENV HOSTNAME=0.0.0.0
-ENV PORT=3000
+ENV PORT=3230
 ENV NITRO_HOST=0.0.0.0
-ENV NITRO_PORT=3000
+ENV NITRO_PORT=3230
 
 # Install necessary runtime packages
 RUN apk add --no-cache curl tzdata && \
@@ -72,11 +72,11 @@ RUN pnpm install --prod
 USER appuser
 
 # Expose the port
-EXPOSE 3000
+EXPOSE 3230
 
 # Health check to ensure the application is running
 HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
-    CMD curl -f http://localhost:3000/health || exit 1
+    CMD curl -f http://localhost:3230/health || exit 1
 
 # Start the Nitro server
 CMD ["node", "./index.mjs"]
