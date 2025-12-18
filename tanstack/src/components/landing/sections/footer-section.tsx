@@ -55,7 +55,7 @@ export function FooterSection() {
           {/* GitHub Link Only */}
           <div className="flex gap-4">
             <a
-              href="https://github.com"
+              href="https://github.com/amaal-khayrat/getdoa"
               target="_blank"
               rel="noopener noreferrer"
               className="hover:text-foreground transition-colors flex items-center gap-2"
