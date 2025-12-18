@@ -80,6 +80,10 @@ jobs:
           echo "${{ secrets.EC2_SSH_KEY }}" > /home/runner/.ssh/ec2_key
           chmod 600 /home/runner/.ssh/ec2_key
 
+      - name: Create getdoa directory on EC2
+        run: |
+          ssh -o StrictHostKeyChecking=no -i /home/runner/.ssh/ec2_key ubuntu@43.217.8.220 "if [ ! -d '/home/ubuntu/getdoa' ]; then mkdir -p /home/ubuntu/getdoa; fi"
+
       - name: Transfer docker-compose.yml to EC2
         run: |
           scp -o StrictHostKeyChecking=no -i /home/runner/.ssh/ec2_key \
