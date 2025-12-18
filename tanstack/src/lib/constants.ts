@@ -191,10 +191,7 @@ export const LANDING_CONTENT = {
     columns: {
       product: {
         title: 'Product',
-        links: [
-          { label: 'Features', href: '#features' },
-          { label: 'Pricing', href: '/pricing' },
-        ],
+        links: [{ label: 'Pricing', href: '/pricing' }],
       },
       company: {
         title: 'Company',

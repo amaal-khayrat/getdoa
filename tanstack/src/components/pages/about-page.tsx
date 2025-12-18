@@ -162,33 +162,6 @@ export function AboutPage() {
           </div>
         </div>
       </section>
-
-      {/* Call to Action Section */}
-      <section className="py-20 bg-background">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <h2 className="text-3xl md:text-4xl font-serif font-medium text-foreground mb-6">
-            Join Our Spiritual Journey
-          </h2>
-          <p className="text-lg text-muted-foreground mb-8 max-w-2xl mx-auto">
-            Together, we're building a community that values authenticity,
-            accessibility, and innovation in spiritual technology.
-          </p>
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <a
-              href="/pricing"
-              className="inline-flex items-center justify-center rounded-lg bg-gradient-to-r from-teal-500 to-emerald-600 px-6 py-3 text-white font-medium hover:from-teal-600 hover:to-emerald-700 transition-all duration-300 hover:shadow-lg hover:shadow-teal-500/30"
-            >
-              Start Your Journey
-            </a>
-            <a
-              href="/contact"
-              className="inline-flex items-center justify-center rounded-lg border border-border bg-background px-6 py-3 text-foreground font-medium hover:bg-muted transition-all duration-300"
-            >
-              Contact Us
-            </a>
-          </div>
-        </div>
-      </section>
     </div>
   )
 }

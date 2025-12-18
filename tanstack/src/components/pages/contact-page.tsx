@@ -273,9 +273,12 @@ export function ContactPage() {
                     asChild
                     className="w-full bg-gradient-to-r from-teal-500 to-emerald-600 hover:from-teal-600 hover:to-emerald-700"
                   >
-                    <a href={`mailto:${contactContent.information.email}`}>
+                    <a
+                      href={`mailto:${contactContent.information.email}`}
+                      className="flex items-center justify-center"
+                    >
                       <Mail className="w-4 h-4 mr-2" />
-                      Open Email Client
+                      Email
                     </a>
                   </Button>
                 </CardContent>
@@ -323,24 +326,6 @@ export function ContactPage() {
                           </div>
                           <div className="text-sm text-muted-foreground">
                             Learn about our 14-day guarantee
-                          </div>
-                        </div>
-                      </a>
-                    </Button>
-
-                    <Button
-                      asChild
-                      variant="ghost"
-                      className="w-full justify-start text-left h-auto p-4"
-                    >
-                      <a href="/faq" className="flex items-center gap-3">
-                        <div className="w-8 h-8 rounded-lg bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 flex items-center justify-center">
-                          <span className="text-xs font-bold">?</span>
-                        </div>
-                        <div>
-                          <div className="font-medium text-foreground">FAQ</div>
-                          <div className="text-sm text-muted-foreground">
-                            Find answers to common questions
                           </div>
                         </div>
                       </a>

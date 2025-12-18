@@ -96,65 +96,6 @@ export function PrivacyPage() {
               )
             })}
           </div>
-
-          {/* Trust Indicators */}
-          <div className="mt-16 grid md:grid-cols-3 gap-6">
-            <Card className="text-center p-6 border-teal-200 dark:border-teal-800 bg-teal-50/50 dark:bg-teal-950/20">
-              <CardContent className="p-0">
-                <Lock className="w-8 h-8 text-teal-600 dark:text-teal-400 mx-auto mb-3" />
-                <h3 className="font-medium text-foreground mb-2">
-                  256-bit Encryption
-                </h3>
-                <p className="text-sm text-muted-foreground">
-                  Bank-level security for your data
-                </p>
-              </CardContent>
-            </Card>
-
-            <Card className="text-center p-6 border-emerald-200 dark:border-emerald-800 bg-emerald-50/50 dark:bg-emerald-950/20">
-              <CardContent className="p-0">
-                <Shield className="w-8 h-8 text-emerald-600 dark:text-emerald-400 mx-auto mb-3" />
-                <h3 className="font-medium text-foreground mb-2">
-                  GDPR Compliant
-                </h3>
-                <p className="text-sm text-muted-foreground">
-                  Following international data protection standards
-                </p>
-              </CardContent>
-            </Card>
-
-            <Card className="text-center p-6 border-blue-200 dark:border-blue-800 bg-blue-50/50 dark:bg-blue-950/20">
-              <CardContent className="p-0">
-                <CreditCard className="w-8 h-8 text-blue-600 dark:text-blue-400 mx-auto mb-3" />
-                <h3 className="font-medium text-foreground mb-2">
-                  PCI DSS Compliant
-                </h3>
-                <p className="text-sm text-muted-foreground">
-                  Secure payment processing through Razorpay
-                </p>
-              </CardContent>
-            </Card>
-          </div>
-
-          {/* Action Section */}
-          <div className="mt-16 bg-muted/50 rounded-lg p-8 text-center">
-            <h3 className="text-xl font-serif font-medium text-foreground mb-4">
-              Your Data, Your Rights
-            </h3>
-            <p className="text-muted-foreground mb-6 max-w-2xl mx-auto">
-              You have the right to access, update, or delete your personal
-              information at any time. Contact us and we'll respond within 24
-              hours.
-            </p>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Button onClick={scrollToTop} variant="outline">
-                Back to Top
-              </Button>
-              <Button asChild>
-                <a href="/contact">Exercise Your Rights</a>
-              </Button>
-            </div>
-          </div>
         </div>
       </section>
     </div>

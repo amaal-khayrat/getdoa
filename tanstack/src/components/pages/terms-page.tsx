@@ -59,14 +59,6 @@ export function TermsPage() {
                       By continuing to use GetDoa, you acknowledge that you have
                       read, understood, and agree to be bound by these terms.
                     </p>
-                    <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                      <Button onClick={scrollToTop} variant="outline">
-                        Back to Top
-                      </Button>
-                      <Button asChild>
-                        <a href="/pricing">View Pricing Plans</a>
-                      </Button>
-                    </div>
                   </div>
                 </div>
               </div>

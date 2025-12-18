@@ -153,9 +153,6 @@ export function RefundPage() {
               >
                 <a href="mailto:hazqeel@ellzaf.com">Email Support Team</a>
               </Button>
-              <Button onClick={scrollToTop} variant="outline">
-                Back to Top
-              </Button>
             </div>
           </CardContent>
         </Card>
