@@ -1,10 +1,42 @@
-import { HeadContent, Scripts, createRootRoute } from '@tanstack/react-router'
+import {
+  HeadContent,
+  Link,
+  Outlet,
+  Scripts,
+  createRootRoute,
+} from '@tanstack/react-router'
 import { TanStackRouterDevtoolsPanel } from '@tanstack/react-router-devtools'
 import { TanStackDevtools } from '@tanstack/react-devtools'
 
 import appCss from '../styles.css?url'
 
+function NotFound() {
+  return (
+    <div className="min-h-screen flex items-center justify-center bg-background px-4">
+      <div className="text-center">
+        <h1 className="text-8xl font-serif font-bold text-muted-foreground/30">
+          404
+        </h1>
+        <h2 className="mt-4 text-2xl font-serif font-medium text-foreground">
+          Page Not Found
+        </h2>
+        <p className="mt-2 text-muted-foreground max-w-md mx-auto">
+          The page you're looking for doesn't exist or has been moved.
+        </p>
+        <Link
+          to="/"
+          className="mt-6 inline-flex items-center gap-2 rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90 transition-colors"
+        >
+          Go back home
+        </Link>
+      </div>
+    </div>
+  )
+}
+
 export const Route = createRootRoute({
+  component: () => <Outlet />,
+  notFoundComponent: NotFound,
   head: () => ({
     meta: [
       {

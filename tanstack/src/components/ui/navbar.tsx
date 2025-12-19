@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { Link } from '@tanstack/react-router'
 import { ArrowLeft, Menu, X } from 'lucide-react'
 import type { ComponentProps } from 'react'
 import { Button } from '@/components/ui/button'
@@ -69,15 +70,21 @@ export function Navbar({
                 variant="outline"
                 size="default"
                 className="border-teal-600 text-teal-600 hover:bg-teal-600 hover:text-white font-medium px-6"
+                asChild
               >
-                {LANDING_CONTENT.navigation.loginButton}
+                <Link to="/login">
+                  {LANDING_CONTENT.navigation.loginButton}
+                </Link>
               </Button>
               <Button
                 variant="default"
                 size="default"
                 className="bg-teal-600 hover:bg-teal-700 text-white font-medium px-6 shadow-lg hover:shadow-xl transition-all transform hover:scale-105"
+                asChild
               >
-                {LANDING_CONTENT.navigation.signUpButton}
+                <Link to="/signup">
+                  {LANDING_CONTENT.navigation.signUpButton}
+                </Link>
               </Button>
             </>
           ) : (
@@ -124,8 +131,11 @@ export function Navbar({
                 variant="outline"
                 size="default"
                 className="border-teal-600 text-teal-600 hover:bg-teal-600 hover:text-white font-medium px-6"
+                asChild
               >
-                {t ? t('login') : LANDING_CONTENT.navigation.loginButton}
+                <Link to="/login">
+                  {t ? t('login') : LANDING_CONTENT.navigation.loginButton}
+                </Link>
               </Button>
             </>
           )}
@@ -163,14 +173,20 @@ export function Navbar({
                   <Button
                     variant="outline"
                     className="w-full border-teal-600 text-teal-600 hover:bg-teal-600 hover:text-white font-medium py-3"
+                    asChild
                   >
-                    {LANDING_CONTENT.navigation.loginButton}
+                    <Link to="/login" onClick={handleLinkClick}>
+                      {LANDING_CONTENT.navigation.loginButton}
+                    </Link>
                   </Button>
                   <Button
                     variant="default"
                     className="w-full bg-teal-600 hover:bg-teal-700 text-white font-medium py-3 shadow-lg hover:shadow-xl transition-all"
+                    asChild
                   >
-                    {LANDING_CONTENT.navigation.signUpButton}
+                    <Link to="/signup" onClick={handleLinkClick}>
+                      {LANDING_CONTENT.navigation.signUpButton}
+                    </Link>
                   </Button>
                 </>
               ) : (
@@ -205,8 +221,11 @@ export function Navbar({
                   <Button
                     variant="outline"
                     className="w-full border-teal-600 text-teal-600 hover:bg-teal-600 hover:text-white font-medium py-3"
+                    asChild
                   >
-                    {t ? t('login') : LANDING_CONTENT.navigation.loginButton}
+                    <Link to="/login" onClick={handleLinkClick}>
+                      {t ? t('login') : LANDING_CONTENT.navigation.loginButton}
+                    </Link>
                   </Button>
                 </>
               )}

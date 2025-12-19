@@ -1,5 +1,7 @@
+import { Link } from '@tanstack/react-router'
 import { ArrowRight } from 'lucide-react'
-import { Button } from '@/components/ui/button'
+import { buttonVariants } from '@/components/ui/button'
+import { cn } from '@/lib/utils'
 import { LANDING_CONTENT } from '@/lib/constants'
 
 export function HeroSection() {
@@ -25,22 +27,25 @@ export function HeroSection() {
 
         {/* CTA Buttons */}
         <div className="flex flex-col sm:flex-row items-center justify-center gap-4 w-full max-w-md mx-auto sm:max-w-none sm:mx-0">
-          <Button
-            size="lg"
-            className="w-full sm:w-auto px-8 py-4 text-lg shadow-lg hover:shadow-xl hover:-translate-y-0.5 transition-all duration-300 flex items-center gap-2 min-h-14 justify-center"
+          <Link
+            to="/signup"
+            className={cn(
+              buttonVariants({ size: 'lg' }),
+              'w-full sm:w-auto px-8 py-4 text-lg shadow-lg hover:shadow-xl hover:-translate-y-0.5 transition-all duration-300 flex items-center gap-2 min-h-14 justify-center'
+            )}
           >
             {LANDING_CONTENT.hero.primaryCTA}
             <ArrowRight className="w-5 h-5 shrink-0" />
-          </Button>
-          <a href="/doa" className="w-full sm:w-auto">
-            <Button
-              size="lg"
-              className="w-full sm:w-auto px-8 py-4 text-lg shadow-lg hover:shadow-xl hover:-translate-y-0.5 transition-all duration-300 flex items-center gap-2 min-h-14 justify-center"
-              variant="outline"
-            >
-              {LANDING_CONTENT.hero.secondaryCTA}
-            </Button>
-          </a>
+          </Link>
+          <Link
+            to="/doa"
+            className={cn(
+              buttonVariants({ size: 'lg', variant: 'outline' }),
+              'w-full sm:w-auto px-8 py-4 text-lg shadow-lg hover:shadow-xl hover:-translate-y-0.5 transition-all duration-300 flex items-center gap-2 min-h-14 justify-center'
+            )}
+          >
+            {LANDING_CONTENT.hero.secondaryCTA}
+          </Link>
         </div>
       </div>
     </section>
