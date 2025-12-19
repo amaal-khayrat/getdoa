@@ -1,6 +1,8 @@
 import { useState } from 'react'
+import { Link } from '@tanstack/react-router'
 import { Menu, X } from 'lucide-react'
-import { Button } from '@/components/ui/button'
+import { Button, buttonVariants } from '@/components/ui/button'
+import { cn } from '@/lib/utils'
 import { LANDING_CONTENT } from '@/lib/constants'
 
 export function Navigation() {
@@ -37,20 +39,24 @@ export function Navigation() {
 
         {/* Desktop CTA Buttons */}
         <div className="hidden md:flex items-center gap-4">
-          <Button
-            variant="outline"
-            size="default"
-            className="border-teal-600 text-teal-600 hover:bg-teal-600 hover:text-white font-medium px-6"
+          <Link
+            to="/login"
+            className={cn(
+              buttonVariants({ variant: 'outline', size: 'default' }),
+              'border-teal-600 text-teal-600 hover:bg-teal-600 hover:text-white font-medium px-6'
+            )}
           >
             {LANDING_CONTENT.navigation.loginButton}
-          </Button>
-          <Button
-            variant="default"
-            size="default"
-            className="bg-teal-600 hover:bg-teal-700 text-white font-medium px-6 shadow-lg hover:shadow-xl transition-all transform hover:scale-105"
+          </Link>
+          <Link
+            to="/signup"
+            className={cn(
+              buttonVariants({ variant: 'default', size: 'default' }),
+              'bg-teal-600 hover:bg-teal-700 text-white font-medium px-6 shadow-lg hover:shadow-xl transition-all transform hover:scale-105'
+            )}
           >
             {LANDING_CONTENT.navigation.signUpButton}
-          </Button>
+          </Link>
         </div>
 
         {/* Mobile Menu Button */}
@@ -74,18 +80,26 @@ export function Navigation() {
         <div className="md:hidden bg-background/95 backdrop-blur-sm border-t border-border">
           <div className="px-4 pt-4 pb-3 border-t border-border">
             <div className="space-y-3">
-              <Button
-                variant="outline"
-                className="w-full border-teal-600 text-teal-600 hover:bg-teal-600 hover:text-white font-medium py-3"
+              <Link
+                to="/login"
+                onClick={handleLinkClick}
+                className={cn(
+                  buttonVariants({ variant: 'outline' }),
+                  'w-full border-teal-600 text-teal-600 hover:bg-teal-600 hover:text-white font-medium py-3'
+                )}
               >
                 {LANDING_CONTENT.navigation.loginButton}
-              </Button>
-              <Button
-                variant="default"
-                className="w-full bg-teal-600 hover:bg-teal-700 text-white font-medium py-3 shadow-lg hover:shadow-xl transition-all"
+              </Link>
+              <Link
+                to="/signup"
+                onClick={handleLinkClick}
+                className={cn(
+                  buttonVariants({ variant: 'default' }),
+                  'w-full bg-teal-600 hover:bg-teal-700 text-white font-medium py-3 shadow-lg hover:shadow-xl transition-all'
+                )}
               >
                 {LANDING_CONTENT.navigation.signUpButton}
-              </Button>
+              </Link>
             </div>
           </div>
         </div>
