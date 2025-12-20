@@ -104,6 +104,13 @@ jobs:
 
             # Update .env file with required secrets
             echo "DOCKER_USERNAME=${{ secrets.DOCKER_USERNAME }}" > /home/ubuntu/getdoa/.env
+            echo "BETTER_AUTH_SECRET=${{ secrets.BETTER_AUTH_SECRET }}" >> /home/ubuntu/getdoa/.env
+            echo "BETTER_AUTH_URL=${{ secrets.BETTER_AUTH_URL }}" >> /home/ubuntu/getdoa/.env
+            echo "GOOGLE_CLIENT_ID=${{ secrets.GOOGLE_CLIENT_ID }}" >> /home/ubuntu/getdoa/.env
+            echo "GOOGLE_CLIENT_SECRET=${{ secrets.GOOGLE_CLIENT_SECRET }}" >> /home/ubuntu/getdoa/.env
+            echo "POSTGRES_USER=${{ secrets.POSTGRES_USER }}" >> /home/ubuntu/getdoa/.env
+            echo "POSTGRES_PASSWORD=${{ secrets.POSTGRES_PASSWORD }}" >> /home/ubuntu/getdoa/.env
+            echo "POSTGRES_DB=${{ secrets.POSTGRES_DB }}" >> /home/ubuntu/getdoa/.env
 
             # Clean up any Docker resources to prevent image corruption issues
             sudo docker system prune -f --volumes

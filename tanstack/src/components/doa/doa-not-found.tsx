@@ -1,5 +1,5 @@
 import { Link } from '@tanstack/react-router'
-import { ArrowLeft, Search, BookOpen } from 'lucide-react'
+import { ArrowLeft, BookOpen, Search } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
 import { useLanguage } from '@/contexts/language-context'
@@ -8,9 +8,24 @@ export function DoaNotFound({ searchedSlug }: { searchedSlug?: string }) {
   const { language, t } = useLanguage()
 
   const suggestedPrayers = [
-    { slug: 'penghulu-bagi-doa-keampunan', name: language === 'my' ? 'Penghulu Bagi Doa Keampunan' : 'The Master of Forgiveness Prayer' },
-    { slug: 'pagi-doa-ditetapkan-islam', name: language === 'my' ? '[PAGI] Doa Ditetapkan Islam' : '[MORNING] Firmly Islam Doa' },
-    { slug: 'doa-mohon-taqwa', name: language === 'my' ? 'Doa Mohon Taqwa' : 'Prayer for Taqwa' },
+    {
+      slug: 'penghulu-bagi-doa-keampunan',
+      name:
+        language === 'my'
+          ? 'Penghulu Bagi Doa Keampunan'
+          : 'The Master of Forgiveness Prayer',
+    },
+    {
+      slug: 'pagi-doa-ditetapkan-islam',
+      name:
+        language === 'my'
+          ? '[PAGI] Doa Ditetapkan Islam'
+          : '[MORNING] Firmly Islam Doa',
+    },
+    {
+      slug: 'doa-mohon-taqwa',
+      name: language === 'my' ? 'Doa Mohon Taqwa' : 'Prayer for Taqwa',
+    },
   ]
 
   return (
@@ -18,12 +33,10 @@ export function DoaNotFound({ searchedSlug }: { searchedSlug?: string }) {
       <Card className="p-8 text-center">
         {/* 404 Icon */}
         <div className="mb-6">
-          <div className="w-20 h-20 bg-teal-100 dark:bg-teal-900/20 rounded-full flex items-center justify-center mx-auto mb-4">
-            <BookOpen className="w-10 h-10 text-teal-600 dark:text-teal-400" />
+          <div className="w-20 h-20 bg-secondary rounded-full flex items-center justify-center mx-auto mb-4">
+            <BookOpen className="w-10 h-10 text-primary" />
           </div>
-          <h1 className="text-4xl font-bold text-foreground mb-2">
-            404
-          </h1>
+          <h1 className="text-4xl font-bold text-foreground mb-2">404</h1>
           <h2 className="text-xl font-semibold text-foreground mb-4">
             {language === 'my' ? 'Doa Tidak Ditemui' : 'Prayer Not Found'}
           </h2>
@@ -38,7 +51,9 @@ export function DoaNotFound({ searchedSlug }: { searchedSlug?: string }) {
           </p>
           {searchedSlug && (
             <p className="text-sm text-muted-foreground">
-              {language === 'my' ? `Slug yang dicari: "${searchedSlug}"` : `Searched slug: "${searchedSlug}"`}
+              {language === 'my'
+                ? `Slug yang dicari: "${searchedSlug}"`
+                : `Searched slug: "${searchedSlug}"`}
             </p>
           )}
         </div>
@@ -78,7 +93,9 @@ export function DoaNotFound({ searchedSlug }: { searchedSlug?: string }) {
                   {prayer.name}
                 </h4>
                 <p className="text-xs text-muted-foreground">
-                  {language === 'my' ? 'Klik untuk melihat doa' : 'Click to view prayer'}
+                  {language === 'my'
+                    ? 'Klik untuk melihat doa'
+                    : 'Click to view prayer'}
                 </p>
               </Link>
             ))}
@@ -86,7 +103,7 @@ export function DoaNotFound({ searchedSlug }: { searchedSlug?: string }) {
         </div>
 
         {/* Help Section */}
-        <div className="mt-8 p-4 bg-blue-50 dark:bg-blue-950/20 rounded-lg">
+        <div className="mt-8 p-4 bg-muted rounded-lg">
           <h4 className="font-medium text-foreground mb-2">
             {language === 'my' ? 'Perlu Bantuan?' : 'Need Help?'}
           </h4>

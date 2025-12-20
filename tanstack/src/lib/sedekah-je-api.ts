@@ -2,12 +2,12 @@
 export interface SedekahJeResponse {
   id: number
   name: string
-  category: "mosque" | "other"
+  category: 'mosque' | 'other'
   state: string
   city: string
   qrImage: string
   qrContent: string
-  supportedPayment: string[]
+  supportedPayment: Array<string>
   coords: [number, number]
 }
 
@@ -25,7 +25,7 @@ class ApiCache {
   set<T>(key: string, data: T): void {
     this.cache.set(key, {
       data,
-      timestamp: Date.now()
+      timestamp: Date.now(),
     })
   }
 
@@ -50,11 +50,11 @@ const apiCache = new ApiCache()
 
 // API configuration
 const API_CONFIG = {
-  BASE_URL: "https://sedekah.je",
+  BASE_URL: 'https://sedekah.je',
   ENDPOINTS: {
-    RANDOM_MOSQUE: "/api/random"
+    RANDOM_MOSQUE: '/api/random',
   },
-  TIMEOUT: 10000 // 10 seconds
+  TIMEOUT: 10000, // 10 seconds
 } as const
 
 // Error types for better error handling
@@ -62,7 +62,7 @@ export class SedekahJeApiError extends Error {
   constructor(
     message: string,
     public status?: number,
-    public code?: string
+    public code?: string,
   ) {
     super(message)
     this.name = 'SedekahJeApiError'
@@ -70,7 +70,10 @@ export class SedekahJeApiError extends Error {
 }
 
 // Fetch wrapper with timeout and error handling
-async function fetchWithTimeout(url: string, options: RequestInit = {}): Promise<Response> {
+async function fetchWithTimeout(
+  url: string,
+  options: RequestInit = {},
+): Promise<Response> {
   const controller = new AbortController()
   const timeoutId = setTimeout(() => controller.abort(), API_CONFIG.TIMEOUT)
 
@@ -90,7 +93,7 @@ async function fetchWithTimeout(url: string, options: RequestInit = {}): Promise
       throw new SedekahJeApiError(
         `HTTP ${response.status}: ${response.statusText}`,
         response.status,
-        'HTTP_ERROR'
+        'HTTP_ERROR',
       )
     }
 
@@ -104,23 +107,19 @@ async function fetchWithTimeout(url: string, options: RequestInit = {}): Promise
 
     if (error instanceof Error) {
       if (error.name === 'AbortError') {
-        throw new SedekahJeApiError(
-          'Request timeout',
-          undefined,
-          'TIMEOUT'
-        )
+        throw new SedekahJeApiError('Request timeout', undefined, 'TIMEOUT')
       }
       throw new SedekahJeApiError(
         `Network error: ${error.message}`,
         undefined,
-        'NETWORK_ERROR'
+        'NETWORK_ERROR',
       )
     }
 
     throw new SedekahJeApiError(
       'Unknown error occurred',
       undefined,
-      'UNKNOWN_ERROR'
+      'UNKNOWN_ERROR',
     )
   }
 }
@@ -131,20 +130,29 @@ function validateSedekahJeResponse(data: unknown): SedekahJeResponse {
     throw new SedekahJeApiError(
       'Invalid response: Expected object',
       undefined,
-      'VALIDATION_ERROR'
+      'VALIDATION_ERROR',
     )
   }
 
   const obj = data as Record<string, unknown>
 
   // Required fields validation
-  const requiredFields = ['id', 'name', 'category', 'state', 'city', 'qrContent', 'supportedPayment', 'coords']
+  const requiredFields = [
+    'id',
+    'name',
+    'category',
+    'state',
+    'city',
+    'qrContent',
+    'supportedPayment',
+    'coords',
+  ]
   for (const field of requiredFields) {
     if (!(field in obj)) {
       throw new SedekahJeApiError(
         `Invalid response: Missing required field '${field}'`,
         undefined,
-        'VALIDATION_ERROR'
+        'VALIDATION_ERROR',
       )
     }
   }
@@ -154,7 +162,7 @@ function validateSedekahJeResponse(data: unknown): SedekahJeResponse {
     throw new SedekahJeApiError(
       'Invalid response: id must be a number',
       undefined,
-      'VALIDATION_ERROR'
+      'VALIDATION_ERROR',
     )
   }
 
@@ -162,7 +170,7 @@ function validateSedekahJeResponse(data: unknown): SedekahJeResponse {
     throw new SedekahJeApiError(
       'Invalid response: name must be a string',
       undefined,
-      'VALIDATION_ERROR'
+      'VALIDATION_ERROR',
     )
   }
 
@@ -170,7 +178,7 @@ function validateSedekahJeResponse(data: unknown): SedekahJeResponse {
     throw new SedekahJeApiError(
       'Invalid response: qrContent must be a string',
       undefined,
-      'VALIDATION_ERROR'
+      'VALIDATION_ERROR',
     )
   }
 
@@ -178,7 +186,7 @@ function validateSedekahJeResponse(data: unknown): SedekahJeResponse {
     throw new SedekahJeApiError(
       'Invalid response: supportedPayment must be an array',
       undefined,
-      'VALIDATION_ERROR'
+      'VALIDATION_ERROR',
     )
   }
 
@@ -211,7 +219,7 @@ export async function getRandomMosque(): Promise<SedekahJeResponse> {
     throw new SedekahJeApiError(
       'Failed to fetch random mosque data',
       undefined,
-      'FETCH_ERROR'
+      'FETCH_ERROR',
     )
   }
 }
@@ -219,18 +227,20 @@ export async function getRandomMosque(): Promise<SedekahJeResponse> {
 // Utility function to check if QR content is valid
 export function isValidQrContent(qrContent: string): boolean {
   // Basic validation - QR content should not be empty and should be a reasonable length
-  return typeof qrContent === 'string' &&
-         qrContent.trim().length > 0 &&
-         qrContent.length <= 1000
+  return (
+    typeof qrContent === 'string' &&
+    qrContent.trim().length > 0 &&
+    qrContent.length <= 1000
+  )
 }
 
 // Utility function to get payment method display name
 export function getPaymentMethodDisplayName(method: string): string {
   const displayNames: Record<string, string> = {
-    'duitnow': 'DuitNow',
-    'tng': 'Touch \'n Go',
-    'boost': 'Boost',
-    'grabpay': 'GrabPay'
+    duitnow: 'DuitNow',
+    tng: "Touch 'n Go",
+    boost: 'Boost',
+    grabpay: 'GrabPay',
   }
   return displayNames[method.toLowerCase()] || method
 }

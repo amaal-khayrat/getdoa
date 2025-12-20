@@ -10,8 +10,17 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu'
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { LANDING_CONTENT } from '@/lib/constants'
 import { useLanguage } from '@/contexts/language-context'
+import { signOut, useSession } from '@/lib/auth-client'
 
 interface NavbarProps extends Omit<ComponentProps<'nav'>, 'className'> {
   onBackClick?: () => void
@@ -29,13 +38,74 @@ export function Navbar({
   const languageContext = variant === 'doa' ? useLanguage() : null
   const { language = 'en', setLanguage, t } = languageContext || {}
 
+  // Authentication state
+  const { data: session } = useSession()
+  const isAuthenticated = !!session?.user
+  const userName = session?.user?.name
+  const userImage = session?.user?.image || undefined
+
   const handleMobileMenuToggle = () => {
     setIsMobileMenuOpen(!isMobileMenuOpen)
+  }
+
+  const handleSignOut = async () => {
+    await signOut()
+    setIsMobileMenuOpen(false) // Close mobile menu after sign out
   }
 
   const handleLinkClick = () => {
     setIsMobileMenuOpen(false)
   }
+
+  // User profile dropdown component
+  const UserProfile = () => (
+    <div className="flex items-center gap-3">
+      <Avatar size="sm">
+        <AvatarImage src={userImage} alt={userName} />
+        <AvatarFallback>
+          {userName?.charAt(0).toUpperCase() || 'U'}
+        </AvatarFallback>
+      </Avatar>
+      <div className="hidden sm:flex flex-col">
+        <p className="font-medium text-sm text-foreground">{userName}</p>
+      </div>
+      <DropdownMenu>
+        <DropdownMenuTrigger asChild>
+          <Button
+            variant="ghost"
+            size="icon-sm"
+            className="h-8 w-8"
+            aria-label="User menu"
+          >
+            <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+            </svg>
+          </Button>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent className="w-56" align="end" forceMount>
+          <div className="flex items-center justify-start gap-2 p-2">
+            <div className="flex flex-col space-y-1 leading-none">
+              {userName && <p className="font-medium text-sm">{userName}</p>}
+              {session?.user?.email && (
+                <p className="w-[200px] truncate text-xs text-muted-foreground">
+                  {session.user.email}
+                </p>
+              )}
+            </div>
+          </div>
+          <DropdownMenuSeparator />
+          <DropdownMenuItem asChild>
+            <Link to="/profile" className="cursor-pointer">
+              Profile
+            </Link>
+          </DropdownMenuItem>
+          <DropdownMenuItem onClick={handleSignOut} className="cursor-pointer">
+            Sign out
+          </DropdownMenuItem>
+        </DropdownMenuContent>
+      </DropdownMenu>
+    </div>
+  )
 
   return (
     <nav
@@ -65,28 +135,18 @@ export function Navbar({
         {/* Desktop Actions */}
         <div className="hidden md:flex items-center gap-4">
           {variant === 'landing' ? (
-            <>
+            isAuthenticated ? (
+              <UserProfile />
+            ) : (
               <Button
-                variant="outline"
+                variant="primary-gradient"
                 size="default"
-                className="border-teal-600 text-teal-600 hover:bg-teal-600 hover:text-white font-medium px-6"
+                className="font-medium px-6 shadow-green hover:shadow-green-lg hover:-translate-y-0.5 transition-all duration-300"
                 asChild
               >
-                <Link to="/login">
-                  {LANDING_CONTENT.navigation.loginButton}
-                </Link>
+                <Link to="/login">Sign In with Google</Link>
               </Button>
-              <Button
-                variant="default"
-                size="default"
-                className="bg-teal-600 hover:bg-teal-700 text-white font-medium px-6 shadow-lg hover:shadow-xl transition-all transform hover:scale-105"
-                asChild
-              >
-                <Link to="/signup">
-                  {LANDING_CONTENT.navigation.signUpButton}
-                </Link>
-              </Button>
-            </>
+            )
           ) : (
             <>
               {/* Language Picker */}
@@ -126,17 +186,19 @@ export function Navbar({
                 {t ? t('backToGetDoa') : 'Back to GetDoa'}
               </Button>
               <div className="h-5 w-px bg-border"></div>
-              {/* Login Button */}
-              <Button
-                variant="outline"
-                size="default"
-                className="border-teal-600 text-teal-600 hover:bg-teal-600 hover:text-white font-medium px-6"
-                asChild
-              >
-                <Link to="/login">
-                  {t ? t('login') : LANDING_CONTENT.navigation.loginButton}
-                </Link>
-              </Button>
+              {/* User Profile or Login */}
+              {isAuthenticated ? (
+                <UserProfile />
+              ) : (
+                <Button
+                  variant="green-outline"
+                  size="default"
+                  className="font-medium px-4"
+                  asChild
+                >
+                  <Link to="/login">Sign In with Google</Link>
+                </Button>
+              )}
             </>
           )}
         </div>
@@ -169,26 +231,44 @@ export function Navbar({
           <div className="px-4 pt-4 pb-3">
             <div className="space-y-3">
               {variant === 'landing' ? (
-                <>
+                isAuthenticated ? (
+                  <div className="flex items-center justify-between py-2 px-3 bg-secondary/50 rounded-lg">
+                    <div className="flex items-center gap-3">
+                      <Avatar size="sm">
+                        <AvatarImage src={userImage} alt={userName} />
+                        <AvatarFallback>
+                          {userName?.charAt(0).toUpperCase() || 'U'}
+                        </AvatarFallback>
+                      </Avatar>
+                      <div className="flex flex-col">
+                        <p className="font-medium text-sm">{userName}</p>
+                        {session?.user?.email && (
+                          <p className="text-xs text-muted-foreground truncate max-w-45">
+                            {session.user.email}
+                          </p>
+                        )}
+                      </div>
+                    </div>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={handleSignOut}
+                      className="text-destructive hover:text-destructive hover:bg-destructive/10"
+                    >
+                      Sign out
+                    </Button>
+                  </div>
+                ) : (
                   <Button
-                    variant="outline"
-                    className="w-full border-teal-600 text-teal-600 hover:bg-teal-600 hover:text-white font-medium py-3"
+                    variant="primary-gradient"
+                    className="w-full font-medium py-3 shadow-green hover:shadow-green-lg transition-all duration-300"
                     asChild
                   >
                     <Link to="/login" onClick={handleLinkClick}>
-                      {LANDING_CONTENT.navigation.loginButton}
+                      Sign In with Google
                     </Link>
                   </Button>
-                  <Button
-                    variant="default"
-                    className="w-full bg-teal-600 hover:bg-teal-700 text-white font-medium py-3 shadow-lg hover:shadow-xl transition-all"
-                    asChild
-                  >
-                    <Link to="/signup" onClick={handleLinkClick}>
-                      {LANDING_CONTENT.navigation.signUpButton}
-                    </Link>
-                  </Button>
-                </>
+                )
               ) : (
                 <>
                   <div className="relative flex items-center">
@@ -218,15 +298,44 @@ export function Navbar({
                     <ArrowLeft className="w-4 h-4" />
                     {t ? t('backToGetDoa') : 'Back to GetDoa'}
                   </Button>
-                  <Button
-                    variant="outline"
-                    className="w-full border-teal-600 text-teal-600 hover:bg-teal-600 hover:text-white font-medium py-3"
-                    asChild
-                  >
-                    <Link to="/login" onClick={handleLinkClick}>
-                      {t ? t('login') : LANDING_CONTENT.navigation.loginButton}
-                    </Link>
-                  </Button>
+                  {isAuthenticated ? (
+                    <div className="flex items-center justify-between py-2 px-3 bg-secondary/50 rounded-lg">
+                      <div className="flex items-center gap-3">
+                        <Avatar size="sm">
+                          <AvatarImage src={userImage} alt={userName} />
+                          <AvatarFallback>
+                            {userName?.charAt(0).toUpperCase() || 'U'}
+                          </AvatarFallback>
+                        </Avatar>
+                        <div className="flex flex-col">
+                          <p className="font-medium text-sm">{userName}</p>
+                          {session?.user?.email && (
+                            <p className="text-xs text-muted-foreground truncate max-w-45">
+                              {session.user.email}
+                            </p>
+                          )}
+                        </div>
+                      </div>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={handleSignOut}
+                        className="text-destructive hover:text-destructive hover:bg-destructive/10"
+                      >
+                        Sign out
+                      </Button>
+                    </div>
+                  ) : (
+                    <Button
+                      variant="green-outline"
+                      className="w-full font-medium py-3 shadow-green hover:shadow-green-lg transition-all duration-300"
+                      asChild
+                    >
+                      <Link to="/login" onClick={handleLinkClick}>
+                        Sign In with Google
+                      </Link>
+                    </Button>
+                  )}
                 </>
               )}
             </div>
