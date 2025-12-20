@@ -378,8 +378,8 @@ export function wrapArabicText(
     return lines.length > 0 ? lines : [text]
   }
 
-  // Use canvas context for accurate measurement
-  ctx.font = `${fontSize}px 'Amiri Quran', 'Scheherazade New', Arial, sans-serif`
+  // Use canvas context for accurate measurement - Use Simpo as primary font
+  ctx.font = `${fontSize}px 'Simpo', 'Amiri Quran', 'Scheherazade New', Arial, sans-serif`
   ctx.textAlign = 'right'
   ctx.direction = 'rtl'
 
@@ -418,8 +418,8 @@ export function renderCenteredArabicText(
   maxWidth: number,
   fontSize: number,
 ): void {
-  // Set proper Arabic text configuration
-  ctx.font = `${fontSize}px 'Amiri Quran', 'Scheherazade New', Arial, sans-serif`
+  // Set proper Arabic text configuration - Use Simpo as primary font
+  ctx.font = `${fontSize}px 'Simpo', 'Amiri Quran', 'Scheherazade New', Arial, sans-serif`
   ctx.textAlign = 'right'
   ctx.direction = 'rtl'
 
@@ -450,8 +450,8 @@ export function calculateArabicCenterPosition(
   centerX: number,
   fontSize: number,
 ): number {
-  // Set font for measurement
-  ctx.font = `${fontSize}px 'Amiri Quran', 'Scheherazade New', Arial, sans-serif`
+  // Set font for measurement - Use Simpo as primary font
+  ctx.font = `${fontSize}px 'Simpo', 'Amiri Quran', 'Scheherazade New', Arial, sans-serif`
 
   // Measure text width
   const metrics = ctx.measureText(text)
