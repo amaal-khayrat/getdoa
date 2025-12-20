@@ -11,7 +11,7 @@ import {
 } from '@/utils/text-helpers'
 import { downloadImage, generateDoaImage } from '@/utils/image-generator'
 import { Button } from '@/components/ui/button'
-import { DEFAULT_PREVIEW_SETTINGS, IMAGE_SIZE_PRESETS } from '@/types/doa.types'
+import { DEFAULT_PREVIEW_SETTINGS } from '@/types/doa.types'
 import { ResponsiveDoaLayout } from './responsive-layout'
 // Components will be imported where needed to avoid circular dependencies
 
@@ -26,6 +26,7 @@ const DoaListStateContext = React.createContext<{
   language: 'en' | 'my'
   isGeneratingImage: boolean
   showPreview: boolean
+  isPreviewLoading: boolean
   previewSettings: PreviewSettings
   user: {
     isAuthenticated: boolean
@@ -43,6 +44,7 @@ const DoaListStateContext = React.createContext<{
   language: 'en',
   isGeneratingImage: false,
   showPreview: false,
+  isPreviewLoading: false,
   previewSettings: DEFAULT_PREVIEW_SETTINGS,
   user: { isAuthenticated: false, username: undefined },
   currentPage: 1,
@@ -57,6 +59,7 @@ const DoaListActionsContext = React.createContext<{
   generateImage: () => Promise<void>
   setCurrentPage: (page: number) => void
   resetToFirstPage: () => void
+  handlePreview: () => Promise<void>
 }>({
   updateState: () => {},
   addPrayer: () => {},
@@ -65,6 +68,7 @@ const DoaListActionsContext = React.createContext<{
   generateImage: async () => {},
   setCurrentPage: () => {},
   resetToFirstPage: () => {},
+  handlePreview: async () => {},
 })
 
 // Provider component
@@ -152,9 +156,10 @@ function DoaListProvider({ children }: { children: React.ReactNode }) {
 
       const blob = await generateDoaImage({
         doaList,
-        imageSize: IMAGE_SIZE_PRESETS[state.previewSettings.imageSize],
-        backgroundColor: state.previewSettings.backgroundColor,
+        backgroundColor: '#ffffff',
         textColor: state.previewSettings.textColor,
+        minImageWidth: 1080,
+        maxImageWidth: 3000,
       })
 
       const filename = `${state.title.replace(/[^a-z0-9]/gi, '_')}.png`
@@ -173,6 +178,18 @@ function DoaListProvider({ children }: { children: React.ReactNode }) {
 
   const resetToFirstPage = useCallback(() => {
     setState((prev) => ({ ...prev, currentPage: 1 }))
+  }, [])
+
+  // Handle preview with loading state to prevent blank screen
+  const handlePreview = useCallback(async () => {
+    // Start loading
+    setState((prev) => ({ ...prev, isPreviewLoading: true }))
+
+    // Small delay to allow UI to update and prevent blank screen
+    await new Promise(resolve => setTimeout(resolve, 100))
+
+    // Show preview
+    setState((prev) => ({ ...prev, isPreviewLoading: false, showPreview: true }))
   }, [])
 
   // Update available prayers when data changes
@@ -220,6 +237,7 @@ function DoaListProvider({ children }: { children: React.ReactNode }) {
           generateImage,
           setCurrentPage,
           resetToFirstPage,
+          handlePreview,
         }}
       >
         {children}
@@ -277,12 +295,13 @@ function DoaListBuilderContent() {
     availablePrayers,
     isGeneratingImage,
     showPreview,
+    isPreviewLoading,
     selectedPrayers,
     currentPage,
     itemsPerPage,
   } = useDoaListState()
 
-  const { updateState, generateImage, setCurrentPage, resetToFirstPage } =
+  const { updateState, generateImage, setCurrentPage, resetToFirstPage, handlePreview } =
     useDoaListActions()
 
   // Filter prayers based on search and category
@@ -357,12 +376,21 @@ function DoaListBuilderContent() {
               <Button
                 variant="outline"
                 size="sm"
-                onClick={() => updateState({ showPreview: true })}
-                disabled={selectedPrayers.length === 0}
+                onClick={handlePreview}
+                disabled={selectedPrayers.length === 0 || isPreviewLoading}
                 className="flex-1"
               >
-                <Eye className="w-4 h-4 mr-1 sm:mr-2" />
-                <span className="text-xs sm:text-sm">Preview</span>
+                {isPreviewLoading ? (
+                  <>
+                    <div className="w-4 h-4 mr-1 sm:mr-2 animate-spin rounded-full border-2 border-current border-t-transparent" />
+                    <span className="text-xs sm:text-sm">Loading...</span>
+                  </>
+                ) : (
+                  <>
+                    <Eye className="w-4 h-4 mr-1 sm:mr-2" />
+                    <span className="text-xs sm:text-sm">Preview</span>
+                  </>
+                )}
               </Button>
               <Button
                 size="sm"
@@ -392,13 +420,23 @@ function DoaListBuilderContent() {
             <div className="flex items-center gap-3 shrink-0">
               <Button
                 variant="outline"
-                onClick={() => updateState({ showPreview: true })}
-                disabled={selectedPrayers.length === 0}
+                onClick={handlePreview}
+                disabled={selectedPrayers.length === 0 || isPreviewLoading}
                 className="min-w-25"
               >
-                <Eye className="w-4 h-4 mr-2" />
-                <span className="hidden sm:inline">Preview</span>
-                <span className="sm:hidden text-xs">View</span>
+                {isPreviewLoading ? (
+                  <>
+                    <div className="w-4 h-4 mr-2 animate-spin rounded-full border-2 border-current border-t-transparent" />
+                    <span className="hidden sm:inline">Loading...</span>
+                    <span className="sm:hidden text-xs">Load</span>
+                  </>
+                ) : (
+                  <>
+                    <Eye className="w-4 h-4 mr-2" />
+                    <span className="hidden sm:inline">Preview</span>
+                    <span className="sm:hidden text-xs">View</span>
+                  </>
+                )}
               </Button>
               <Button
                 onClick={handleExport}

@@ -1,4 +1,3 @@
-import React from 'react'
 import {
   DndContext,
   KeyboardSensor,
@@ -41,7 +40,7 @@ function SortablePrayerItem({ prayer, index }: { prayer: any; index: number }) {
   }
 
   const { language, selectedPrayers } = useDoaListState()
-  const { removePrayer } = useDoaListActions()
+  const { removePrayer, reorderPrayers } = useDoaListActions()
 
   return (
     <div
@@ -125,7 +124,7 @@ export function SelectedPrayersPanel({
 }) {
   const { selectedPrayers, title, description, language } = useDoaListState()
 
-  const { updateState, addPrayer, removePrayer, reorderPrayers } =
+  const { updateState, addPrayer, reorderPrayers } =
     useDoaListActions()
 
   const sensors = useSensors(

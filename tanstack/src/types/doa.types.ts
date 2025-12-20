@@ -30,18 +30,10 @@ export interface DoaList {
 export type Language = 'en' | 'my'
 export type TranslationLayout = 'grouped' | 'interleaved'
 
-export type ImageSize = 'a4' | 'instagram-story' | 'square' | 'custom'
-export interface ImageDimensions {
-  width: number
-  height: number
-}
-
 export interface PreviewSettings {
   showTranslations: boolean
   translationLayout: TranslationLayout
   attribution: AttributionSettings
-  imageSize: ImageSize
-  backgroundColor: string
   textColor: string
 }
 
@@ -83,15 +75,5 @@ export const DEFAULT_PREVIEW_SETTINGS: PreviewSettings = {
     showUsername: true,
     showBranding: true,
   },
-  imageSize: 'a4',
-  backgroundColor: '#ffffff',
   textColor: '#000000',
-}
-
-// Image size presets
-export const IMAGE_SIZE_PRESETS: Record<ImageSize, ImageDimensions> = {
-  a4: { width: 2480, height: 3508 },
-  'instagram-story': { width: 1080, height: 1920 },
-  square: { width: 1080, height: 1080 },
-  custom: { width: 1080, height: 1350 },
 }

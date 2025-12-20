@@ -1,15 +1,95 @@
-import React from 'react'
-import { Download, Eye, X } from 'lucide-react'
+import { Download, X } from 'lucide-react'
+import React, { useMemo } from 'react'
 import { useDoaListActions, useDoaListState } from './doa-list-builder'
-import type { ImageSize, TranslationLayout } from '@/types/doa.types'
+import type { TranslationLayout } from '@/types/doa.types'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Switch } from '@/components/ui/switch'
 import { Card } from '@/components/ui/card'
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group'
-import { IMAGE_SIZE_PRESETS } from '@/types/doa.types'
+
+// Memoized ContentInfo component to prevent re-calculations
+const ContentInfo = ({ prayers, showTranslations }: {
+  prayers: Array<any>
+  showTranslations: boolean
+}) => {
+  // Memoize expensive calculations to prevent re-computation on every render
+  const contentMetrics = useMemo(() => {
+    const totalCharacters = prayers.reduce((sum, prayer) => {
+      return sum + (prayer.content?.length || 0) +
+             (showTranslations ? (prayer.meaning_en?.length || 0) + (prayer.meaning_my?.length || 0) : 0)
+    }, 0)
+
+    const estimatedLines = Math.ceil(totalCharacters / 50) // Rough estimate
+
+    return {
+      prayerCount: prayers.length,
+      totalCharacters,
+      estimatedLines,
+      hasTranslations: showTranslations
+    }
+  }, [prayers, showTranslations])
+
+  return (
+    <div className="bg-muted/50 p-3 rounded-lg space-y-2">
+      <h4 className="font-medium text-sm">Content Summary</h4>
+      <div className="text-xs text-muted-foreground space-y-1">
+        <div>• {contentMetrics.prayerCount} prayer{contentMetrics.prayerCount !== 1 ? 's' : ''}</div>
+        <div>• {contentMetrics.hasTranslations ? 'With' : 'Without'} translations</div>
+        <div>• Approximately {contentMetrics.estimatedLines} lines of text</div>
+        <div>• Optimized for readability</div>
+        <div>• Dynamic sizing based on content</div>
+      </div>
+    </div>
+  )
+}
+
+// Memoized prayer item to prevent unnecessary re-renders
+const PrayerItem = React.memo(({
+  prayer,
+  index,
+  language,
+  translationLayout,
+  showTranslations
+}: {
+  prayer: any
+  index: number
+  language: 'en' | 'my'
+  translationLayout: 'grouped' | 'interleaved'
+  showTranslations: boolean
+}) => {
+  if (translationLayout === 'grouped') {
+    return (
+      <div className="border-l-4 border-primary pl-4">
+        <div className="text-sm font-medium text-muted-foreground mb-1">
+          {index + 1}. {language === 'my' ? prayer.name_my : prayer.name_en}
+        </div>
+        <p className="font-arabic text-lg text-right" dir="rtl">
+          {prayer.content}
+        </p>
+      </div>
+    )
+  }
+
+  return (
+    <div className="border-l-4 border-primary pl-4">
+      <div className="text-sm font-medium text-muted-foreground mb-1">
+        {index + 1}. {language === 'my' ? prayer.name_my : prayer.name_en}
+      </div>
+      <p className="font-arabic text-lg text-right" dir="rtl">
+        {prayer.content}
+      </p>
+      {showTranslations && (
+        <p className="text-sm text-muted-foreground mt-2 italic">
+          {language === 'my' ? prayer.meaning_my : prayer.meaning_en}
+        </p>
+      )}
+    </div>
+  )
+})
+
+PrayerItem.displayName = 'PrayerItem'
 
 export function PreviewModal({
   onClose,
@@ -42,21 +122,6 @@ export function PreviewModal({
       description: 'Arabic-translation pairs',
     },
   ] as const
-
-  const sizeOptions: Array<{
-    value: ImageSize
-    label: string
-    dimensions: string
-  }> = [
-    { value: 'a4', label: 'A4', dimensions: '2480 × 3508px' },
-    {
-      value: 'instagram-story',
-      label: 'Instagram Story',
-      dimensions: '1080 × 1920px',
-    },
-    { value: 'square', label: 'Square', dimensions: '1080 × 1080px' },
-    { value: 'custom', label: 'Custom', dimensions: '1080 × 1350px' },
-  ]
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center">
@@ -94,47 +159,16 @@ export function PreviewModal({
 
               {/* Preview Content */}
               <div className="space-y-4">
-                {selectedPrayers.map((prayer, index) => {
-                  if (previewSettings.translationLayout === 'grouped') {
-                    return (
-                      <div
-                        key={prayer.slug}
-                        className="border-l-4 border-primary pl-4"
-                      >
-                        <div className="text-sm font-medium text-muted-foreground mb-1">
-                          {index + 1}.{' '}
-                          {language === 'my' ? prayer.name_my : prayer.name_en}
-                        </div>
-                        <p className="font-arabic text-lg text-right" dir="rtl">
-                          {prayer.content}
-                        </p>
-                      </div>
-                    )
-                  } else {
-                    // Interleaved
-                    return (
-                      <div
-                        key={prayer.slug}
-                        className="border-l-4 border-primary pl-4"
-                      >
-                        <div className="text-sm font-medium text-muted-foreground mb-1">
-                          {index + 1}.{' '}
-                          {language === 'my' ? prayer.name_my : prayer.name_en}
-                        </div>
-                        <p className="font-arabic text-lg text-right" dir="rtl">
-                          {prayer.content}
-                        </p>
-                        {previewSettings.showTranslations && (
-                          <p className="text-sm text-muted-foreground mt-2 italic">
-                            {language === 'my'
-                              ? prayer.meaning_my
-                              : prayer.meaning_en}
-                          </p>
-                        )}
-                      </div>
-                    )
-                  }
-                })}
+                {selectedPrayers.map((prayer, index) => (
+                  <PrayerItem
+                    key={prayer.slug}
+                    prayer={prayer}
+                    index={index}
+                    language={language}
+                    translationLayout={previewSettings.translationLayout}
+                    showTranslations={previewSettings.showTranslations}
+                  />
+                ))}
 
                 {/* Grouped Translations */}
                 {previewSettings.translationLayout === 'grouped' &&
@@ -176,6 +210,12 @@ export function PreviewModal({
           {/* Right Panel - Settings */}
           <div className="w-80 p-4 overflow-y-auto">
             <div className="space-y-6">
+              {/* Content Info */}
+              <ContentInfo
+                prayers={selectedPrayers}
+                showTranslations={previewSettings.showTranslations}
+              />
+
               {/* Translation Settings */}
               <div>
                 <h3 className="text-sm font-medium mb-3">
@@ -235,74 +275,6 @@ export function PreviewModal({
                         </div>
                       ))}
                     </RadioGroup>
-                  </div>
-                </div>
-              </div>
-
-              {/* Export Settings */}
-              <div>
-                <h3 className="text-sm font-medium mb-3">Export Settings</h3>
-                <div className="space-y-3">
-                  <div>
-                    <Label className="text-sm text-muted-foreground mb-2 block">
-                      Image Size
-                    </Label>
-                    <Select
-                      value={previewSettings.imageSize}
-                      onValueChange={(value) =>
-                        updateState({
-                          previewSettings: {
-                            ...previewSettings,
-                            imageSize: value as ImageSize,
-                          },
-                        })
-                      }
-                    >
-                      <SelectTrigger className="w-full">
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {sizeOptions.map((option) => (
-                          <SelectItem key={option.value} value={option.value}>
-                            {option.label} ({option.dimensions})
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  </div>
-
-                  <div>
-                    <Label className="text-sm text-muted-foreground mb-2 block">
-                      Background Color
-                    </Label>
-                    <div className="flex items-center space-x-2">
-                      <Input
-                        type="color"
-                        value={previewSettings.backgroundColor}
-                        onChange={(e) =>
-                          updateState({
-                            previewSettings: {
-                              ...previewSettings,
-                              backgroundColor: e.target.value,
-                            },
-                          })
-                        }
-                        className="w-8 h-8 rounded border p-1"
-                      />
-                      <Input
-                        type="text"
-                        value={previewSettings.backgroundColor}
-                        onChange={(e) =>
-                          updateState({
-                            previewSettings: {
-                              ...previewSettings,
-                              backgroundColor: e.target.value,
-                            },
-                          })
-                        }
-                        className="flex-1"
-                      />
-                    </div>
                   </div>
                 </div>
               </div>
