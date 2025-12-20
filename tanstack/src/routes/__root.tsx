@@ -9,6 +9,7 @@ import { TanStackRouterDevtoolsPanel } from '@tanstack/react-router-devtools'
 import { TanStackDevtools } from '@tanstack/react-devtools'
 
 import appCss from '../styles.css?url'
+import { FontPreloader } from '@/components/font-preloader'
 
 function NotFound() {
   return (
@@ -35,7 +36,12 @@ function NotFound() {
 }
 
 export const Route = createRootRoute({
-  component: () => <Outlet />,
+  component: () => (
+    <>
+      <FontPreloader />
+      <Outlet />
+    </>
+  ),
   notFoundComponent: NotFound,
   head: () => ({
     meta: [

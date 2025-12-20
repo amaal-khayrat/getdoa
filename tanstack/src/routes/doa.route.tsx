@@ -1,4 +1,4 @@
-import { createFileRoute, Outlet } from '@tanstack/react-router'
+import { Outlet, createFileRoute } from '@tanstack/react-router'
 import { LandingLayout } from '@/components/landing/layout/landing-layout'
 import { LanguageProvider } from '@/contexts/language-context'
 

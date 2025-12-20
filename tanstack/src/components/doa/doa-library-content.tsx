@@ -8,7 +8,6 @@ import {
   Heart,
   Search,
   Share,
-  ExternalLink,
 } from 'lucide-react'
 import doaDataRaw from '../../../data/doa.json'
 import { Button } from '@/components/ui/button'
@@ -25,7 +24,7 @@ function DynamicMetaTags() {
   // Update or create meta description
   const existingMetaDescription = document.querySelector(
     'meta[name="description"]',
-  ) as HTMLMetaElement | null
+  )
   if (existingMetaDescription) {
     existingMetaDescription.content = t('pageDescription')
   } else {
@@ -123,77 +122,77 @@ function PrayerCard({
   }
 
   return (
-    <Link to="/doa/$slug" params={{ slug: doa.slug }}>
-      <article className="bg-card dark:bg-card rounded-3xl p-6 md:p-8 shadow-sm hover:shadow-md border border-transparent hover:border-primary-100 dark:hover:border-primary-900/50 transition-all duration-300 group cursor-pointer">
-      <div className="flex justify-between items-start mb-6">
-        <div className="flex flex-col gap-1">
-          <h2 className="text-xl md:text-2xl font-bold text-foreground font-sans tracking-tight">
-            {getTitle()}
-          </h2>
-        </div>
-        <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
-          <button
-            className="p-2 rounded-full text-muted-foreground hover:text-primary hover:bg-primary-50 dark:hover:bg-primary-900/30 transition-colors"
-            title="Copy"
-            onClick={() => navigator.clipboard.writeText(doa.content)}
-          >
-            <Copy className="w-5 h-5" />
-          </button>
-          <button
-            className="p-2 rounded-full text-muted-foreground hover:text-pink-500 hover:bg-pink-50 dark:hover:bg-pink-900/30 transition-colors"
-            title="Favorite"
-          >
-            <Heart className="w-5 h-5" />
-          </button>
-          <button
-            className="p-2 rounded-full text-muted-foreground hover:text-blue-500 hover:bg-blue-50 dark:hover:bg-blue-900/30 transition-colors"
-            title="Share"
-          >
-            <Share className="w-5 h-5" />
-          </button>
-        </div>
-      </div>
-
-      <div className="space-y-6">
-        <div className="relative bg-secondary/50 dark:bg-muted/50 rounded-2xl p-8 flex items-center justify-center min-h-[160px] border border-border">
-          <p
-            className="text-center font-arabic text-foreground text-2xl md:text-3xl leading-relaxed"
-            dir="rtl"
-            lang="ar"
-          >
-            {doa.content}
-          </p>
+    <Link to="/doa/$slug" params={{ slug: doa.slug }} className="p-2">
+      <article className="bg-card rounded-3xl p-6 md:p-8 shadow-green-sm hover:shadow-green-lg border border-transparent hover:border-border transition-all duration-300 group cursor-pointer">
+        <div className="flex justify-between items-start mb-6">
+          <div className="flex flex-col gap-1">
+            <h2 className="text-xl md:text-2xl font-bold text-foreground font-sans tracking-tight">
+              {getTitle()}
+            </h2>
+          </div>
+          <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+            <button
+              className="p-2 rounded-full text-muted-foreground hover:text-primary hover:bg-secondary transition-colors"
+              title="Copy"
+              onClick={() => navigator.clipboard.writeText(doa.content)}
+            >
+              <Copy className="w-5 h-5" />
+            </button>
+            <button
+              className="p-2 rounded-full text-muted-foreground hover:text-primary hover:bg-secondary transition-colors"
+              title="Favorite"
+            >
+              <Heart className="w-5 h-5" />
+            </button>
+            <button
+              className="p-2 rounded-full text-muted-foreground hover:text-primary hover:bg-secondary transition-colors"
+              title="Share"
+            >
+              <Share className="w-5 h-5" />
+            </button>
+          </div>
         </div>
 
-        <div className="px-2 md:px-4">
-          <h3 className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-muted-foreground mb-2">
-            <span className="w-1.5 h-1.5 rounded-full bg-primary"></span>
-            {language === 'my' ? 'Maksud' : 'Meaning'}
-          </h3>
-          <p className="text-muted-foreground leading-relaxed text-base md:text-lg">
-            {getMeaning()}
-          </p>
-        </div>
-      </div>
+        <div className="space-y-6">
+          <div className="relative bg-secondary/50 dark:bg-muted/50 rounded-2xl p-8 flex items-center justify-center min-h-[160px] border border-border">
+            <p
+              className="text-center font-arabic text-foreground text-2xl md:text-3xl leading-relaxed"
+              dir="rtl"
+              lang="ar"
+            >
+              {doa.content}
+            </p>
+          </div>
 
-      <div className="mt-8 pt-6 border-t border-border flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-        <div className="flex items-center gap-2 text-muted-foreground">
-          <BookOpen className="w-4 h-4" />
-          <span className="text-sm font-medium italic">{getReference()}</span>
+          <div className="px-2 md:px-4">
+            <h3 className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-muted-foreground mb-2">
+              <span className="w-1.5 h-1.5 rounded-full bg-primary"></span>
+              {language === 'my' ? 'Maksud' : 'Meaning'}
+            </h3>
+            <p className="text-muted-foreground leading-relaxed text-base md:text-lg">
+              {getMeaning()}
+            </p>
+          </div>
         </div>
-        <div className="flex flex-wrap gap-2">
-          {getCategories()
-            .slice(0, 2)
-            .map((cat, idx) => (
-              <span
-                key={idx}
-                className="inline-flex items-center px-2.5 py-1 rounded-md text-xs font-medium bg-secondary text-secondary-foreground border border-border"
-              >
-                {cat}
-              </span>
-            ))}
+
+        <div className="mt-8 pt-6 border-t border-border flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div className="flex items-center gap-2 text-muted-foreground">
+            <BookOpen className="w-4 h-4" />
+            <span className="text-sm font-medium italic">{getReference()}</span>
+          </div>
+          <div className="flex flex-wrap gap-2">
+            {getCategories()
+              .slice(0, 2)
+              .map((cat, idx) => (
+                <span
+                  key={idx}
+                  className="inline-flex items-center px-2.5 py-1 rounded-md text-xs font-medium bg-secondary text-secondary-foreground border border-border"
+                >
+                  {cat}
+                </span>
+              ))}
+          </div>
         </div>
-      </div>
       </article>
     </Link>
   )
@@ -246,11 +245,11 @@ function Pagination({
     <div className="flex flex-col items-center gap-6">
       <div className="flex items-center gap-2">
         <Button
-          variant="outline"
+          variant="green-outline"
           size="icon"
           onClick={() => onPageChange(currentPage - 1)}
           disabled={currentPage === 1}
-          className="rounded-full border-teal-200 hover:bg-teal-50 hover:text-teal-600 hover:border-teal-300 dark:border-teal-700 dark:hover:bg-teal-900/30 dark:hover:text-teal-400 disabled:opacity-50"
+          className="rounded-full disabled:opacity-50"
         >
           <ChevronLeft className="w-5 h-5" />
         </Button>
@@ -272,8 +271,8 @@ function Pagination({
                 onClick={() => onPageChange(page as number)}
                 className={`w-9 h-9 rounded-full ${
                   page === currentPage
-                    ? 'bg-gradient-to-r from-teal-500 to-emerald-600 hover:from-teal-600 hover:to-emerald-700 shadow-md shadow-teal-500/30 text-white'
-                    : 'hover:bg-teal-50 hover:text-teal-600 dark:hover:bg-teal-900/30 dark:hover:text-teal-400'
+                    ? 'bg-gradient-primary shadow-green text-white hover:shadow-green-lg'
+                    : 'hover:bg-secondary hover:text-primary'
                 }`}
               >
                 {page}
@@ -283,11 +282,11 @@ function Pagination({
         </div>
 
         <Button
-          variant="outline"
+          variant="green-outline"
           size="icon"
           onClick={() => onPageChange(currentPage + 1)}
           disabled={currentPage === totalPages}
-          className="rounded-full border-teal-200 hover:bg-teal-50 hover:text-teal-600 hover:border-teal-300 dark:border-teal-700 dark:hover:bg-teal-900/30 dark:hover:text-teal-400 disabled:opacity-50"
+          className="rounded-full disabled:opacity-50"
         >
           <ChevronRight className="w-5 h-5" />
         </Button>
@@ -316,7 +315,7 @@ function FilterBar({
   t: (key: string) => string
 }) {
   return (
-    <div className="bg-card dark:bg-card rounded-2xl p-4 shadow-sm border border-border mb-10 sticky top-24 z-30 transition-all duration-300">
+    <div className="bg-card rounded-2xl p-4 shadow-green border border-border mb-10 sticky top-20 z-30 transition-all duration-300">
       <div className="relative group">
         <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
           <Search className="w-4 h-4 text-muted-foreground group-focus-within:text-primary transition-colors" />
@@ -401,14 +400,14 @@ export function DoaLibraryContent() {
     <>
       <DynamicMetaTags />
       {/* Main Content */}
-      <main className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8 md:py-12">
+      <main className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8 md:py-12 pb-24">
         <FilterBar
           searchQuery={searchQuery}
           onSearchChange={handleSearchChange}
           t={t}
         />
 
-        <div className="space-y-8">
+        <div className="space-y-16">
           {currentDoas.map((doa) => (
             <PrayerCard key={doa.slug} doa={doa} language={language} />
           ))}

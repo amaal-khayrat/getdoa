@@ -1,14 +1,14 @@
-import { useMemo, useState, useEffect } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { Link, useParams } from '@tanstack/react-router'
 import { BookOpen, Copy, Heart, Share2 } from 'lucide-react'
 import doaDataRaw from '../../../data/doa.json'
+import { DoaNotFound } from './doa-not-found'
+import { MosqueDonationCard } from './mosque-donation-card'
 import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { useLanguage } from '@/contexts/language-context'
-import { DoaNotFound } from './doa-not-found'
-import { MosqueDonationCard } from './mosque-donation-card'
-import { getRandomMosque, SedekahJeApiError } from '@/lib/sedekah-je-api'
+import { SedekahJeApiError, getRandomMosque } from '@/lib/sedekah-je-api'
 
 // Type definitions
 interface DoaItem {
@@ -113,7 +113,7 @@ function PrayerDisplay({ content, title }: { content: string; title: string }) {
   }
 
   return (
-    <Card className="p-6 sm:p-8 bg-gradient-to-br from-teal-50 to-emerald-50 dark:from-teal-950/20 dark:to-emerald-950/20 border-teal-200 dark:border-teal-800">
+    <Card className="p-6 sm:p-8 bg-gradient-bg-section border-border">
       <div className="flex justify-between items-start mb-4">
         <h2 className="text-lg sm:text-xl font-semibold text-foreground">
           {title}
@@ -131,7 +131,7 @@ function PrayerDisplay({ content, title }: { content: string; title: string }) {
         <p
           dir="rtl"
           lang="ar"
-          className="font-arabic text-2xl sm:text-3xl leading-relaxed text-teal-900 dark:text-teal-100"
+          className="font-arabic text-2xl sm:text-3xl leading-relaxed text-foreground dark:text-primary-foreground"
         >
           {content}
         </p>
@@ -151,7 +151,7 @@ function ReferenceCard({
   return (
     <Card className="p-6 bg-slate-50 dark:bg-slate-900/50 border-slate-200 dark:border-slate-700">
       <div className="flex items-center space-x-2 mb-3">
-        <BookOpen className="h-5 w-5 text-teal-600 dark:text-teal-400" />
+        <BookOpen className="h-5 w-5 text-primary" />
         <h3 className="text-lg font-semibold text-foreground">
           {language === 'my' ? 'Rujukan' : 'Reference'}
         </h3>
@@ -320,7 +320,7 @@ function RelatedPrayers({
               params={{ slug: prayer.slug }}
               className="block group"
             >
-              <h4 className="font-medium text-foreground group-hover:text-teal-600 dark:group-hover:text-teal-400 transition-colors mb-2">
+              <h4 className="font-medium text-foreground group-hover:text-primary transition-colors mb-2">
                 {language === 'my' ? prayer.name_my : prayer.name_en}
               </h4>
               <p className="text-sm text-muted-foreground line-clamp-2">
@@ -403,11 +403,7 @@ export function DoaDetailContent() {
           {/* Categories */}
           <div className="flex flex-wrap gap-2 mb-6">
             {doa.category_names.map((category, index) => (
-              <Badge
-                key={index}
-                variant="default"
-                className="bg-teal-600 hover:bg-teal-700"
-              >
+              <Badge key={index} variant="default">
                 {category}
               </Badge>
             ))}

@@ -10,11 +10,11 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as TermsRouteImport } from './routes/terms'
-import { Route as SignupRouteImport } from './routes/signup'
 import { Route as RefundRouteImport } from './routes/refund'
 import { Route as PrivacyRouteImport } from './routes/privacy'
 import { Route as PricingRouteImport } from './routes/pricing'
 import { Route as LoginRouteImport } from './routes/login'
+import { Route as CreateDoaListRouteImport } from './routes/create-doa-list'
 import { Route as ContactRouteImport } from './routes/contact'
 import { Route as AboutRouteImport } from './routes/about'
 import { Route as DoaRouteRouteImport } from './routes/doa.route'
@@ -26,11 +26,6 @@ import { Route as ApiAuthSplatRouteImport } from './routes/api/auth/$'
 const TermsRoute = TermsRouteImport.update({
   id: '/terms',
   path: '/terms',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const SignupRoute = SignupRouteImport.update({
-  id: '/signup',
-  path: '/signup',
   getParentRoute: () => rootRouteImport,
 } as any)
 const RefundRoute = RefundRouteImport.update({
@@ -51,6 +46,11 @@ const PricingRoute = PricingRouteImport.update({
 const LoginRoute = LoginRouteImport.update({
   id: '/login',
   path: '/login',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CreateDoaListRoute = CreateDoaListRouteImport.update({
+  id: '/create-doa-list',
+  path: '/create-doa-list',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ContactRoute = ContactRouteImport.update({
@@ -94,11 +94,11 @@ export interface FileRoutesByFullPath {
   '/doa': typeof DoaRouteRouteWithChildren
   '/about': typeof AboutRoute
   '/contact': typeof ContactRoute
+  '/create-doa-list': typeof CreateDoaListRoute
   '/login': typeof LoginRoute
   '/pricing': typeof PricingRoute
   '/privacy': typeof PrivacyRoute
   '/refund': typeof RefundRoute
-  '/signup': typeof SignupRoute
   '/terms': typeof TermsRoute
   '/doa/$slug': typeof DoaSlugRoute
   '/doa/': typeof DoaIndexRoute
@@ -108,11 +108,11 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
   '/contact': typeof ContactRoute
+  '/create-doa-list': typeof CreateDoaListRoute
   '/login': typeof LoginRoute
   '/pricing': typeof PricingRoute
   '/privacy': typeof PrivacyRoute
   '/refund': typeof RefundRoute
-  '/signup': typeof SignupRoute
   '/terms': typeof TermsRoute
   '/doa/$slug': typeof DoaSlugRoute
   '/doa': typeof DoaIndexRoute
@@ -124,11 +124,11 @@ export interface FileRoutesById {
   '/doa': typeof DoaRouteRouteWithChildren
   '/about': typeof AboutRoute
   '/contact': typeof ContactRoute
+  '/create-doa-list': typeof CreateDoaListRoute
   '/login': typeof LoginRoute
   '/pricing': typeof PricingRoute
   '/privacy': typeof PrivacyRoute
   '/refund': typeof RefundRoute
-  '/signup': typeof SignupRoute
   '/terms': typeof TermsRoute
   '/doa/$slug': typeof DoaSlugRoute
   '/doa/': typeof DoaIndexRoute
@@ -141,11 +141,11 @@ export interface FileRouteTypes {
     | '/doa'
     | '/about'
     | '/contact'
+    | '/create-doa-list'
     | '/login'
     | '/pricing'
     | '/privacy'
     | '/refund'
-    | '/signup'
     | '/terms'
     | '/doa/$slug'
     | '/doa/'
@@ -155,11 +155,11 @@ export interface FileRouteTypes {
     | '/'
     | '/about'
     | '/contact'
+    | '/create-doa-list'
     | '/login'
     | '/pricing'
     | '/privacy'
     | '/refund'
-    | '/signup'
     | '/terms'
     | '/doa/$slug'
     | '/doa'
@@ -170,11 +170,11 @@ export interface FileRouteTypes {
     | '/doa'
     | '/about'
     | '/contact'
+    | '/create-doa-list'
     | '/login'
     | '/pricing'
     | '/privacy'
     | '/refund'
-    | '/signup'
     | '/terms'
     | '/doa/$slug'
     | '/doa/'
@@ -186,11 +186,11 @@ export interface RootRouteChildren {
   DoaRouteRoute: typeof DoaRouteRouteWithChildren
   AboutRoute: typeof AboutRoute
   ContactRoute: typeof ContactRoute
+  CreateDoaListRoute: typeof CreateDoaListRoute
   LoginRoute: typeof LoginRoute
   PricingRoute: typeof PricingRoute
   PrivacyRoute: typeof PrivacyRoute
   RefundRoute: typeof RefundRoute
-  SignupRoute: typeof SignupRoute
   TermsRoute: typeof TermsRoute
   ApiAuthSplatRoute: typeof ApiAuthSplatRoute
 }
@@ -202,13 +202,6 @@ declare module '@tanstack/react-router' {
       path: '/terms'
       fullPath: '/terms'
       preLoaderRoute: typeof TermsRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/signup': {
-      id: '/signup'
-      path: '/signup'
-      fullPath: '/signup'
-      preLoaderRoute: typeof SignupRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/refund': {
@@ -237,6 +230,13 @@ declare module '@tanstack/react-router' {
       path: '/login'
       fullPath: '/login'
       preLoaderRoute: typeof LoginRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/create-doa-list': {
+      id: '/create-doa-list'
+      path: '/create-doa-list'
+      fullPath: '/create-doa-list'
+      preLoaderRoute: typeof CreateDoaListRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/contact': {
@@ -310,11 +310,11 @@ const rootRouteChildren: RootRouteChildren = {
   DoaRouteRoute: DoaRouteRouteWithChildren,
   AboutRoute: AboutRoute,
   ContactRoute: ContactRoute,
+  CreateDoaListRoute: CreateDoaListRoute,
   LoginRoute: LoginRoute,
   PricingRoute: PricingRoute,
   PrivacyRoute: PrivacyRoute,
   RefundRoute: RefundRoute,
-  SignupRoute: SignupRoute,
   TermsRoute: TermsRoute,
   ApiAuthSplatRoute: ApiAuthSplatRoute,
 }
