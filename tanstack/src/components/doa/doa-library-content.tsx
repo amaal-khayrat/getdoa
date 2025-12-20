@@ -122,7 +122,7 @@ function PrayerCard({
   }
 
   return (
-    <Link to="/doa/$slug" params={{ slug: doa.slug }}>
+    <Link to="/doa/$slug" params={{ slug: doa.slug }} className="p-2">
       <article className="bg-card rounded-3xl p-6 md:p-8 shadow-green-sm hover:shadow-green-lg border border-transparent hover:border-border transition-all duration-300 group cursor-pointer">
         <div className="flex justify-between items-start mb-6">
           <div className="flex flex-col gap-1">

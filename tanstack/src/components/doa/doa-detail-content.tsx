@@ -131,7 +131,7 @@ function PrayerDisplay({ content, title }: { content: string; title: string }) {
         <p
           dir="rtl"
           lang="ar"
-          className="font-arabic text-2xl sm:text-3xl leading-relaxed text-primary dark:text-primary-foreground"
+          className="font-arabic text-2xl sm:text-3xl leading-relaxed text-foreground dark:text-primary-foreground"
         >
           {content}
         </p>
