@@ -62,6 +62,9 @@ COPY --from=builder --chown=appuser:nodejs /app/.output/server/package.json ./se
 COPY --from=builder --chown=appuser:nodejs /app/.output/server ./server
 COPY --from=builder --chown=appuser:nodejs /app/.output/public ./public
 
+# Copy drizzle migration files for database migrations
+COPY --from=builder --chown=appuser:nodejs /app/drizzle ./server/drizzle
+
 # Set working directory for the user
 WORKDIR /app/server
 
