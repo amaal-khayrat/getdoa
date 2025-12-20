@@ -3,6 +3,7 @@ import {
   analyzeContent,
   calculateOptimalLayout,
   wrapArabicText,
+  renderCenteredArabicText,
 } from '@/utils/text-helpers'
 import { preloadSimpoFont } from '@/utils/font-loader'
 
@@ -94,12 +95,16 @@ export async function generateDoaImage(
     currentY += 60
   }
 
-  // Bismillah
-  ctx.font = `bold ${suggestedFontSize.arabic + 6}px Simpo, Arial, sans-serif`
-  ctx.fillText(
+  // Bismillah - Use same centering as prayer content
+  ctx.fillStyle = config.textColor
+  const bismillahMaxWidth = canvas.width - (layout.margins.left + layout.margins.right)
+  renderCenteredArabicText(
+    ctx,
     'بِسْمِ اللهِ الرَّحْمٰنِ الرَّحِيْمِ',
     canvas.width / 2,
     currentY,
+    bismillahMaxWidth,
+    suggestedFontSize.arabic + 6,
   )
   currentY += 60
 
@@ -117,28 +122,22 @@ export async function generateDoaImage(
   // Draw prayers
 
   config.doaList.prayers.forEach((prayer) => {
-    // Arabic text - RTL with dynamic font size and improved wrapping
-    ctx.font = `${suggestedFontSize.arabic}px Simpo, Arial, sans-serif`
-    ctx.textAlign = 'center'
-    ctx.direction = 'rtl'
-
+    // Arabic text - Fixed RTL centering with proper rendering
+    ctx.fillStyle = config.textColor
     const maxWidth = canvas.width - (layout.margins.left + layout.margins.right)
-    const arabicLines = wrapArabicText(
+
+    // Use the new renderCenteredArabicText function
+    renderCenteredArabicText(
+      ctx,
       prayer.content,
+      canvas.width / 2,
+      currentY,
       maxWidth,
       suggestedFontSize.arabic,
-      ctx,
     )
 
-    // Draw each Arabic line centered
-    arabicLines.forEach((line, lineIndex) => {
-      ctx.fillText(
-        line,
-        canvas.width / 2,
-        currentY + lineIndex * suggestedFontSize.arabic * 1.6,
-      )
-    })
-
+    // Calculate how much Y space was used
+    const arabicLines = wrapArabicText(prayer.content, maxWidth, suggestedFontSize.arabic, ctx)
     currentY += arabicLines.length * suggestedFontSize.arabic * 1.6
 
     // Handle translations based on layout
@@ -252,12 +251,18 @@ export async function generateDoaImage(
     })
   }
 
-  // Footer with "Ameen"
+  // Footer with "Ameen" - Use same centering as prayer content
   const footerY = canvas.height - layout.margins.bottom
-  ctx.font = `bold ${suggestedFontSize.arabic + 6}px Simpo, Arial, sans-serif`
   ctx.fillStyle = config.textColor
-  ctx.textAlign = 'center'
-  ctx.fillText('أٰمِيْنَ', canvas.width / 2, footerY)
+  const ameenMaxWidth = canvas.width - (layout.margins.left + layout.margins.right)
+  renderCenteredArabicText(
+    ctx,
+    'أٰمِيْنَ',
+    canvas.width / 2,
+    footerY,
+    ameenMaxWidth,
+    suggestedFontSize.arabic + 6,
+  )
 
   return new Promise((resolve, reject) => {
     canvas.toBlob(

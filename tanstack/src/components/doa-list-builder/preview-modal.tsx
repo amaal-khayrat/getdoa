@@ -3,7 +3,6 @@ import React, { useMemo } from 'react'
 import { useDoaListActions, useDoaListState } from './doa-list-builder'
 import type { TranslationLayout } from '@/types/doa.types'
 import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Switch } from '@/components/ui/switch'
 import { Card } from '@/components/ui/card'
@@ -139,39 +138,39 @@ export function PreviewModal({
   ] as const
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-2 sm:p-4">
       {/* Backdrop */}
       <div className="absolute inset-0 bg-black/50" onClick={onClose} />
 
-      {/* Modal */}
-      <div className="relative bg-background rounded-lg shadow-xl w-full max-w-4xl max-h-[90vh] overflow-hidden mx-4">
+      {/* Modal - PROPERLY RESPONSIVE sizing */}
+      <div className="relative bg-background rounded-lg shadow-xl w-[95vw] h-[85vh] sm:w-[90vw] sm:h-[80vh] md:w-[85vw] md:h-[75vh] lg:w-[80vw] lg:h-[70vh] xl:w-[75vw] xl:h-[65vh] max-w-7xl overflow-hidden flex flex-col">
         {/* Header */}
-        <div className="flex items-center justify-between p-4 border-b">
-          <h2 className="text-lg font-semibold">Preview Your Prayer List</h2>
+        <div className="flex items-center justify-between p-3 sm:p-4 border-b flex-shrink-0">
+          <h2 className="text-base sm:text-lg font-semibold">Preview Your Prayer List</h2>
           <Button variant="ghost" size="icon" onClick={onClose}>
             <X className="w-4 h-4" />
           </Button>
         </div>
 
-        <div className="flex h-[calc(90vh-8rem)]">
-          {/* Left Panel - Preview */}
-          <div className="flex-1 p-4 border-r overflow-y-auto">
-            <Card className="p-6 shadow-green" style={{ minHeight: '600px' }}>
+        <div className="flex flex-col lg:flex-row flex-1 min-h-0 overflow-hidden">
+          {/* Preview Panel - Left on Desktop, Top on Mobile */}
+          <div className="flex-1 p-3 lg:p-4 overflow-y-auto min-w-0 order-2 lg:order-1">
+            <Card className="p-4 lg:p-6 shadow-green" style={{ minHeight: '200px' }}>
               {/* Preview Header */}
-              <div className="text-center mb-6">
+              <div className="text-center mb-4 sm:mb-6">
                 <h3
-                  className="font-arabic text-2xl mb-4 text-primary"
+                  className="font-arabic text-xl sm:text-2xl mb-3 sm:mb-4 text-primary"
                   dir="rtl"
                 >
                   بِسْمِ اللهِ الرَّحْمٰنِ الرَّحِيْمِ
                 </h3>
                 {title && (
-                  <h4 className="text-lg font-semibold text-foreground">
+                  <h4 className="text-base sm:text-lg font-semibold text-foreground">
                     {title}
                   </h4>
                 )}
                 {description && (
-                  <p className="text-sm text-muted-foreground mt-1">
+                  <p className="text-xs sm:text-sm text-muted-foreground mt-1">
                     {description}
                   </p>
                 )}
@@ -220,16 +219,20 @@ export function PreviewModal({
                   أٰمِيْنَ
                 </p>
                 <div className="text-xs text-muted-foreground">
-                  {user.username && <div>List Created By: {user.username}</div>}
-                  <div>List Created on GetDoa.com, go create yours now</div>
+                  {user.username && previewSettings.attribution.showUsername && (
+                    <div>List Created By: {user.username}</div>
+                  )}
+                  {previewSettings.attribution.showBranding && (
+                    <div>List Created on GetDoa.com, go create yours now</div>
+                  )}
                 </div>
               </div>
             </Card>
           </div>
 
-          {/* Right Panel - Settings */}
-          <div className="w-80 p-4 overflow-y-auto">
-            <div className="space-y-6">
+          {/* Settings Panel - Right on Desktop, Bottom on Mobile */}
+          <div className="w-full lg:w-80 xl:w-96 p-3 lg:p-4 overflow-y-auto shrink-0 order-1 lg:order-2 border-t lg:border-t-0 lg:border-l">
+            <div className="space-y-4 lg:space-y-6">
               {/* Content Info */}
               <ContentInfo
                 prayers={selectedPrayers}
@@ -254,51 +257,53 @@ export function PreviewModal({
                         })
                       }
                     />
-                    <Label htmlFor="show-translations" className="text-sm">
-                      Show translations
-                    </Label>
+                    <Label className="text-sm">Show translations</Label>
                   </div>
 
-                  <div>
-                    <Label className="text-sm text-muted-foreground mb-3 block">
-                      Layout
-                    </Label>
-                    <RadioGroup
-                      value={previewSettings.translationLayout}
-                      onValueChange={(value) =>
-                        updateState({
-                          previewSettings: {
-                            ...previewSettings,
-                            translationLayout: value as TranslationLayout,
-                          },
-                        })
-                      }
-                    >
-                      {layoutOptions.map((option) => (
-                        <div
-                          key={option.value}
-                          className="flex items-start space-x-3"
-                        >
-                          <RadioGroupItem
-                            value={option.value}
-                            id={`layout-${option.value}`}
-                            className="mt-0.5"
-                          />
-                          <div className="flex-1">
-                            <Label
-                              htmlFor={`layout-${option.value}`}
-                              className="text-sm font-medium cursor-pointer"
-                            >
-                              {option.label}
-                            </Label>
-                            <p className="text-xs text-muted-foreground mt-1">
-                              {option.description}
-                            </p>
+                  {previewSettings.showTranslations && (
+                    <div>
+                      <Label className="text-sm text-muted-foreground mb-3 block">
+                        Layout
+                      </Label>
+                      <RadioGroup
+                        value={previewSettings.translationLayout}
+                        onValueChange={(value) => {
+                          if (value === 'grouped' || value === 'interleaved') {
+                            updateState({
+                              previewSettings: {
+                                ...previewSettings,
+                                translationLayout: value as TranslationLayout,
+                              },
+                            })
+                          }
+                        }}
+                      >
+                        {layoutOptions.map((option) => (
+                          <div
+                            key={option.value}
+                            className="flex items-start space-x-3"
+                          >
+                            <RadioGroupItem
+                              value={option.value}
+                              id={`layout-${option.value}`}
+                              className="mt-0.5"
+                            />
+                            <div className="flex-1">
+                              <Label
+                                htmlFor={`layout-${option.value}`}
+                                className="text-sm font-medium cursor-pointer"
+                              >
+                                {option.label}
+                              </Label>
+                              <p className="text-xs text-muted-foreground mt-1">
+                                {option.description}
+                              </p>
+                            </div>
                           </div>
-                        </div>
-                      ))}
-                    </RadioGroup>
-                  </div>
+                        ))}
+                      </RadioGroup>
+                    </div>
+                  )}
                 </div>
               </div>
 
@@ -322,7 +327,7 @@ export function PreviewModal({
                       }
                       disabled={!user.username}
                     />
-                    <Label htmlFor="show-username" className="text-sm">
+                    <Label className="text-sm">
                       Show username{' '}
                       {user.username ? `(${user.username})` : '(not logged in)'}
                     </Label>
@@ -342,15 +347,13 @@ export function PreviewModal({
                         })
                       }
                     />
-                    <Label htmlFor="show-branding" className="text-sm">
-                      Show GetDoa branding
-                    </Label>
+                    <Label className="text-sm">Show GetDoa branding</Label>
                   </div>
                 </div>
               </div>
 
               {/* Actions */}
-              <div className="space-y-2 pt-4">
+              <div className="space-y-2 pt-4 border-t">
                 <Button
                   onClick={onExport}
                   disabled={isGenerating}

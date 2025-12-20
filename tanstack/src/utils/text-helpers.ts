@@ -405,3 +405,58 @@ export function wrapArabicText(
 
   return lines.length > 0 ? lines : [text]
 }
+
+/**
+ * Render centered Arabic text with proper RTL alignment
+ * Fixes the issue where Arabic text starts from center and overflows right
+ */
+export function renderCenteredArabicText(
+  ctx: CanvasRenderingContext2D,
+  text: string,
+  centerX: number,
+  y: number,
+  maxWidth: number,
+  fontSize: number,
+): void {
+  // Set proper Arabic text configuration
+  ctx.font = `${fontSize}px 'Amiri Quran', 'Scheherazade New', Arial, sans-serif`
+  ctx.textAlign = 'right'
+  ctx.direction = 'rtl'
+
+  // Get wrapped lines for the text
+  const lines = wrapArabicText(text, maxWidth, fontSize, ctx)
+
+  // Render each line with proper centering
+  lines.forEach((line, index) => {
+    const lineY = y + (index * fontSize * 1.6)
+
+    // Calculate line metrics for proper centering
+    const lineMetrics = ctx.measureText(line)
+    const lineWidth = lineMetrics.width
+
+    // For right-aligned RTL text, center means: centerX + (lineWidth / 2)
+    const renderX = centerX + (lineWidth / 2)
+
+    ctx.fillText(line, renderX, lineY)
+  })
+}
+
+/**
+ * Calculate center position for right-aligned RTL text
+ */
+export function calculateArabicCenterPosition(
+  ctx: CanvasRenderingContext2D,
+  text: string,
+  centerX: number,
+  fontSize: number,
+): number {
+  // Set font for measurement
+  ctx.font = `${fontSize}px 'Amiri Quran', 'Scheherazade New', Arial, sans-serif`
+
+  // Measure text width
+  const metrics = ctx.measureText(text)
+  const textWidth = metrics.width
+
+  // For right-aligned RTL text: centerX + (textWidth / 2)
+  return centerX + (textWidth / 2)
+}

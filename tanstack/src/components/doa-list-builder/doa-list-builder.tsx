@@ -1,5 +1,5 @@
-import React, { use, useCallback, useMemo, useState } from 'react'
-import { Download, Eye } from 'lucide-react'
+import React, { use, useCallback, useMemo, useReducer, useState, useEffect, useRef } from 'react'
+import { Download, Eye, AlertCircle, CheckCircle, X } from 'lucide-react'
 import { ResponsiveDoaLayout } from './responsive-layout'
 import type { DoaItem, DoaList, PreviewSettings } from '@/types/doa.types'
 import { useSession } from '@/lib/auth-client'
@@ -14,6 +14,202 @@ import { downloadImage, generateDoaImage } from '@/utils/image-generator'
 import { Button } from '@/components/ui/button'
 import { DEFAULT_PREVIEW_SETTINGS } from '@/types/doa.types'
 // Components will be imported where needed to avoid circular dependencies
+
+// Simple notification system for better error handling
+type NotificationType = 'error' | 'success' | 'warning'
+
+interface Notification {
+  id: string
+  type: NotificationType
+  message: string
+  duration?: number
+}
+
+function Notification({ notification, onDismiss }: { notification: Notification; onDismiss: (id: string) => void }) {
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      onDismiss(notification.id)
+    }, notification.duration || 5000)
+
+    return () => clearTimeout(timer)
+  }, [notification.id, notification.duration, onDismiss])
+
+  const getIcon = () => {
+    switch (notification.type) {
+      case 'error':
+        return <AlertCircle className="w-4 h-4 text-red-500" />
+      case 'success':
+        return <CheckCircle className="w-4 h-4 text-green-500" />
+      case 'warning':
+        return <AlertCircle className="w-4 h-4 text-yellow-500" />
+      default:
+        return null
+    }
+  }
+
+  const getStyles = () => {
+    switch (notification.type) {
+      case 'error':
+        return 'border-red-200 bg-red-50 text-red-900'
+      case 'success':
+        return 'border-green-200 bg-green-50 text-green-900'
+      case 'warning':
+        return 'border-yellow-200 bg-yellow-50 text-yellow-900'
+      default:
+        return 'border-gray-200 bg-gray-50 text-gray-900'
+    }
+  }
+
+  return (
+    <div className={`fixed top-4 right-4 z-50 flex items-center gap-3 p-4 rounded-lg border shadow-lg ${getStyles()} max-w-md`}>
+      {getIcon()}
+      <span className="flex-1 text-sm font-medium">{notification.message}</span>
+      <Button
+        variant="ghost"
+        size="icon"
+        onClick={() => onDismiss(notification.id)}
+        className="h-6 w-6 p-0 hover:bg-black/10"
+      >
+        <X className="w-3 h-3" />
+      </Button>
+    </div>
+  )
+}
+
+// Notification provider context
+const NotificationContext = React.createContext<{
+  addNotification: (type: NotificationType, message: string, duration?: number) => void
+  dismissNotification: (id: string) => void
+}>({
+  addNotification: () => {},
+  dismissNotification: () => {},
+})
+
+function NotificationProvider({ children }: { children: React.ReactNode }) {
+  const [notifications, setNotifications] = useState<Notification[]>([])
+
+  const addNotification = useCallback((type: NotificationType, message: string, duration?: number) => {
+    const id = Math.random().toString(36).substr(2, 9)
+    setNotifications((prev) => [...prev, { id, type, message, duration }])
+  }, [])
+
+  const dismissNotification = useCallback((id: string) => {
+    setNotifications((prev) => prev.filter((n) => n.id !== id))
+  }, [])
+
+  return (
+    <NotificationContext.Provider value={{ addNotification, dismissNotification }}>
+      {children}
+      {notifications.map((notification) => (
+        <Notification
+          key={notification.id}
+          notification={notification}
+          onDismiss={dismissNotification}
+        />
+      ))}
+    </NotificationContext.Provider>
+  )
+}
+
+function useNotifications() {
+  const context = React.useContext(NotificationContext)
+  if (!context) {
+    throw new Error('useNotifications must be used within NotificationProvider')
+  }
+  return context
+}
+
+// Type definitions for useReducer
+type DoaListState = {
+  selectedPrayers: Array<DoaItem>
+  title: string
+  description: string
+  searchQuery: string
+  selectedCategory: string
+  language: 'en' | 'my'
+  isGeneratingImage: boolean
+  showPreview: boolean
+  previewSettings: PreviewSettings
+  user: {
+    isAuthenticated: boolean
+    username?: string
+  }
+  availablePrayers: Array<DoaItem>
+  currentPage: number
+  itemsPerPage: number
+}
+
+type DoaListAction =
+  | { type: 'UPDATE_STATE'; payload: Partial<DoaListState> }
+  | { type: 'ADD_PRAYER'; payload: DoaItem }
+  | { type: 'REMOVE_PRAYER'; payload: string }
+  | { type: 'REORDER_PRAYERS'; payload: { fromIndex: number; toIndex: number } }
+  | { type: 'SET_GENERATING'; payload: boolean }
+  | { type: 'TOGGLE_PREVIEW'; payload?: boolean }
+  | { type: 'SET_PAGE'; payload: number }
+  | { type: 'RESET_PAGE' }
+
+// Reducer function for state management
+function doaListReducer(state: DoaListState, action: DoaListAction): DoaListState {
+  switch (action.type) {
+    case 'UPDATE_STATE':
+      return { ...state, ...action.payload }
+
+    case 'ADD_PRAYER':
+      if (state.selectedPrayers.length >= 15) {
+        // Return state unchanged, will handle alert in component
+        return state
+      }
+      return {
+        ...state,
+        selectedPrayers: [...state.selectedPrayers, action.payload],
+      }
+
+    case 'REMOVE_PRAYER':
+      return {
+        ...state,
+        selectedPrayers: state.selectedPrayers.filter((p) => p.slug !== action.payload),
+      }
+
+    case 'REORDER_PRAYERS':
+      const { fromIndex, toIndex } = action.payload
+      const newPrayers = [...state.selectedPrayers]
+      const [moved] = newPrayers.splice(fromIndex, 1)
+      newPrayers.splice(toIndex, 0, moved)
+      return {
+        ...state,
+        selectedPrayers: newPrayers,
+      }
+
+    case 'SET_GENERATING':
+      return {
+        ...state,
+        isGeneratingImage: action.payload,
+      }
+
+    case 'TOGGLE_PREVIEW':
+      return {
+        ...state,
+        showPreview: action.payload ?? !state.showPreview,
+        isPreviewLoading: false,
+      }
+
+    case 'SET_PAGE':
+      return {
+        ...state,
+        currentPage: action.payload,
+      }
+
+    case 'RESET_PAGE':
+      return {
+        ...state,
+        currentPage: 1,
+      }
+
+    default:
+      return state
+  }
+}
 
 // Create a context for sharing state
 const DoaListStateContext = React.createContext<{
@@ -71,14 +267,16 @@ const DoaListActionsContext = React.createContext<{
   handlePreview: async () => {},
 })
 
-// Provider component
-function DoaListProvider({ children }: { children: React.ReactNode }) {
+// Inner provider with access to notifications
+function DoaListProviderWithNotifications({ children }: { children: React.ReactNode }) {
   const { data: session } = useSession()
   const { language } = useLanguage()
   const { prayers } = useDoaData()
+  const { addNotification } = useNotifications()
 
-  const [state, setState] = useState(() => ({
-    selectedPrayers: [] as Array<DoaItem>,
+  // Initialize state with useReducer
+  const [state, dispatch] = useReducer(doaListReducer, {
+    selectedPrayers: [],
     title: 'My Daily Prayers',
     description: '',
     searchQuery: '',
@@ -94,39 +292,28 @@ function DoaListProvider({ children }: { children: React.ReactNode }) {
     availablePrayers: prayers,
     currentPage: 1,
     itemsPerPage: 10,
-  }))
+  })
 
-  const updateState = useCallback((updates: Partial<typeof state>) => {
-    setState((prev) => ({ ...prev, ...updates }))
+  // Wrap dispatch actions in callbacks for API compatibility
+  const updateState = useCallback((updates: Partial<DoaListState>) => {
+    dispatch({ type: 'UPDATE_STATE', payload: updates })
   }, [])
 
   const addPrayer = useCallback((prayer: DoaItem) => {
-    setState((prev) => {
-      if (prev.selectedPrayers.length >= 15) {
-        alert('Maximum 15 prayers allowed')
-        return prev
-      }
-      return {
-        ...prev,
-        selectedPrayers: [...prev.selectedPrayers, prayer],
-      }
-    })
-  }, [])
+    const currentState = state // Capture current state for limit check
+    if (currentState.selectedPrayers.length >= 15) {
+      addNotification('warning', 'Maximum 15 prayers allowed')
+      return
+    }
+    dispatch({ type: 'ADD_PRAYER', payload: prayer })
+  }, [state.selectedPrayers.length, addNotification])
 
   const removePrayer = useCallback((slug: string) => {
-    setState((prev) => ({
-      ...prev,
-      selectedPrayers: prev.selectedPrayers.filter((p) => p.slug !== slug),
-    }))
+    dispatch({ type: 'REMOVE_PRAYER', payload: slug })
   }, [])
 
   const reorderPrayers = useCallback((fromIndex: number, toIndex: number) => {
-    setState((prev) => {
-      const newPrayers = [...prev.selectedPrayers]
-      const [moved] = newPrayers.splice(fromIndex, 1)
-      newPrayers.splice(toIndex, 0, moved)
-      return { ...prev, selectedPrayers: newPrayers }
-    })
+    dispatch({ type: 'REORDER_PRAYERS', payload: { fromIndex, toIndex } })
   }, [])
 
   const generateImage = useCallback(async () => {
@@ -136,11 +323,11 @@ function DoaListProvider({ children }: { children: React.ReactNode }) {
     })
 
     if (!validation.isValid) {
-      alert(validation.errors.join('\n'))
+      addNotification('error', validation.errors.join('\n'))
       return
     }
 
-    setState((prev) => ({ ...prev, isGeneratingImage: true }))
+    dispatch({ type: 'SET_GENERATING', payload: true })
 
     try {
       const doaList: DoaList = {
@@ -164,71 +351,68 @@ function DoaListProvider({ children }: { children: React.ReactNode }) {
 
       const filename = `${state.title.replace(/[^a-z0-9]/gi, '_')}.png`
       downloadImage(blob, filename)
+      addNotification('success', 'Image generated successfully!')
     } catch (error) {
       console.error('Error generating image:', error)
-      alert('Failed to generate image. Please try again.')
+      addNotification('error', 'Failed to generate image. Please try again.')
     } finally {
-      setState((prev) => ({ ...prev, isGeneratingImage: false }))
+      dispatch({ type: 'SET_GENERATING', payload: false })
     }
-  }, [state])
+  }, [state, addNotification])
 
   const setCurrentPage = useCallback((page: number) => {
-    setState((prev) => ({ ...prev, currentPage: page }))
+    dispatch({ type: 'SET_PAGE', payload: page })
   }, [])
 
   const resetToFirstPage = useCallback(() => {
-    setState((prev) => ({ ...prev, currentPage: 1 }))
+    dispatch({ type: 'RESET_PAGE' })
   }, [])
 
-  // Handle preview with loading state to prevent blank screen
-  const handlePreview = useCallback(async () => {
-    // Start loading
-    setState((prev) => ({ ...prev, isPreviewLoading: true }))
-
-    // Small delay to allow UI to update and prevent blank screen
-    await new Promise((resolve) => setTimeout(resolve, 100))
-
-    // Show preview
-    setState((prev) => ({
-      ...prev,
-      isPreviewLoading: false,
-      showPreview: true,
-    }))
+  // Handle preview - removed artificial delay to eliminate flashing
+  const handlePreview = useCallback(() => {
+    dispatch({ type: 'TOGGLE_PREVIEW', payload: true })
   }, [])
 
-  // Update available prayers when data changes
-  if (state.availablePrayers.length !== prayers.length) {
-    setState((prev) => ({ ...prev, availablePrayers: prayers }))
-  }
+  // Handle external data updates with useEffect to avoid render-time state updates
+  useEffect(() => {
+    if (state.availablePrayers.length !== prayers.length) {
+      dispatch({ type: 'UPDATE_STATE', payload: { availablePrayers: prayers } })
+    }
+  }, [prayers.length, state.availablePrayers.length])
 
-  // Update user info when session changes
-  const currentUser = {
-    isAuthenticated: !!session?.user,
-    username: session?.user?.name,
-  }
-  if (JSON.stringify(state.user) !== JSON.stringify(currentUser)) {
-    setState((prev) => ({ ...prev, user: currentUser }))
-  }
+  useEffect(() => {
+    const currentUser = {
+      isAuthenticated: !!session?.user,
+      username: session?.user?.name,
+    }
+    if (JSON.stringify(state.user) !== JSON.stringify(currentUser)) {
+      dispatch({ type: 'UPDATE_STATE', payload: { user: currentUser } })
+    }
+  }, [session?.user, state.user])
 
-  // Update language preference
-  if (state.language !== language) {
-    setState((prev) => ({ ...prev, language: language as 'en' | 'my' }))
-  }
+  useEffect(() => {
+    if (state.language !== language) {
+      dispatch({ type: 'UPDATE_STATE', payload: { language: language as 'en' | 'my' } })
+    }
+  }, [language, state.language])
 
-  // Update attribution when user changes
-  const currentUsername = state.user.username
-  if (state.previewSettings.attribution.username !== currentUsername) {
-    setState((prev) => ({
-      ...prev,
-      previewSettings: {
-        ...prev.previewSettings,
-        attribution: {
-          ...prev.previewSettings.attribution,
-          username: currentUsername,
+  useEffect(() => {
+    const currentUsername = state.user.username
+    if (state.previewSettings.attribution.username !== currentUsername) {
+      dispatch({
+        type: 'UPDATE_STATE',
+        payload: {
+          previewSettings: {
+            ...state.previewSettings,
+            attribution: {
+              ...state.previewSettings.attribution,
+              username: currentUsername,
+            },
+          },
         },
-      },
-    }))
-  }
+      })
+    }
+  }, [state.user.username, state.previewSettings.attribution.username, state.previewSettings])
 
   return (
     <DoaListStateContext.Provider value={state}>
@@ -279,16 +463,16 @@ function useDoaListBuilder() {
 // Export the hooks so other components can use them
 export { useDoaListState, useDoaListActions, useDoaListBuilder }
 
-// Import components where needed
-const PreviewModal = React.lazy(() =>
-  import('./preview-modal').then((m) => ({ default: m.PreviewModal })),
-)
+// Import components where needed - NO LAZY LOADING to prevent flash
+import { PreviewModal } from './preview-modal'
 
 export function DoaListBuilder() {
   return (
-    <DoaListProvider>
-      <DoaListBuilderContent />
-    </DoaListProvider>
+    <NotificationProvider>
+      <DoaListProviderWithNotifications>
+        <DoaListBuilderContent />
+      </DoaListProviderWithNotifications>
+    </NotificationProvider>
   )
 }
 
@@ -313,12 +497,33 @@ function DoaListBuilderContent() {
     handlePreview,
   } = useDoaListActions()
 
-  // Filter prayers based on search and category
+  // Debounced search to optimize performance
+  const [debouncedSearchQuery, setDebouncedSearchQuery] = useState(searchQuery)
+  const debounceTimerRef = useRef<NodeJS.Timeout | null>(null)
+
+  // Update debounced search with delay
+  useEffect(() => {
+    if (debounceTimerRef.current) {
+      clearTimeout(debounceTimerRef.current)
+    }
+
+    debounceTimerRef.current = setTimeout(() => {
+      setDebouncedSearchQuery(searchQuery)
+    }, 300) // 300ms debounce delay
+
+    return () => {
+      if (debounceTimerRef.current) {
+        clearTimeout(debounceTimerRef.current)
+      }
+    }
+  }, [searchQuery])
+
+  // Filter prayers based on debounced search and category
   const filteredPrayers = useMemo(() => {
     let filtered = availablePrayers
 
-    if (searchQuery) {
-      filtered = searchPrayers(filtered, searchQuery)
+    if (debouncedSearchQuery) {
+      filtered = searchPrayers(filtered, debouncedSearchQuery)
     }
 
     if (selectedCategory !== 'All Categories') {
@@ -326,7 +531,7 @@ function DoaListBuilderContent() {
     }
 
     return filtered
-  }, [availablePrayers, searchQuery, selectedCategory])
+  }, [availablePrayers, debouncedSearchQuery, selectedCategory])
 
   // Pagination logic
   const paginatedData = useMemo(() => {
@@ -494,7 +699,7 @@ function DoaListBuilderContent() {
         </div>
       </main>
 
-      {/* Preview Modal */}
+      {/* Preview Modal - NO SUSPENSE, instant rendering */}
       {showPreview && (
         <PreviewModal
           onClose={() => updateState({ showPreview: false })}
