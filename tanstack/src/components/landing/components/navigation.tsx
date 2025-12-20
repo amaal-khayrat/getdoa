@@ -37,25 +37,16 @@ export function Navigation() {
         {/* Desktop Navigation */}
         <div className="hidden md:flex items-center gap-8 text-sm font-medium text-muted-foreground"></div>
 
-        {/* Desktop CTA Buttons */}
+        {/* Desktop CTA Button */}
         <div className="hidden md:flex items-center gap-4">
           <Link
             to="/login"
             className={cn(
-              buttonVariants({ variant: 'green-outline', size: 'default' }),
-              'font-medium px-6',
-            )}
-          >
-            {LANDING_CONTENT.navigation.loginButton}
-          </Link>
-          <Link
-            to="/signup"
-            className={cn(
               buttonVariants({ variant: 'primary-gradient', size: 'default' }),
-              'font-medium px-6 transform hover:scale-105',
+              'font-medium px-6 shadow-green hover:shadow-green-lg hover:-translate-y-0.5 transition-all duration-300',
             )}
           >
-            {LANDING_CONTENT.navigation.signUpButton}
+            Sign In with Google
           </Link>
         </div>
 
@@ -84,21 +75,11 @@ export function Navigation() {
                 to="/login"
                 onClick={handleLinkClick}
                 className={cn(
-                  buttonVariants({ variant: 'green-outline' }),
-                  'w-full font-medium py-3',
-                )}
-              >
-                {LANDING_CONTENT.navigation.loginButton}
-              </Link>
-              <Link
-                to="/signup"
-                onClick={handleLinkClick}
-                className={cn(
                   buttonVariants({ variant: 'primary-gradient' }),
-                  'w-full font-medium py-3',
+                  'w-full font-medium py-3 shadow-green hover:shadow-green-lg transition-all duration-300',
                 )}
               >
-                {LANDING_CONTENT.navigation.signUpButton}
+                Sign In with Google
               </Link>
             </div>
           </div>

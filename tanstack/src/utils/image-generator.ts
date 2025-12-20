@@ -2,7 +2,7 @@ import type { DoaList } from '@/types/doa.types'
 import {
   analyzeContent,
   calculateOptimalLayout,
-  wrapArabicText
+  wrapArabicText,
 } from '@/utils/text-helpers'
 import { preloadSimpoFont } from '@/utils/font-loader'
 
@@ -31,13 +31,13 @@ export async function generateDoaImage(
     config.doaList.prayers,
     config.doaList.showTranslations,
     config.doaList.translationLayout,
-    baseWidth
+    baseWidth,
   )
 
   // Calculate optimal layout dimensions
   const layout = calculateOptimalLayout(
     contentAnalysis,
-    config.targetAspectRatio
+    config.targetAspectRatio,
   )
 
   // Set canvas size with calculated dimensions
@@ -68,12 +68,20 @@ export async function generateDoaImage(
   // Left attribution - at very top
   ctx.textAlign = 'left'
   if (config.doaList.createdBy) {
-    ctx.fillText(`Created by: ${config.doaList.createdBy}`, layout.margins.left, currentY)
+    ctx.fillText(
+      `Created by: ${config.doaList.createdBy}`,
+      layout.margins.left,
+      currentY,
+    )
   }
 
   // Right attribution - at very top
   ctx.textAlign = 'right'
-  ctx.fillText('Create your own prayer list at GetDoa.com →', canvas.width - layout.margins.right, currentY)
+  ctx.fillText(
+    'Create your own prayer list at GetDoa.com →',
+    canvas.width - layout.margins.right,
+    currentY,
+  )
 
   ctx.fillStyle = config.textColor
   ctx.textAlign = 'center'
@@ -88,7 +96,11 @@ export async function generateDoaImage(
 
   // Bismillah
   ctx.font = `bold ${suggestedFontSize.arabic + 6}px Simpo, Arial, sans-serif`
-  ctx.fillText('بِسْمِ اللهِ الرَّحْمٰنِ الرَّحِيْمِ', canvas.width / 2, currentY)
+  ctx.fillText(
+    'بِسْمِ اللهِ الرَّحْمٰنِ الرَّحِيْمِ',
+    canvas.width / 2,
+    currentY,
+  )
   currentY += 60
 
   // Description if exists
@@ -111,11 +123,20 @@ export async function generateDoaImage(
     ctx.direction = 'rtl'
 
     const maxWidth = canvas.width - (layout.margins.left + layout.margins.right)
-    const arabicLines = wrapArabicText(prayer.content, maxWidth, suggestedFontSize.arabic, ctx)
+    const arabicLines = wrapArabicText(
+      prayer.content,
+      maxWidth,
+      suggestedFontSize.arabic,
+      ctx,
+    )
 
     // Draw each Arabic line centered
     arabicLines.forEach((line, lineIndex) => {
-      ctx.fillText(line, canvas.width / 2, currentY + (lineIndex * suggestedFontSize.arabic * 1.6))
+      ctx.fillText(
+        line,
+        canvas.width / 2,
+        currentY + lineIndex * suggestedFontSize.arabic * 1.6,
+      )
     })
 
     currentY += arabicLines.length * suggestedFontSize.arabic * 1.6
@@ -136,11 +157,13 @@ export async function generateDoaImage(
         // Word wrap for translations with proper line breaking
         const transWords = translation.split(' ')
         let transLine = ''
-        let transY = currentY
-        const translationLines: string[] = []
+        const transY = currentY
+        const translationLines: Array<string> = []
 
         for (let i = 0; i < transWords.length; i++) {
-          const testLine = transLine ? `${transLine} ${transWords[i]}` : transWords[i]
+          const testLine = transLine
+            ? `${transLine} ${transWords[i]}`
+            : transWords[i]
           const metrics = ctx.measureText(testLine)
 
           if (metrics.width > maxWidth && transLine) {
@@ -156,10 +179,15 @@ export async function generateDoaImage(
 
         // Draw each translation line centered
         translationLines.forEach((line, lineIndex) => {
-          ctx.fillText(line, canvas.width / 2, transY + (lineIndex * suggestedFontSize.translations * 1.5))
+          ctx.fillText(
+            line,
+            canvas.width / 2,
+            transY + lineIndex * suggestedFontSize.translations * 1.5,
+          )
         })
 
-        currentY += translationLines.length * suggestedFontSize.translations * 1.5
+        currentY +=
+          translationLines.length * suggestedFontSize.translations * 1.5
         ctx.fillStyle = config.textColor
       }
     }
@@ -187,11 +215,12 @@ export async function generateDoaImage(
         config.doaList.language === 'my' ? prayer.meaning_my : prayer.meaning_en
 
       // Smart word wrap for grouped translations
-      const maxWidth = canvas.width - (layout.margins.left + layout.margins.right)
+      const maxWidth =
+        canvas.width - (layout.margins.left + layout.margins.right)
       const words = translation.split(' ')
       let line = ''
-      let lineY = currentY
-      const translationLines: string[] = []
+      const lineY = currentY
+      const translationLines: Array<string> = []
 
       for (let i = 0; i < words.length; i++) {
         const testLine = line ? `${line} ${words[i]}` : words[i]
@@ -211,10 +240,15 @@ export async function generateDoaImage(
 
       // Draw each translation line centered
       translationLines.forEach((transLine, lineIndex) => {
-        ctx.fillText(transLine, canvas.width / 2, lineY + (lineIndex * suggestedFontSize.translations * 1.5))
+        ctx.fillText(
+          transLine,
+          canvas.width / 2,
+          lineY + lineIndex * suggestedFontSize.translations * 1.5,
+        )
       })
 
-      currentY += translationLines.length * suggestedFontSize.translations * 1.5 + 30
+      currentY +=
+        translationLines.length * suggestedFontSize.translations * 1.5 + 30
     })
   }
 

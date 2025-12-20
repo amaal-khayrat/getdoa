@@ -2,14 +2,20 @@ import { Plus, Search } from 'lucide-react'
 import { useDoaListActions, useDoaListState } from './doa-list-builder'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select'
 import {
   Pagination,
   PaginationContent,
   PaginationItem,
   PaginationLink,
   PaginationNext,
-  PaginationPrevious
+  PaginationPrevious,
 } from '@/components/ui/pagination'
 import { Badge } from '@/components/ui/badge'
 import { isPrayerSelected, truncateText } from '@/utils/text-helpers'
@@ -45,13 +51,18 @@ export function PrayerBrowserPanel({
   const getCategoryVariant = (category: string) => {
     const morningCategories = ['Bacaan Pagi', 'Morning Supplication']
     const eveningCategories = ['Bacaan Petang', 'Evening Supplication']
-    const forgivenessCategories = ['Keampunan', 'Forgiveness', 'Taubat', 'Repentance']
+    const forgivenessCategories = [
+      'Keampunan',
+      'Forgiveness',
+      'Taubat',
+      'Repentance',
+    ]
 
-    if (morningCategories.some(cat => category.includes(cat))) {
+    if (morningCategories.some((cat) => category.includes(cat))) {
       return 'default'
-    } else if (eveningCategories.some(cat => category.includes(cat))) {
+    } else if (eveningCategories.some((cat) => category.includes(cat))) {
       return 'secondary'
-    } else if (forgivenessCategories.some(cat => category.includes(cat))) {
+    } else if (forgivenessCategories.some((cat) => category.includes(cat))) {
       return 'outline'
     }
     return 'secondary'
@@ -75,7 +86,10 @@ export function PrayerBrowserPanel({
         </div>
 
         {/* Category Filter */}
-        <Select value={selectedCategory} onValueChange={(value) => onCategoryChange(value || '')}>
+        <Select
+          value={selectedCategory}
+          onValueChange={(value) => onCategoryChange(value || '')}
+        >
           <SelectTrigger className="h-11 text-base sm:h-10 sm:text-sm">
             <SelectValue />
           </SelectTrigger>
@@ -102,10 +116,7 @@ export function PrayerBrowserPanel({
         ) : (
           <div className="space-y-3 sm:space-y-4">
             {filteredPrayers.map((prayer) => {
-              const isSelected = isPrayerSelected(
-                selectedPrayers,
-                prayer.slug,
-              )
+              const isSelected = isPrayerSelected(selectedPrayers, prayer.slug)
               const canAdd = selectedPrayers.length < 15 && !isSelected
 
               return (
@@ -124,7 +135,9 @@ export function PrayerBrowserPanel({
                         prayer.category_names.length > 0 && (
                           <div className="mb-2">
                             <Badge
-                              variant={getCategoryVariant(prayer.category_names[0])}
+                              variant={getCategoryVariant(
+                                prayer.category_names[0],
+                              )}
                               className="text-xs"
                             >
                               {prayer.category_names[0]}
@@ -134,9 +147,7 @@ export function PrayerBrowserPanel({
 
                       {/* Prayer Title */}
                       <h4 className="font-medium text-sm sm:text-sm mb-2 leading-tight">
-                        {language === 'my'
-                          ? prayer.name_my
-                          : prayer.name_en}
+                        {language === 'my' ? prayer.name_my : prayer.name_en}
                       </h4>
 
                       {/* Arabic Text */}
@@ -201,7 +212,9 @@ export function PrayerBrowserPanel({
             <span className="ml-2">• {selectedPrayers.length} selected</span>
           )}
           {paginationData.totalPages > 1 && (
-            <span className="ml-2">• Page {paginationData.currentPage} of {paginationData.totalPages}</span>
+            <span className="ml-2">
+              • Page {paginationData.currentPage} of {paginationData.totalPages}
+            </span>
           )}
         </div>
 
@@ -212,40 +225,54 @@ export function PrayerBrowserPanel({
               <PaginationItem>
                 <PaginationPrevious
                   onClick={() => onPageChange(paginationData.currentPage - 1)}
-                  className={!paginationData.hasPreviousPage ? 'pointer-events-none opacity-50' : 'cursor-pointer'}
+                  className={
+                    !paginationData.hasPreviousPage
+                      ? 'pointer-events-none opacity-50'
+                      : 'cursor-pointer'
+                  }
                 />
               </PaginationItem>
 
               {/* Page Numbers */}
-              {Array.from({ length: Math.min(5, paginationData.totalPages) }, (_, i) => {
-                let pageNumber;
-                if (paginationData.totalPages <= 5) {
-                  pageNumber = i + 1;
-                } else if (paginationData.currentPage <= 3) {
-                  pageNumber = i + 1;
-                } else if (paginationData.currentPage >= paginationData.totalPages - 2) {
-                  pageNumber = paginationData.totalPages - 4 + i;
-                } else {
-                  pageNumber = paginationData.currentPage - 2 + i;
-                }
+              {Array.from(
+                { length: Math.min(5, paginationData.totalPages) },
+                (_, i) => {
+                  let pageNumber
+                  if (paginationData.totalPages <= 5) {
+                    pageNumber = i + 1
+                  } else if (paginationData.currentPage <= 3) {
+                    pageNumber = i + 1
+                  } else if (
+                    paginationData.currentPage >=
+                    paginationData.totalPages - 2
+                  ) {
+                    pageNumber = paginationData.totalPages - 4 + i
+                  } else {
+                    pageNumber = paginationData.currentPage - 2 + i
+                  }
 
-                return (
-                  <PaginationItem key={pageNumber}>
-                    <PaginationLink
-                      onClick={() => onPageChange(pageNumber)}
-                      isActive={pageNumber === paginationData.currentPage}
-                      className="cursor-pointer"
-                    >
-                      {pageNumber}
-                    </PaginationLink>
-                  </PaginationItem>
-                );
-              })}
+                  return (
+                    <PaginationItem key={pageNumber}>
+                      <PaginationLink
+                        onClick={() => onPageChange(pageNumber)}
+                        isActive={pageNumber === paginationData.currentPage}
+                        className="cursor-pointer"
+                      >
+                        {pageNumber}
+                      </PaginationLink>
+                    </PaginationItem>
+                  )
+                },
+              )}
 
               <PaginationItem>
                 <PaginationNext
                   onClick={() => onPageChange(paginationData.currentPage + 1)}
-                  className={!paginationData.hasNextPage ? 'pointer-events-none opacity-50' : 'cursor-pointer'}
+                  className={
+                    !paginationData.hasNextPage
+                      ? 'pointer-events-none opacity-50'
+                      : 'cursor-pointer'
+                  }
                 />
               </PaginationItem>
             </PaginationContent>

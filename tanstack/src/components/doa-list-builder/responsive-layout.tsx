@@ -1,7 +1,7 @@
 import { useState } from 'react'
-import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs'
 import { SelectedPrayersPanel } from './selected-prayers-panel'
 import { PrayerBrowserPanel } from './prayer-browser-panel'
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 
 interface ResponsiveDoaLayoutProps {
   filteredPrayers: Array<any>
@@ -60,7 +60,13 @@ export function ResponsiveDoaLayout({
 
       {/* Mobile Layout - Tabbed interface */}
       <div className="lg:hidden flex flex-col">
-        <Tabs value={activeTab} onValueChange={(value) => setActiveTab(value as 'selected' | 'browse')} className="flex flex-col">
+        <Tabs
+          value={activeTab}
+          onValueChange={(value) =>
+            setActiveTab(value as 'selected' | 'browse')
+          }
+          className="flex flex-col"
+        >
           <TabsList className="grid w-full grid-cols-2 mb-4">
             <TabsTrigger value="selected" className="flex items-center gap-2">
               My Prayer

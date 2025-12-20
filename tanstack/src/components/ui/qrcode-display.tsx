@@ -61,7 +61,9 @@ export function QrCodeDisplay({
         )}
         style={{ width: size, height: size }}
       >
-        <p className="text-center text-sm text-muted-foreground px-2">{error}</p>
+        <p className="text-center text-sm text-muted-foreground px-2">
+          {error}
+        </p>
       </div>
     )
   }

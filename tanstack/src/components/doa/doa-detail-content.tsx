@@ -403,10 +403,7 @@ export function DoaDetailContent() {
           {/* Categories */}
           <div className="flex flex-wrap gap-2 mb-6">
             {doa.category_names.map((category, index) => (
-              <Badge
-                key={index}
-                variant="default"
-              >
+              <Badge key={index} variant="default">
                 {category}
               </Badge>
             ))}

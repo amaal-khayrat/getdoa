@@ -68,18 +68,29 @@
   --sidebar-ring: var(--ring);
 
   /* Enhanced Green Gradients */
-  --gradient-primary: linear-gradient(135deg, oklch(0.55 0.17 180), oklch(0.55 0.15 160));
-  --gradient-hover: linear-gradient(135deg, oklch(0.97 0.03 180), oklch(0.97 0.03 160));
-  --gradient-bg-hero: linear-gradient(135deg,
+  --gradient-primary: linear-gradient(
+    135deg,
+    oklch(0.55 0.17 180),
+    oklch(0.55 0.15 160)
+  );
+  --gradient-hover: linear-gradient(
+    135deg,
+    oklch(0.97 0.03 180),
+    oklch(0.97 0.03 160)
+  );
+  --gradient-bg-hero: linear-gradient(
+    135deg,
     oklch(0.55 0.17 180 / 0.1) 0%,
     oklch(0.55 0.15 160 / 0.1) 50%,
     transparent 100%
   );
-  --gradient-bg-section: linear-gradient(135deg,
+  --gradient-bg-section: linear-gradient(
+    135deg,
     oklch(0.97 0.03 180 / 0.8),
     oklch(0.97 0.03 160 / 0.8)
   );
-  --gradient-text-primary: linear-gradient(135deg,
+  --gradient-text-primary: linear-gradient(
+    135deg,
     oklch(0.43 0.17 180),
     oklch(0.55 0.17 180),
     oklch(0.55 0.15 160)
@@ -87,9 +98,15 @@
 
   /* Green-tinted shadows */
   --shadow-green-sm: 0 1px 2px 0 oklch(0.55 0.17 180 / 0.1);
-  --shadow-green: 0 4px 6px -1px oklch(0.55 0.17 180 / 0.2), 0 2px 4px -2px oklch(0.55 0.17 180 / 0.2);
-  --shadow-green-lg: 0 10px 15px -3px oklch(0.55 0.17 180 / 0.25), 0 4px 6px -4px oklch(0.55 0.17 180 / 0.25);
-  --shadow-green-xl: 0 20px 25px -5px oklch(0.55 0.17 180 / 0.3), 0 8px 10px -6px oklch(0.55 0.17 180 / 0.3);
+  --shadow-green:
+    0 4px 6px -1px oklch(0.55 0.17 180 / 0.2),
+    0 2px 4px -2px oklch(0.55 0.17 180 / 0.2);
+  --shadow-green-lg:
+    0 10px 15px -3px oklch(0.55 0.17 180 / 0.25),
+    0 4px 6px -4px oklch(0.55 0.17 180 / 0.25);
+  --shadow-green-xl:
+    0 20px 25px -5px oklch(0.55 0.17 180 / 0.3),
+    0 8px 10px -6px oklch(0.55 0.17 180 / 0.3);
 
   /* Glow effects */
   --glow-green: 0 0 20px oklch(0.55 0.17 180 / 0.3);
@@ -112,7 +129,7 @@
 
   --secondary: oklch(0.25 0.03 180);
   --secondary-foreground: oklch(0.97 0.03 180);
-  --secondary-hover: oklch(0.30 0.05 180);
+  --secondary-hover: oklch(0.3 0.05 180);
 
   --accent: oklch(0.55 0.15 160);
   --accent-foreground: oklch(0.985 0 0);
@@ -124,9 +141,9 @@
   --destructive: oklch(0.704 0.191 22.216);
   --success: oklch(0.61 0.15 145);
   --success-foreground: oklch(0.145 0 0);
-  --border: oklch(0.30 0.04 180);
+  --border: oklch(0.3 0.04 180);
   --border-hover: oklch(0.35 0.06 180);
-  --input: oklch(0.30 0.04 180);
+  --input: oklch(0.3 0.04 180);
   --ring: oklch(0.49 0.17 180);
 
   /* Chart colors */
@@ -147,25 +164,34 @@
   --sidebar-ring: var(--ring);
 
   /* Dark mode gradients */
-  --gradient-bg-hero: linear-gradient(135deg,
+  --gradient-bg-hero: linear-gradient(
+    135deg,
     oklch(0.55 0.17 180 / 0.15) 0%,
     oklch(0.55 0.15 160 / 0.15) 50%,
     transparent 100%
   );
-  --gradient-bg-section: linear-gradient(135deg,
+  --gradient-bg-section: linear-gradient(
+    135deg,
     oklch(0.25 0.03 180 / 0.5),
     oklch(0.25 0.03 160 / 0.5)
   );
-  --gradient-hover: linear-gradient(135deg,
+  --gradient-hover: linear-gradient(
+    135deg,
     oklch(0.25 0.03 180 / 0.5),
     oklch(0.25 0.03 160 / 0.5)
   );
 
   /* Dark mode shadows */
   --shadow-green-sm: 0 1px 2px 0 oklch(0.25 0.17 180 / 0.5);
-  --shadow-green: 0 4px 6px -1px oklch(0.25 0.17 180 / 0.4), 0 2px 4px -2px oklch(0.25 0.17 180 / 0.4);
-  --shadow-green-lg: 0 10px 15px -3px oklch(0.25 0.17 180 / 0.35), 0 4px 6px -4px oklch(0.25 0.17 180 / 0.35);
-  --shadow-green-xl: 0 20px 25px -5px oklch(0.25 0.17 180 / 0.3), 0 8px 10px -6px oklch(0.25 0.17 180 / 0.3);
+  --shadow-green:
+    0 4px 6px -1px oklch(0.25 0.17 180 / 0.4),
+    0 2px 4px -2px oklch(0.25 0.17 180 / 0.4);
+  --shadow-green-lg:
+    0 10px 15px -3px oklch(0.25 0.17 180 / 0.35),
+    0 4px 6px -4px oklch(0.25 0.17 180 / 0.35);
+  --shadow-green-xl:
+    0 20px 25px -5px oklch(0.25 0.17 180 / 0.3),
+    0 8px 10px -6px oklch(0.25 0.17 180 / 0.3);
 
   --glow-green: 0 0 20px oklch(0.55 0.17 180 / 0.2);
   --glow-green-lg: 0 0 40px oklch(0.55 0.17 180 / 0.3);
@@ -229,13 +255,7 @@
 }
 
 @layer utilities {
-  .text-gradient {
-    background-clip: text;
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-image: var(--gradient-text-primary);
-  }
-
+  
   .blob {
     position: absolute;
     filter: blur(60px);
@@ -341,13 +361,7 @@
     background: var(--gradient-bg-section);
   }
 
-  .text-gradient-primary {
-    background-image: var(--gradient-text-primary);
-    background-clip: text;
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
   }
-}
 
 /* Landing Page Custom Utilities */
 @layer utilities {

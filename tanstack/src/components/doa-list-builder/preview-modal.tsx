@@ -10,15 +10,23 @@ import { Card } from '@/components/ui/card'
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group'
 
 // Memoized ContentInfo component to prevent re-calculations
-const ContentInfo = ({ prayers, showTranslations }: {
+const ContentInfo = ({
+  prayers,
+  showTranslations,
+}: {
   prayers: Array<any>
   showTranslations: boolean
 }) => {
   // Memoize expensive calculations to prevent re-computation on every render
   const contentMetrics = useMemo(() => {
     const totalCharacters = prayers.reduce((sum, prayer) => {
-      return sum + (prayer.content?.length || 0) +
-             (showTranslations ? (prayer.meaning_en?.length || 0) + (prayer.meaning_my?.length || 0) : 0)
+      return (
+        sum +
+        (prayer.content?.length || 0) +
+        (showTranslations
+          ? (prayer.meaning_en?.length || 0) + (prayer.meaning_my?.length || 0)
+          : 0)
+      )
     }, 0)
 
     const estimatedLines = Math.ceil(totalCharacters / 50) // Rough estimate
@@ -27,7 +35,7 @@ const ContentInfo = ({ prayers, showTranslations }: {
       prayerCount: prayers.length,
       totalCharacters,
       estimatedLines,
-      hasTranslations: showTranslations
+      hasTranslations: showTranslations,
     }
   }, [prayers, showTranslations])
 
@@ -35,8 +43,13 @@ const ContentInfo = ({ prayers, showTranslations }: {
     <div className="bg-muted/50 p-3 rounded-lg space-y-2">
       <h4 className="font-medium text-sm">Content Summary</h4>
       <div className="text-xs text-muted-foreground space-y-1">
-        <div>• {contentMetrics.prayerCount} prayer{contentMetrics.prayerCount !== 1 ? 's' : ''}</div>
-        <div>• {contentMetrics.hasTranslations ? 'With' : 'Without'} translations</div>
+        <div>
+          • {contentMetrics.prayerCount} prayer
+          {contentMetrics.prayerCount !== 1 ? 's' : ''}
+        </div>
+        <div>
+          • {contentMetrics.hasTranslations ? 'With' : 'Without'} translations
+        </div>
         <div>• Approximately {contentMetrics.estimatedLines} lines of text</div>
         <div>• Optimized for readability</div>
         <div>• Dynamic sizing based on content</div>
@@ -46,20 +59,33 @@ const ContentInfo = ({ prayers, showTranslations }: {
 }
 
 // Memoized prayer item to prevent unnecessary re-renders
-const PrayerItem = React.memo(({
-  prayer,
-  index,
-  language,
-  translationLayout,
-  showTranslations
-}: {
-  prayer: any
-  index: number
-  language: 'en' | 'my'
-  translationLayout: 'grouped' | 'interleaved'
-  showTranslations: boolean
-}) => {
-  if (translationLayout === 'grouped') {
+const PrayerItem = React.memo(
+  ({
+    prayer,
+    index,
+    language,
+    translationLayout,
+    showTranslations,
+  }: {
+    prayer: any
+    index: number
+    language: 'en' | 'my'
+    translationLayout: 'grouped' | 'interleaved'
+    showTranslations: boolean
+  }) => {
+    if (translationLayout === 'grouped') {
+      return (
+        <div className="border-l-4 border-primary pl-4">
+          <div className="text-sm font-medium text-muted-foreground mb-1">
+            {index + 1}. {language === 'my' ? prayer.name_my : prayer.name_en}
+          </div>
+          <p className="font-arabic text-lg text-right" dir="rtl">
+            {prayer.content}
+          </p>
+        </div>
+      )
+    }
+
     return (
       <div className="border-l-4 border-primary pl-4">
         <div className="text-sm font-medium text-muted-foreground mb-1">
@@ -68,26 +94,15 @@ const PrayerItem = React.memo(({
         <p className="font-arabic text-lg text-right" dir="rtl">
           {prayer.content}
         </p>
+        {showTranslations && (
+          <p className="text-sm text-muted-foreground mt-2 italic">
+            {language === 'my' ? prayer.meaning_my : prayer.meaning_en}
+          </p>
+        )}
       </div>
     )
-  }
-
-  return (
-    <div className="border-l-4 border-primary pl-4">
-      <div className="text-sm font-medium text-muted-foreground mb-1">
-        {index + 1}. {language === 'my' ? prayer.name_my : prayer.name_en}
-      </div>
-      <p className="font-arabic text-lg text-right" dir="rtl">
-        {prayer.content}
-      </p>
-      {showTranslations && (
-        <p className="text-sm text-muted-foreground mt-2 italic">
-          {language === 'my' ? prayer.meaning_my : prayer.meaning_en}
-        </p>
-      )}
-    </div>
-  )
-})
+  },
+)
 
 PrayerItem.displayName = 'PrayerItem'
 
@@ -144,7 +159,10 @@ export function PreviewModal({
             <Card className="p-6 shadow-green" style={{ minHeight: '600px' }}>
               {/* Preview Header */}
               <div className="text-center mb-6">
-                <h3 className="font-arabic text-2xl mb-4 text-primary" dir="rtl">
+                <h3
+                  className="font-arabic text-2xl mb-4 text-primary"
+                  dir="rtl"
+                >
                   بِسْمِ اللهِ الرَّحْمٰنِ الرَّحِيْمِ
                 </h3>
                 {title && (
@@ -153,7 +171,9 @@ export function PreviewModal({
                   </h4>
                 )}
                 {description && (
-                  <p className="text-sm text-muted-foreground mt-1">{description}</p>
+                  <p className="text-sm text-muted-foreground mt-1">
+                    {description}
+                  </p>
                 )}
               </div>
 
@@ -255,7 +275,10 @@ export function PreviewModal({
                       }
                     >
                       {layoutOptions.map((option) => (
-                        <div key={option.value} className="flex items-start space-x-3">
+                        <div
+                          key={option.value}
+                          className="flex items-start space-x-3"
+                        >
                           <RadioGroupItem
                             value={option.value}
                             id={`layout-${option.value}`}

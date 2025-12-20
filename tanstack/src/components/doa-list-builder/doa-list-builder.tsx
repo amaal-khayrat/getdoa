@@ -1,5 +1,6 @@
 import React, { use, useCallback, useMemo, useState } from 'react'
 import { Download, Eye } from 'lucide-react'
+import { ResponsiveDoaLayout } from './responsive-layout'
 import type { DoaItem, DoaList, PreviewSettings } from '@/types/doa.types'
 import { useSession } from '@/lib/auth-client'
 import { useLanguage } from '@/contexts/language-context'
@@ -12,7 +13,6 @@ import {
 import { downloadImage, generateDoaImage } from '@/utils/image-generator'
 import { Button } from '@/components/ui/button'
 import { DEFAULT_PREVIEW_SETTINGS } from '@/types/doa.types'
-import { ResponsiveDoaLayout } from './responsive-layout'
 // Components will be imported where needed to avoid circular dependencies
 
 // Create a context for sharing state
@@ -186,10 +186,14 @@ function DoaListProvider({ children }: { children: React.ReactNode }) {
     setState((prev) => ({ ...prev, isPreviewLoading: true }))
 
     // Small delay to allow UI to update and prevent blank screen
-    await new Promise(resolve => setTimeout(resolve, 100))
+    await new Promise((resolve) => setTimeout(resolve, 100))
 
     // Show preview
-    setState((prev) => ({ ...prev, isPreviewLoading: false, showPreview: true }))
+    setState((prev) => ({
+      ...prev,
+      isPreviewLoading: false,
+      showPreview: true,
+    }))
   }, [])
 
   // Update available prayers when data changes
@@ -301,8 +305,13 @@ function DoaListBuilderContent() {
     itemsPerPage,
   } = useDoaListState()
 
-  const { updateState, generateImage, setCurrentPage, resetToFirstPage, handlePreview } =
-    useDoaListActions()
+  const {
+    updateState,
+    generateImage,
+    setCurrentPage,
+    resetToFirstPage,
+    handlePreview,
+  } = useDoaListActions()
 
   // Filter prayers based on search and category
   const filteredPrayers = useMemo(() => {

@@ -136,15 +136,15 @@ export interface LayoutDimensions {
 export function calculateOptimalFontSizes(
   contentLength: number,
   prayerCount: number,
-  _targetWidth: number
+  _targetWidth: number,
 ): FontSizeConfig {
   // Base configuration for readability
   const config: FontSizeConfig = {
-    minArabic: 28,        // Minimum readable Arabic font
-    maxArabic: 36,        // Maximum Arabic font for short content
-    minTranslation: 18,   // Minimum translation font
-    maxTranslation: 24,   // Maximum translation font
-    scaleFactor: 0.8      // How aggressively to scale based on content
+    minArabic: 28, // Minimum readable Arabic font
+    maxArabic: 36, // Maximum Arabic font for short content
+    minTranslation: 18, // Minimum translation font
+    maxTranslation: 24, // Maximum translation font
+    scaleFactor: 0.8, // How aggressively to scale based on content
   }
 
   // Adjust font sizes based on content length
@@ -152,11 +152,15 @@ export function calculateOptimalFontSizes(
   const prayerRatio = Math.min(prayerCount / 10, 1) // Normalize prayer count
 
   // Combined ratio to determine font scaling
-  const combinedRatio = (contentRatio * 0.6 + prayerRatio * 0.4) * config.scaleFactor
+  const combinedRatio =
+    (contentRatio * 0.6 + prayerRatio * 0.4) * config.scaleFactor
 
   // Calculate optimal sizes
-  const arabicSize = config.maxArabic - (config.maxArabic - config.minArabic) * combinedRatio
-  const translationSize = config.maxTranslation - (config.maxTranslation - config.minTranslation) * combinedRatio
+  const arabicSize =
+    config.maxArabic - (config.maxArabic - config.minArabic) * combinedRatio
+  const translationSize =
+    config.maxTranslation -
+    (config.maxTranslation - config.minTranslation) * combinedRatio
 
   return {
     ...config,
@@ -164,7 +168,7 @@ export function calculateOptimalFontSizes(
     minArabic: arabicSize,
     maxArabic: arabicSize,
     minTranslation: translationSize,
-    maxTranslation: translationSize
+    maxTranslation: translationSize,
   }
 }
 
@@ -175,15 +179,24 @@ export function analyzeContent(
   prayers: Array<any>,
   showTranslations: boolean,
   translationLayout: 'grouped' | 'interleaved',
-  baseWidth: number
+  baseWidth: number,
 ): ContentAnalysis {
   // Calculate optimal font sizes first
   const totalContentLength = prayers.reduce((sum, prayer) => {
-    return sum + (prayer.content?.length || 0) +
-           (showTranslations ? (prayer.meaning_en?.length || 0) + (prayer.meaning_my?.length || 0) : 0)
+    return (
+      sum +
+      (prayer.content?.length || 0) +
+      (showTranslations
+        ? (prayer.meaning_en?.length || 0) + (prayer.meaning_my?.length || 0)
+        : 0)
+    )
   }, 0)
 
-  const fontConfig = calculateOptimalFontSizes(totalContentLength, prayers.length, baseWidth)
+  const fontConfig = calculateOptimalFontSizes(
+    totalContentLength,
+    prayers.length,
+    baseWidth,
+  )
 
   // Calculate text dimensions
   let totalArabicHeight = 0
@@ -203,7 +216,8 @@ export function analyzeContent(
       const translationText = prayer.meaning_en || prayer.meaning_my || ''
       const translationWords = translationText.split(' ')
       const translationLinesPerPrayer = Math.ceil(translationWords.length / 12) // Average 12 words per line
-      const translationHeight = translationLinesPerPrayer * (fontConfig.minTranslation * 1.5) // 1.5 line height
+      const translationHeight =
+        translationLinesPerPrayer * (fontConfig.minTranslation * 1.5) // 1.5 line height
 
       if (translationLayout === 'interleaved') {
         totalTranslationHeight += translationHeight
@@ -232,7 +246,9 @@ export function analyzeContent(
   contentHeight += 60 // Bismillah space
 
   // Description space if needed
-  const hasDescription = prayers.some(p => p.description_en || p.description_my)
+  const hasDescription = prayers.some(
+    (p) => p.description_en || p.description_my,
+  )
   if (hasDescription) {
     contentHeight += 40 // Description space
   }
@@ -261,7 +277,9 @@ export function analyzeContent(
   // Calculate recommended dimensions
   const margins = { top: 60, right: 80, bottom: 60, left: 80 }
   const recommendedWidth = Math.max(baseWidth, 1080) // Minimum 1080px width
-  const recommendedHeight = Math.ceil(contentHeight + margins.top + margins.bottom)
+  const recommendedHeight = Math.ceil(
+    contentHeight + margins.top + margins.bottom,
+  )
 
   return {
     totalArabicHeight,
@@ -273,8 +291,8 @@ export function analyzeContent(
       arabic: fontConfig.minArabic,
       translations: fontConfig.minTranslation,
       title: 28,
-      description: 18
-    }
+      description: 18,
+    },
   }
 }
 
@@ -283,7 +301,7 @@ export function analyzeContent(
  */
 export function calculateOptimalLayout(
   contentAnalysis: ContentAnalysis,
-  targetAspectRatio?: number
+  targetAspectRatio?: number,
 ): LayoutDimensions {
   const { recommendedWidth, recommendedHeight } = contentAnalysis
 
@@ -292,14 +310,14 @@ export function calculateOptimalLayout(
     top: 80,
     right: 80,
     bottom: 80,
-    left: 80
+    left: 80,
   }
 
   const spacing = {
     titleToDescription: 20,
     descriptionToContent: 40,
     prayerSpacing: 40,
-    translationSpacing: 25
+    translationSpacing: 25,
   }
 
   // Adjust for aspect ratio if specified
@@ -321,7 +339,7 @@ export function calculateOptimalLayout(
     width: finalWidth,
     height: finalHeight,
     margins,
-    spacing
+    spacing,
   }
 }
 
@@ -332,14 +350,14 @@ export function wrapArabicText(
   text: string,
   maxWidth: number,
   fontSize: number,
-  ctx?: CanvasRenderingContext2D
-): string[] {
+  ctx?: CanvasRenderingContext2D,
+): Array<string> {
   // If no canvas context provided, estimate using character count
   if (!ctx) {
     const avgCharWidth = fontSize * 0.6 // Estimate for Arabic characters
     const maxCharsPerLine = Math.floor(maxWidth / avgCharWidth)
     const words = text.split(' ')
-    const lines: string[] = []
+    const lines: Array<string> = []
     let currentLine = ''
 
     for (const word of words) {
@@ -366,7 +384,7 @@ export function wrapArabicText(
   ctx.direction = 'rtl'
 
   const words = text.split(' ')
-  const lines: string[] = []
+  const lines: Array<string> = []
   let currentLine = ''
 
   for (const word of words) {

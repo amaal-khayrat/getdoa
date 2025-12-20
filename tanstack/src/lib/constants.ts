@@ -1,14 +1,12 @@
 export const LANDING_CONTENT = {
   navigation: {
     logo: '/logo.svg',
-    signUpButton: 'Sign Up',
-    loginButton: 'Log In',
     getStartedButton: 'Get the App',
   },
 
   hero: {
     title: 'Find Inner Peace:',
-    subtitle: 'Your Personalized Prayer Journey',
+    subtitle: 'Create Your Personalized Prayer',
     description:
       'Immerse yourself in a sanctuary of digital serenity. Access authentic Doa and curate your daily supplications.',
     primaryCTA: 'Start Your Journey',

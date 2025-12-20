@@ -124,8 +124,7 @@ export function SelectedPrayersPanel({
 }) {
   const { selectedPrayers, title, description, language } = useDoaListState()
 
-  const { updateState, addPrayer, reorderPrayers } =
-    useDoaListActions()
+  const { updateState, addPrayer, reorderPrayers } = useDoaListActions()
 
   const sensors = useSensors(
     useSensor(PointerSensor),

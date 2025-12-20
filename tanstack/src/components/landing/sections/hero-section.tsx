@@ -12,10 +12,10 @@ export function HeroSection() {
       <div className="blob bg-accent w-96 h-96 rounded-full bottom-0 -right-20 mix-blend-multiply dark:mix-blend-overlay dark:bg-accent/30"></div>
       <div className="absolute inset-0 hero-pattern"></div>
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 text-center">
+      <div className="max-w-7xl mx-auto px-8 sm:px-12 lg:px-16 relative z-10 text-center">
         {/* Main Title */}
-        <h1 className="text-5xl md:text-6xl lg:text-7xl font-display font-medium text-foreground tracking-tight leading-[1.1] mb-6">
-          <span className="text-gradient font-display font-semibold italic">
+        <h1 className="text-5xl md:text-6xl lg:text-7xl font-display font-medium tracking-tight leading-[1.4] mb-6">
+          <span className="bg-linear-to-r from-teal-700 via-teal-600 to-teal-500 bg-clip-text text-transparent font-display font-semibold italic inline-block">
             {LANDING_CONTENT.hero.subtitle}
           </span>
         </h1>
