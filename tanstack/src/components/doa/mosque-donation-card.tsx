@@ -1,29 +1,24 @@
-import { Badge } from "@/components/ui/badge"
-import {
-  Card,
-  CardHeader,
-  CardTitle,
-  CardContent,
-} from "@/components/ui/card"
-import { QrCodeDisplay } from "@/components/ui/qrcode-display"
-// eslint-disable-next-line import/no-unresolved
-import masjid from "/icons/masjid.svg"
+import { Badge } from '@/components/ui/badge'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { QrCodeDisplay } from '@/components/ui/qrcode-display'
 
-export type PaymentMethod = "duitnow" | "TNG" | "boost" | "grabpay"
+import masjid from '/icons/masjid.svg'
+
+export type PaymentMethod = 'duitnow' | 'TNG' | 'boost' | 'grabpay'
 
 interface MosqueDonationCardProps {
   name: string
   qrContent: string
-  supportedPayment: string[]
+  supportedPayment: Array<string>
 }
 
-const SITE_URL = "https://sedekah.je"
+const SITE_URL = 'https://sedekah.je'
 
 // Define colors for each payment method
 const paymentMethodColors: Record<string, string> = {
-  duitnow: "bg-[#ED2C67] text-white",
-  tng: "bg-[#015ABF] text-white",
-  boost: "bg-[#FF3333] text-white",
+  duitnow: 'bg-[#ED2C67] text-white',
+  tng: 'bg-[#015ABF] text-white',
+  boost: 'bg-[#FF3333] text-white',
 }
 
 const Section = ({
@@ -50,7 +45,11 @@ const SiteLink = ({ url }: { url: string }) => (
   </a>
 )
 
-export function MosqueDonationCard({ name, qrContent, supportedPayment }: MosqueDonationCardProps) {
+export function MosqueDonationCard({
+  name,
+  qrContent,
+  supportedPayment,
+}: MosqueDonationCardProps) {
   return (
     <Card className="mb-4 overflow-hidden">
       <CardContent className="flex flex-col md:flex-row gap-6 p-6">
@@ -78,7 +77,8 @@ export function MosqueDonationCard({ name, qrContent, supportedPayment }: Mosque
                   key={method}
                   variant="secondary"
                   className={`text-xs capitalize ${
-                    paymentMethodColors[method.toLowerCase()] || "bg-gray-100 text-gray-800"
+                    paymentMethodColors[method.toLowerCase()] ||
+                    'bg-gray-100 text-gray-800'
                   }`}
                 >
                   {method}
@@ -104,7 +104,7 @@ export function MosqueDonationCard({ name, qrContent, supportedPayment }: Mosque
             <p className="flex pt-4 text-xs text-gray-600">
               <img src={masjid} alt="Masjid Icon" className="h-9 w-9 mr-2" />
               <p className="flex items-center mt-1">
-                Powered by{" "} <SiteLink url={SITE_URL} />
+                Powered by <SiteLink url={SITE_URL} />
               </p>
             </p>
           </Section>

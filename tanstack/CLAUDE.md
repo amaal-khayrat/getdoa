@@ -32,18 +32,21 @@ pnpm drizzle-kit studio  # Open Drizzle Studio GUI
 ## Architecture
 
 ### Framework Stack
+
 - **TanStack Start** - Full-stack React meta-framework with file-based routing
 - **Nitro** - Server runtime (Vite plugin integrated)
 - **Vite** - Build tool with Tailwind CSS v4 integration
 - **TypeScript** - Strict mode enabled
 
 ### Key Technologies
+
 - **UI**: shadcn/ui (base-vega style) + Radix primitives + Tailwind CSS v4
 - **Database**: PostgreSQL with Drizzle ORM
 - **Authentication**: Better Auth with Google OAuth
 - **Animations**: Framer Motion
 
 ### File Structure
+
 ```
 src/
 ├── routes/              # TanStack file-based routing
@@ -75,6 +78,7 @@ src/
 ### Routing Patterns
 
 TanStack Start uses file-based routing:
+
 - `routes/index.tsx` → `/`
 - `routes/about.tsx` → `/about`
 - `routes/doa.route.tsx` → Layout for `/doa/*` routes
@@ -82,6 +86,7 @@ TanStack Start uses file-based routing:
 - `routes/api/auth/$.ts` → API catch-all route for auth
 
 Route files export a `Route` constant created with `createFileRoute()`:
+
 ```tsx
 export const Route = createFileRoute('/path')({
   component: Component,
@@ -92,11 +97,13 @@ export const Route = createFileRoute('/path')({
 ### Authentication
 
 Better Auth is configured with:
+
 - Google OAuth provider
 - Drizzle adapter for PostgreSQL
 - Session management via `user`, `session`, `account`, `verification` tables
 
 Client-side auth:
+
 ```tsx
 import { signIn, signOut, useSession } from '@/lib/auth-client'
 ```
@@ -106,6 +113,7 @@ import { signIn, signOut, useSession } from '@/lib/auth-client'
 Drizzle ORM with PostgreSQL. Schema in `src/db/schema.ts` includes auth tables with relations.
 
 Push schema changes directly (no migrations):
+
 ```bash
 pnpm drizzle-kit push
 ```
@@ -120,11 +128,13 @@ pnpm drizzle-kit push
 ### Path Aliases
 
 Configured in `tsconfig.json`:
+
 - `@/*` → `./src/*`
 
 ## Environment Variables
 
 Required in `.env`:
+
 ```
 DATABASE_URL=postgresql://...
 BETTER_AUTH_SECRET=
@@ -136,6 +146,7 @@ GOOGLE_CLIENT_SECRET=
 ## Docker
 
 Multi-stage Dockerfile for production deployment:
+
 - Uses Node 24 Alpine
 - Runs on port 3230
 - Timezone: Asia/Kuala_Lumpur

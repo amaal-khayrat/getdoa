@@ -42,8 +42,8 @@ export function Navigation() {
           <Link
             to="/login"
             className={cn(
-              buttonVariants({ variant: 'outline', size: 'default' }),
-              'border-teal-600 text-teal-600 hover:bg-teal-600 hover:text-white font-medium px-6'
+              buttonVariants({ variant: 'green-outline', size: 'default' }),
+              'font-medium px-6',
             )}
           >
             {LANDING_CONTENT.navigation.loginButton}
@@ -51,8 +51,8 @@ export function Navigation() {
           <Link
             to="/signup"
             className={cn(
-              buttonVariants({ variant: 'default', size: 'default' }),
-              'bg-teal-600 hover:bg-teal-700 text-white font-medium px-6 shadow-lg hover:shadow-xl transition-all transform hover:scale-105'
+              buttonVariants({ variant: 'primary-gradient', size: 'default' }),
+              'font-medium px-6 transform hover:scale-105',
             )}
           >
             {LANDING_CONTENT.navigation.signUpButton}
@@ -77,15 +77,15 @@ export function Navigation() {
 
       {/* Mobile Menu */}
       {isMobileMenuOpen && (
-        <div className="md:hidden bg-background/95 backdrop-blur-sm border-t border-border">
-          <div className="px-4 pt-4 pb-3 border-t border-border">
+        <div className="md:hidden bg-card/95 backdrop-blur-sm border-t border-border shadow-green">
+          <div className="px-4 pt-4 pb-3">
             <div className="space-y-3">
               <Link
                 to="/login"
                 onClick={handleLinkClick}
                 className={cn(
-                  buttonVariants({ variant: 'outline' }),
-                  'w-full border-teal-600 text-teal-600 hover:bg-teal-600 hover:text-white font-medium py-3'
+                  buttonVariants({ variant: 'green-outline' }),
+                  'w-full font-medium py-3',
                 )}
               >
                 {LANDING_CONTENT.navigation.loginButton}
@@ -94,8 +94,8 @@ export function Navigation() {
                 to="/signup"
                 onClick={handleLinkClick}
                 className={cn(
-                  buttonVariants({ variant: 'default' }),
-                  'w-full bg-teal-600 hover:bg-teal-700 text-white font-medium py-3 shadow-lg hover:shadow-xl transition-all'
+                  buttonVariants({ variant: 'primary-gradient' }),
+                  'w-full font-medium py-3',
                 )}
               >
                 {LANDING_CONTENT.navigation.signUpButton}

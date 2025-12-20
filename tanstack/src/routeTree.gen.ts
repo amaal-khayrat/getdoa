@@ -15,6 +15,7 @@ import { Route as RefundRouteImport } from './routes/refund'
 import { Route as PrivacyRouteImport } from './routes/privacy'
 import { Route as PricingRouteImport } from './routes/pricing'
 import { Route as LoginRouteImport } from './routes/login'
+import { Route as CreateDoaListRouteImport } from './routes/create-doa-list'
 import { Route as ContactRouteImport } from './routes/contact'
 import { Route as AboutRouteImport } from './routes/about'
 import { Route as DoaRouteRouteImport } from './routes/doa.route'
@@ -51,6 +52,11 @@ const PricingRoute = PricingRouteImport.update({
 const LoginRoute = LoginRouteImport.update({
   id: '/login',
   path: '/login',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CreateDoaListRoute = CreateDoaListRouteImport.update({
+  id: '/create-doa-list',
+  path: '/create-doa-list',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ContactRoute = ContactRouteImport.update({
@@ -94,6 +100,7 @@ export interface FileRoutesByFullPath {
   '/doa': typeof DoaRouteRouteWithChildren
   '/about': typeof AboutRoute
   '/contact': typeof ContactRoute
+  '/create-doa-list': typeof CreateDoaListRoute
   '/login': typeof LoginRoute
   '/pricing': typeof PricingRoute
   '/privacy': typeof PrivacyRoute
@@ -108,6 +115,7 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
   '/contact': typeof ContactRoute
+  '/create-doa-list': typeof CreateDoaListRoute
   '/login': typeof LoginRoute
   '/pricing': typeof PricingRoute
   '/privacy': typeof PrivacyRoute
@@ -124,6 +132,7 @@ export interface FileRoutesById {
   '/doa': typeof DoaRouteRouteWithChildren
   '/about': typeof AboutRoute
   '/contact': typeof ContactRoute
+  '/create-doa-list': typeof CreateDoaListRoute
   '/login': typeof LoginRoute
   '/pricing': typeof PricingRoute
   '/privacy': typeof PrivacyRoute
@@ -141,6 +150,7 @@ export interface FileRouteTypes {
     | '/doa'
     | '/about'
     | '/contact'
+    | '/create-doa-list'
     | '/login'
     | '/pricing'
     | '/privacy'
@@ -155,6 +165,7 @@ export interface FileRouteTypes {
     | '/'
     | '/about'
     | '/contact'
+    | '/create-doa-list'
     | '/login'
     | '/pricing'
     | '/privacy'
@@ -170,6 +181,7 @@ export interface FileRouteTypes {
     | '/doa'
     | '/about'
     | '/contact'
+    | '/create-doa-list'
     | '/login'
     | '/pricing'
     | '/privacy'
@@ -186,6 +198,7 @@ export interface RootRouteChildren {
   DoaRouteRoute: typeof DoaRouteRouteWithChildren
   AboutRoute: typeof AboutRoute
   ContactRoute: typeof ContactRoute
+  CreateDoaListRoute: typeof CreateDoaListRoute
   LoginRoute: typeof LoginRoute
   PricingRoute: typeof PricingRoute
   PrivacyRoute: typeof PrivacyRoute
@@ -237,6 +250,13 @@ declare module '@tanstack/react-router' {
       path: '/login'
       fullPath: '/login'
       preLoaderRoute: typeof LoginRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/create-doa-list': {
+      id: '/create-doa-list'
+      path: '/create-doa-list'
+      fullPath: '/create-doa-list'
+      preLoaderRoute: typeof CreateDoaListRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/contact': {
@@ -310,6 +330,7 @@ const rootRouteChildren: RootRouteChildren = {
   DoaRouteRoute: DoaRouteRouteWithChildren,
   AboutRoute: AboutRoute,
   ContactRoute: ContactRoute,
+  CreateDoaListRoute: CreateDoaListRoute,
   LoginRoute: LoginRoute,
   PricingRoute: PricingRoute,
   PrivacyRoute: PrivacyRoute,

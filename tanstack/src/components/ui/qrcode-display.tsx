@@ -4,7 +4,7 @@ import { cn } from '@/lib/utils'
 
 interface QrCodeDisplayProps {
   qrContent: string
-  supportedPayment: string[]
+  supportedPayment: Array<string>
   size?: number
   className?: string
 }
@@ -13,7 +13,7 @@ export function QrCodeDisplay({
   qrContent,
   supportedPayment,
   size = 250,
-  className
+  className,
 }: QrCodeDisplayProps) {
   const canvasRef = React.useRef<HTMLCanvasElement>(null)
   const [isLoading, setIsLoading] = React.useState(true)
@@ -38,52 +38,50 @@ export function QrCodeDisplay({
       margin: 1,
       color: {
         dark: '#000000',
-        light: '#FFFFFF'
+        light: '#FFFFFF',
       },
-      errorCorrectionLevel: 'M'
+      errorCorrectionLevel: 'M',
     })
-    .then(() => {
-      setIsLoading(false)
-    })
-    .catch((err) => {
-      console.error('Error generating QR code:', err)
-      setError('Failed to generate QR code')
-      setIsLoading(false)
-    })
+      .then(() => {
+        setIsLoading(false)
+      })
+      .catch((err) => {
+        console.error('Error generating QR code:', err)
+        setError('Failed to generate QR code')
+        setIsLoading(false)
+      })
   }, [qrContent, size])
 
   if (error) {
     return (
       <div
         className={cn(
-          "flex items-center justify-center bg-gray-100 rounded-lg border-2 border-dashed border-gray-300",
-          className
+          'flex items-center justify-center bg-muted rounded-lg border-2 border-dashed border-border',
+          className,
         )}
         style={{ width: size, height: size }}
       >
-        <p className="text-center text-sm text-gray-500 px-2">
-          {error}
-        </p>
+        <p className="text-center text-sm text-muted-foreground px-2">{error}</p>
       </div>
     )
   }
 
   return (
-    <div className={cn("relative", className)}>
+    <div className={cn('relative', className)}>
       <canvas
         ref={canvasRef}
         className={cn(
-          "border-2 border-gray-200 rounded-lg bg-white",
-          isLoading && "opacity-0"
+          'border-2 border-border rounded-lg bg-card',
+          isLoading && 'opacity-0',
         )}
         style={{ width: size, height: size }}
       />
       {isLoading && (
         <div
-          className="absolute inset-0 flex items-center justify-center bg-gray-100 rounded-lg border-2 border-gray-200"
+          className="absolute inset-0 flex items-center justify-center bg-muted rounded-lg border-2 border-border"
           style={{ width: size, height: size }}
         >
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-600"></div>
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
         </div>
       )}
     </div>

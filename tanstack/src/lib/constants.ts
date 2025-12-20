@@ -212,7 +212,6 @@ export const LANDING_CONTENT = {
     github: 'GitHub',
   },
 
-  
   pages: {
     about: {
       hero: {

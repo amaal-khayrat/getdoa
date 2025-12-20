@@ -126,7 +126,7 @@ export function EnhancedFeaturesSection() {
 
         {/* CTA Button */}
         <div className="mt-12 text-center">
-          <button className="inline-flex items-center justify-center px-8 py-4 rounded-full bg-teal-600 text-white font-medium hover:bg-teal-700 transition-all shadow-lg shadow-teal-500/30 hover:shadow-xl hover:shadow-teal-500/40 hover:-translate-y-0.5 gap-2">
+          <button className="inline-flex items-center justify-center px-8 py-4 rounded-full bg-primary-gradient text-primary-foreground font-medium transition-all shadow-green hover:shadow-green-lg hover:-translate-y-0.5 gap-2">
             {LANDING_CONTENT.enhancedFeatures.ctaButton}
             <ArrowRight className="w-5 h-5" />
           </button>

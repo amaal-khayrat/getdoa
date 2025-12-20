@@ -1,6 +1,6 @@
 import { createFileRoute, notFound } from '@tanstack/react-router'
-import { DoaDetailContent } from '@/components/doa/doa-detail-content'
 import doaDataRaw from '../../data/doa.json'
+import { DoaDetailContent } from '@/components/doa/doa-detail-content'
 
 // Type definitions
 interface DoaItem {
