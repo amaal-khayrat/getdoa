@@ -199,17 +199,14 @@ export async function generateDoaImage(
     config.doaList.showTranslations &&
     config.doaList.translationLayout === 'grouped'
   ) {
-    currentY += 40
-    ctx.font = `bold ${suggestedFontSize.title}px Arial, sans-serif`
-    ctx.fillText('Translations', canvas.width / 2, currentY)
-    currentY += 40
+    currentY += 20
 
     ctx.font = `${suggestedFontSize.translations}px Arial, sans-serif`
     ctx.fillStyle = '#666666'
     ctx.textAlign = 'center'
     ctx.direction = 'ltr'
 
-    config.doaList.prayers.forEach((prayer, index) => {
+    config.doaList.prayers.forEach((prayer) => {
       const translation =
         config.doaList.language === 'my' ? prayer.meaning_my : prayer.meaning_en
 

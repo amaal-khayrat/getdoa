@@ -37,14 +37,14 @@ export function ResponsiveDoaLayout({
   return (
     <div className="min-h-0">
       {/* Desktop Layout - Side by side */}
-      <div className="hidden lg:grid lg:grid-cols-2 lg:gap-6">
+      <div className="hidden lg:grid lg:grid-cols-2 lg:gap-6 h-full">
         {/* Left Panel - Selected Prayers */}
-        <div className="flex flex-col">
+        <div className="flex flex-col min-h-0">
           <SelectedPrayersPanel filteredPrayers={filteredPrayers} />
         </div>
 
         {/* Right Panel - Prayer Browser */}
-        <div className="flex flex-col">
+        <div className="flex flex-col min-h-0">
           <PrayerBrowserPanel
             filteredPrayers={filteredPrayers}
             categories={categories}
@@ -59,13 +59,13 @@ export function ResponsiveDoaLayout({
       </div>
 
       {/* Mobile Layout - Tabbed interface */}
-      <div className="lg:hidden flex flex-col">
+      <div className="lg:hidden flex flex-col h-full">
         <Tabs
           value={activeTab}
           onValueChange={(value) =>
             setActiveTab(value as 'selected' | 'browse')
           }
-          className="flex flex-col"
+          className="flex flex-col h-full"
         >
           <TabsList className="grid w-full grid-cols-2 mb-4">
             <TabsTrigger value="selected" className="flex items-center gap-2">
@@ -79,11 +79,11 @@ export function ResponsiveDoaLayout({
             <TabsTrigger value="browse">All DOAs</TabsTrigger>
           </TabsList>
 
-          <TabsContent value="selected" className="flex-1 mt-0">
+          <TabsContent value="selected" className="flex-1 mt-0 min-h-0">
             <SelectedPrayersPanel filteredPrayers={filteredPrayers} />
           </TabsContent>
 
-          <TabsContent value="browse" className="flex-1 mt-0">
+          <TabsContent value="browse" className="flex-1 mt-0 min-h-0">
             <PrayerBrowserPanel
               filteredPrayers={filteredPrayers}
               categories={categories}

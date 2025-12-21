@@ -140,8 +140,8 @@ export function calculateOptimalFontSizes(
 ): FontSizeConfig {
   // Base configuration for readability
   const config: FontSizeConfig = {
-    minArabic: 28, // Minimum readable Arabic font
-    maxArabic: 36, // Maximum Arabic font for short content
+    minArabic: Math.floor(28 * 1.3), // Minimum readable Arabic font (1.3x larger)
+    maxArabic: Math.floor(36 * 1.3), // Maximum Arabic font for short content (1.3x larger)
     minTranslation: 18, // Minimum translation font
     maxTranslation: 24, // Maximum translation font
     scaleFactor: 0.8, // How aggressively to scale based on content

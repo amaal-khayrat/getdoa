@@ -1,4 +1,4 @@
-import { Download, X } from 'lucide-react'
+import { Download } from 'lucide-react'
 import React, { useMemo } from 'react'
 import { useDoaListActions, useDoaListState } from './doa-list-builder'
 import type { TranslationLayout } from '@/types/doa.types'
@@ -7,6 +7,13 @@ import { Label } from '@/components/ui/label'
 import { Switch } from '@/components/ui/switch'
 import { Card } from '@/components/ui/card'
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group'
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog'
 
 // Memoized ContentInfo component to prevent re-calculations
 const ContentInfo = ({
@@ -138,19 +145,17 @@ export function PreviewModal({
   ] as const
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-2 sm:p-4">
-      {/* Backdrop */}
-      <div className="absolute inset-0 bg-black/50" onClick={onClose} />
-
-      {/* Modal - PROPERLY RESPONSIVE sizing */}
-      <div className="relative bg-background rounded-lg shadow-xl w-[95vw] h-[85vh] sm:w-[90vw] sm:h-[80vh] md:w-[85vw] md:h-[75vh] lg:w-[80vw] lg:h-[70vh] xl:w-[75vw] xl:h-[65vh] max-w-7xl overflow-hidden flex flex-col">
-        {/* Header */}
-        <div className="flex items-center justify-between p-3 sm:p-4 border-b flex-shrink-0">
-          <h2 className="text-base sm:text-lg font-semibold">Preview Your Prayer List</h2>
-          <Button variant="ghost" size="icon" onClick={onClose}>
-            <X className="w-4 h-4" />
-          </Button>
-        </div>
+    <Dialog open={true} onOpenChange={(open) => !open && onClose()}>
+      <DialogContent
+        className="max-w-none! sm:max-w-none! w-[95vw] h-[85vh] sm:w-[90vw] sm:h-[80vh] md:w-[85vw] md:h-[75vh] lg:w-[80vw] lg:h-[70vh] xl:w-[75vw] xl:h-[65vh] max-h-[85vh] overflow-hidden flex flex-col p-0 gap-0"
+        showCloseButton={true}
+      >
+        <DialogHeader className="p-3 sm:p-4 border-b shrink-0">
+          <DialogTitle className="text-base sm:text-lg font-semibold">Preview Your Prayer List</DialogTitle>
+          <DialogDescription className="sr-only">
+            Preview and customize your prayer list before exporting as an image
+          </DialogDescription>
+        </DialogHeader>
 
         <div className="flex flex-col lg:flex-row flex-1 min-h-0 overflow-hidden">
           {/* Preview Panel - Left on Desktop, Top on Mobile */}
@@ -375,7 +380,7 @@ export function PreviewModal({
             </div>
           </div>
         </div>
-      </div>
-    </div>
+      </DialogContent>
+    </Dialog>
   )
 }
