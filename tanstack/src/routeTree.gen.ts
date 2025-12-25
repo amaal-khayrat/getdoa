@@ -21,6 +21,8 @@ import { Route as DoaRouteRouteImport } from './routes/doa.route'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as DoaIndexRouteImport } from './routes/doa.index'
 import { Route as DoaSlugRouteImport } from './routes/doa.$slug'
+import { Route as ApiShopeeReferralsRouteImport } from './routes/api/shopee-referrals'
+import { Route as ApiShopeeOgSplatRouteImport } from './routes/api/shopee-og/$'
 import { Route as ApiAuthSplatRouteImport } from './routes/api/auth/$'
 
 const TermsRoute = TermsRouteImport.update({
@@ -83,6 +85,16 @@ const DoaSlugRoute = DoaSlugRouteImport.update({
   path: '/$slug',
   getParentRoute: () => DoaRouteRoute,
 } as any)
+const ApiShopeeReferralsRoute = ApiShopeeReferralsRouteImport.update({
+  id: '/api/shopee-referrals',
+  path: '/api/shopee-referrals',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiShopeeOgSplatRoute = ApiShopeeOgSplatRouteImport.update({
+  id: '/api/shopee-og/$',
+  path: '/api/shopee-og/$',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiAuthSplatRoute = ApiAuthSplatRouteImport.update({
   id: '/api/auth/$',
   path: '/api/auth/$',
@@ -100,9 +112,11 @@ export interface FileRoutesByFullPath {
   '/privacy': typeof PrivacyRoute
   '/refund': typeof RefundRoute
   '/terms': typeof TermsRoute
+  '/api/shopee-referrals': typeof ApiShopeeReferralsRoute
   '/doa/$slug': typeof DoaSlugRoute
   '/doa/': typeof DoaIndexRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
+  '/api/shopee-og/$': typeof ApiShopeeOgSplatRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -114,9 +128,11 @@ export interface FileRoutesByTo {
   '/privacy': typeof PrivacyRoute
   '/refund': typeof RefundRoute
   '/terms': typeof TermsRoute
+  '/api/shopee-referrals': typeof ApiShopeeReferralsRoute
   '/doa/$slug': typeof DoaSlugRoute
   '/doa': typeof DoaIndexRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
+  '/api/shopee-og/$': typeof ApiShopeeOgSplatRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -130,9 +146,11 @@ export interface FileRoutesById {
   '/privacy': typeof PrivacyRoute
   '/refund': typeof RefundRoute
   '/terms': typeof TermsRoute
+  '/api/shopee-referrals': typeof ApiShopeeReferralsRoute
   '/doa/$slug': typeof DoaSlugRoute
   '/doa/': typeof DoaIndexRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
+  '/api/shopee-og/$': typeof ApiShopeeOgSplatRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -147,9 +165,11 @@ export interface FileRouteTypes {
     | '/privacy'
     | '/refund'
     | '/terms'
+    | '/api/shopee-referrals'
     | '/doa/$slug'
     | '/doa/'
     | '/api/auth/$'
+    | '/api/shopee-og/$'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -161,9 +181,11 @@ export interface FileRouteTypes {
     | '/privacy'
     | '/refund'
     | '/terms'
+    | '/api/shopee-referrals'
     | '/doa/$slug'
     | '/doa'
     | '/api/auth/$'
+    | '/api/shopee-og/$'
   id:
     | '__root__'
     | '/'
@@ -176,9 +198,11 @@ export interface FileRouteTypes {
     | '/privacy'
     | '/refund'
     | '/terms'
+    | '/api/shopee-referrals'
     | '/doa/$slug'
     | '/doa/'
     | '/api/auth/$'
+    | '/api/shopee-og/$'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -192,7 +216,9 @@ export interface RootRouteChildren {
   PrivacyRoute: typeof PrivacyRoute
   RefundRoute: typeof RefundRoute
   TermsRoute: typeof TermsRoute
+  ApiShopeeReferralsRoute: typeof ApiShopeeReferralsRoute
   ApiAuthSplatRoute: typeof ApiAuthSplatRoute
+  ApiShopeeOgSplatRoute: typeof ApiShopeeOgSplatRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -281,6 +307,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DoaSlugRouteImport
       parentRoute: typeof DoaRouteRoute
     }
+    '/api/shopee-referrals': {
+      id: '/api/shopee-referrals'
+      path: '/api/shopee-referrals'
+      fullPath: '/api/shopee-referrals'
+      preLoaderRoute: typeof ApiShopeeReferralsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/shopee-og/$': {
+      id: '/api/shopee-og/$'
+      path: '/api/shopee-og/$'
+      fullPath: '/api/shopee-og/$'
+      preLoaderRoute: typeof ApiShopeeOgSplatRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/auth/$': {
       id: '/api/auth/$'
       path: '/api/auth/$'
@@ -316,7 +356,9 @@ const rootRouteChildren: RootRouteChildren = {
   PrivacyRoute: PrivacyRoute,
   RefundRoute: RefundRoute,
   TermsRoute: TermsRoute,
+  ApiShopeeReferralsRoute: ApiShopeeReferralsRoute,
   ApiAuthSplatRoute: ApiAuthSplatRoute,
+  ApiShopeeOgSplatRoute: ApiShopeeOgSplatRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
