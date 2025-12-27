@@ -26,6 +26,10 @@ import { Route as DashboardIndexRouteImport } from './routes/dashboard.index'
 import { Route as DoaSlugRouteImport } from './routes/doa.$slug'
 import { Route as DashboardDoaImageRouteImport } from './routes/dashboard.doa-image'
 import { Route as DashboardCreateDoaListRouteImport } from './routes/dashboard.create-doa-list'
+import { Route as ApiShopeeReferralsRouteImport } from './routes/api/shopee-referrals'
+import { Route as ApiDoaRouteImport } from './routes/api/doa'
+import { Route as ApiShopeeOgSplatRouteImport } from './routes/api/shopee-og/$'
+import { Route as ApiDoaRandomRouteImport } from './routes/api/doa/random'
 import { Route as ApiAuthSplatRouteImport } from './routes/api/auth/$'
 
 const TermsRoute = TermsRouteImport.update({
@@ -113,6 +117,26 @@ const DashboardCreateDoaListRoute = DashboardCreateDoaListRouteImport.update({
   path: '/create-doa-list',
   getParentRoute: () => DashboardRouteRoute,
 } as any)
+const ApiShopeeReferralsRoute = ApiShopeeReferralsRouteImport.update({
+  id: '/api/shopee-referrals',
+  path: '/api/shopee-referrals',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiDoaRoute = ApiDoaRouteImport.update({
+  id: '/api/doa',
+  path: '/api/doa',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiShopeeOgSplatRoute = ApiShopeeOgSplatRouteImport.update({
+  id: '/api/shopee-og/$',
+  path: '/api/shopee-og/$',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiDoaRandomRoute = ApiDoaRandomRouteImport.update({
+  id: '/random',
+  path: '/random',
+  getParentRoute: () => ApiDoaRoute,
+} as any)
 const ApiAuthSplatRoute = ApiAuthSplatRouteImport.update({
   id: '/api/auth/$',
   path: '/api/auth/$',
@@ -132,6 +156,8 @@ export interface FileRoutesByFullPath {
   '/privacy': typeof PrivacyRoute
   '/refund': typeof RefundRoute
   '/terms': typeof TermsRoute
+  '/api/doa': typeof ApiDoaRouteWithChildren
+  '/api/shopee-referrals': typeof ApiShopeeReferralsRoute
   '/dashboard/create-doa-list': typeof DashboardCreateDoaListRoute
   '/dashboard/doa-image': typeof DashboardDoaImageRoute
   '/doa/$slug': typeof DoaSlugRoute
@@ -152,6 +178,8 @@ export interface FileRoutesByTo {
   '/privacy': typeof PrivacyRoute
   '/refund': typeof RefundRoute
   '/terms': typeof TermsRoute
+  '/api/doa': typeof ApiDoaRouteWithChildren
+  '/api/shopee-referrals': typeof ApiShopeeReferralsRoute
   '/dashboard/create-doa-list': typeof DashboardCreateDoaListRoute
   '/dashboard/doa-image': typeof DashboardDoaImageRoute
   '/doa/$slug': typeof DoaSlugRoute
@@ -175,6 +203,8 @@ export interface FileRoutesById {
   '/privacy': typeof PrivacyRoute
   '/refund': typeof RefundRoute
   '/terms': typeof TermsRoute
+  '/api/doa': typeof ApiDoaRouteWithChildren
+  '/api/shopee-referrals': typeof ApiShopeeReferralsRoute
   '/dashboard/create-doa-list': typeof DashboardCreateDoaListRoute
   '/dashboard/doa-image': typeof DashboardDoaImageRoute
   '/doa/$slug': typeof DoaSlugRoute
@@ -199,6 +229,8 @@ export interface FileRouteTypes {
     | '/privacy'
     | '/refund'
     | '/terms'
+    | '/api/doa'
+    | '/api/shopee-referrals'
     | '/dashboard/create-doa-list'
     | '/dashboard/doa-image'
     | '/doa/$slug'
@@ -219,6 +251,8 @@ export interface FileRouteTypes {
     | '/privacy'
     | '/refund'
     | '/terms'
+    | '/api/doa'
+    | '/api/shopee-referrals'
     | '/dashboard/create-doa-list'
     | '/dashboard/doa-image'
     | '/doa/$slug'
@@ -241,10 +275,10 @@ export interface FileRouteTypes {
     | '/privacy'
     | '/refund'
     | '/terms'
-    | '/dashboard/create-doa-list'
-    | '/dashboard/doa-image'
     | '/api/doa'
     | '/api/shopee-referrals'
+    | '/dashboard/create-doa-list'
+    | '/dashboard/doa-image'
     | '/doa/$slug'
     | '/dashboard/'
     | '/doa/'
@@ -392,6 +426,7 @@ declare module '@tanstack/react-router' {
       fullPath: '/dashboard/create-doa-list'
       preLoaderRoute: typeof DashboardCreateDoaListRouteImport
       parentRoute: typeof DashboardRouteRoute
+    }
     '/api/shopee-referrals': {
       id: '/api/shopee-referrals'
       path: '/api/shopee-referrals'
