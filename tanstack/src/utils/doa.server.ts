@@ -1,46 +1,39 @@
-import fs from 'node:fs/promises'
-import path from 'node:path'
 import type { DoaItem } from '@/types/doa.types'
 
-// Path to DOA data file (relative to this file)
-const DOA_DATA_PATH = path.resolve(import.meta.dirname, '../../data/doa.json')
+// Static import - bundled by Vite into the server build
+import doaDataRaw from '../../data/doa.json'
 
-// In-memory cache for DOA data (avoids repeated file reads)
+// Type assertion for the imported JSON
+const doaData = doaDataRaw as DoaItem[]
+
+// In-memory cache for DOA data
 let cachedDoaData: DoaItem[] | null = null
 
 /**
- * Load DOA data from JSON file with caching
+ * Load DOA data from bundled JSON (cached)
  */
 export async function loadDoaData(): Promise<DoaItem[]> {
   if (cachedDoaData !== null) {
     return cachedDoaData
   }
 
-  try {
-    const fileContent = await fs.readFile(DOA_DATA_PATH, 'utf-8')
-    cachedDoaData = JSON.parse(fileContent) as DoaItem[]
-
-    if (!Array.isArray(cachedDoaData)) {
-      throw new Error('DOA data is not an array')
-    }
-
-    console.log('[DoaAPI] Loaded', cachedDoaData.length, 'doa items')
-    return cachedDoaData
-  } catch (error) {
-    const message = error instanceof Error ? error.message : 'Unknown error'
-    console.error('[DoaAPI] Failed to load DOA data:', message)
-    throw new Error(`Failed to load DOA data: ${message}`)
+  if (!Array.isArray(doaData)) {
+    throw new Error('DOA data is not an array')
   }
+
+  cachedDoaData = doaData
+  console.log('[DoaAPI] Loaded', cachedDoaData.length, 'doa items')
+  return cachedDoaData
 }
 
 /**
  * Get all unique categories from DOA data
  */
 export async function getDoaCategories(): Promise<string[]> {
-  const doaData = await loadDoaData()
+  const data = await loadDoaData()
   const categories = new Set<string>()
 
-  for (const item of doaData) {
+  for (const item of data) {
     if (item.category_names) {
       for (const category of item.category_names) {
         categories.add(category)
