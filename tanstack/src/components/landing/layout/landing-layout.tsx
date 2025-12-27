@@ -18,7 +18,7 @@ export function LandingLayout({
   return (
     <div className="min-h-screen bg-background text-foreground flex flex-col">
       <Navbar variant={navbarVariant} {...navbarProps} />
-      <main className="flex-1 pt-24 pb-16">{children}</main>
+      <main className="flex-1 pt-16 pb-16">{children}</main>
       <FooterSection />
     </div>
   )

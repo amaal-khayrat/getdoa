@@ -9,8 +9,8 @@ export const LANDING_CONTENT = {
     subtitle: 'Create Your Personalized Prayer',
     description:
       'Immerse yourself in a sanctuary of digital serenity. Access authentic Doa and curate your daily supplications.',
-    primaryCTA: 'Start Your Journey',
-    secondaryCTA: 'Go To Doa Library',
+    primaryCTA: 'Create Your Doa List',
+    secondaryCTA: 'See Doa Library',
   },
 
   features: {

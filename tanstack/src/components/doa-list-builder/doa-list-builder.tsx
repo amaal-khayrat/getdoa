@@ -1,4 +1,12 @@
-import React, { use, useCallback, useMemo, useReducer, useState, useEffect, useRef } from 'react'
+import React, {
+  use,
+  useCallback,
+  useMemo,
+  useReducer,
+  useState,
+  useEffect,
+  useRef,
+} from 'react'
 import { Download, Eye, AlertCircle, CheckCircle, X } from 'lucide-react'
 import { ResponsiveDoaLayout } from './responsive-layout'
 import type { DoaItem, DoaList, PreviewSettings } from '@/types/doa.types'
@@ -25,7 +33,13 @@ interface Notification {
   duration?: number
 }
 
-function Notification({ notification, onDismiss }: { notification: Notification; onDismiss: (id: string) => void }) {
+function Notification({
+  notification,
+  onDismiss,
+}: {
+  notification: Notification
+  onDismiss: (id: string) => void
+}) {
   useEffect(() => {
     const timer = setTimeout(() => {
       onDismiss(notification.id)
@@ -61,7 +75,9 @@ function Notification({ notification, onDismiss }: { notification: Notification;
   }
 
   return (
-    <div className={`fixed top-4 right-4 z-50 flex items-center gap-3 p-4 rounded-lg border shadow-lg ${getStyles()} max-w-md`}>
+    <div
+      className={`fixed top-4 right-4 z-50 flex items-center gap-3 p-4 rounded-lg border shadow-lg ${getStyles()} max-w-md`}
+    >
       {getIcon()}
       <span className="flex-1 text-sm font-medium">{notification.message}</span>
       <Button
@@ -78,7 +94,11 @@ function Notification({ notification, onDismiss }: { notification: Notification;
 
 // Notification provider context
 const NotificationContext = React.createContext<{
-  addNotification: (type: NotificationType, message: string, duration?: number) => void
+  addNotification: (
+    type: NotificationType,
+    message: string,
+    duration?: number,
+  ) => void
   dismissNotification: (id: string) => void
 }>({
   addNotification: () => {},
@@ -88,17 +108,22 @@ const NotificationContext = React.createContext<{
 function NotificationProvider({ children }: { children: React.ReactNode }) {
   const [notifications, setNotifications] = useState<Notification[]>([])
 
-  const addNotification = useCallback((type: NotificationType, message: string, duration?: number) => {
-    const id = Math.random().toString(36).substr(2, 9)
-    setNotifications((prev) => [...prev, { id, type, message, duration }])
-  }, [])
+  const addNotification = useCallback(
+    (type: NotificationType, message: string, duration?: number) => {
+      const id = Math.random().toString(36).substr(2, 9)
+      setNotifications((prev) => [...prev, { id, type, message, duration }])
+    },
+    [],
+  )
 
   const dismissNotification = useCallback((id: string) => {
     setNotifications((prev) => prev.filter((n) => n.id !== id))
   }, [])
 
   return (
-    <NotificationContext.Provider value={{ addNotification, dismissNotification }}>
+    <NotificationContext.Provider
+      value={{ addNotification, dismissNotification }}
+    >
       {children}
       {notifications.map((notification) => (
         <Notification
@@ -150,7 +175,10 @@ type DoaListAction =
   | { type: 'RESET_PAGE' }
 
 // Reducer function for state management
-function doaListReducer(state: DoaListState, action: DoaListAction): DoaListState {
+function doaListReducer(
+  state: DoaListState,
+  action: DoaListAction,
+): DoaListState {
   switch (action.type) {
     case 'UPDATE_STATE':
       return { ...state, ...action.payload }
@@ -168,7 +196,9 @@ function doaListReducer(state: DoaListState, action: DoaListAction): DoaListStat
     case 'REMOVE_PRAYER':
       return {
         ...state,
-        selectedPrayers: state.selectedPrayers.filter((p) => p.slug !== action.payload),
+        selectedPrayers: state.selectedPrayers.filter(
+          (p) => p.slug !== action.payload,
+        ),
       }
 
     case 'REORDER_PRAYERS':
@@ -268,7 +298,11 @@ const DoaListActionsContext = React.createContext<{
 })
 
 // Inner provider with access to notifications
-function DoaListProviderWithNotifications({ children }: { children: React.ReactNode }) {
+function DoaListProviderWithNotifications({
+  children,
+}: {
+  children: React.ReactNode
+}) {
   const { data: session } = useSession()
   const { language } = useLanguage()
   const { prayers } = useDoaData()
@@ -299,14 +333,17 @@ function DoaListProviderWithNotifications({ children }: { children: React.ReactN
     dispatch({ type: 'UPDATE_STATE', payload: updates })
   }, [])
 
-  const addPrayer = useCallback((prayer: DoaItem) => {
-    const currentState = state // Capture current state for limit check
-    if (currentState.selectedPrayers.length >= 15) {
-      addNotification('warning', 'Maximum 15 prayers allowed')
-      return
-    }
-    dispatch({ type: 'ADD_PRAYER', payload: prayer })
-  }, [state.selectedPrayers.length, addNotification])
+  const addPrayer = useCallback(
+    (prayer: DoaItem) => {
+      const currentState = state // Capture current state for limit check
+      if (currentState.selectedPrayers.length >= 15) {
+        addNotification('warning', 'Maximum 15 prayers allowed')
+        return
+      }
+      dispatch({ type: 'ADD_PRAYER', payload: prayer })
+    },
+    [state.selectedPrayers.length, addNotification],
+  )
 
   const removePrayer = useCallback((slug: string) => {
     dispatch({ type: 'REMOVE_PRAYER', payload: slug })
@@ -392,7 +429,10 @@ function DoaListProviderWithNotifications({ children }: { children: React.ReactN
 
   useEffect(() => {
     if (state.language !== language) {
-      dispatch({ type: 'UPDATE_STATE', payload: { language: language as 'en' | 'my' } })
+      dispatch({
+        type: 'UPDATE_STATE',
+        payload: { language: language as 'en' | 'my' },
+      })
     }
   }, [language, state.language])
 
@@ -412,7 +452,11 @@ function DoaListProviderWithNotifications({ children }: { children: React.ReactN
         },
       })
     }
-  }, [state.user.username, state.previewSettings.attribution.username, state.previewSettings])
+  }, [
+    state.user.username,
+    state.previewSettings.attribution.username,
+    state.previewSettings,
+  ])
 
   return (
     <DoaListStateContext.Provider value={state}>
@@ -574,7 +618,7 @@ function DoaListBuilderContent() {
   return (
     <div className="min-h-screen bg-background">
       {/* Simple Page Header */}
-      <div className="bg-background/95 backdrop-blur supports-backdrop-filter:bg-background/60">
+      <div className="bg-background/95 backdrop-blur pt-8 supports-backdrop-filter:bg-background/60">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-6">
           {/* Mobile Layout - Stacked */}
           <div className="flex flex-col sm:hidden gap-4">

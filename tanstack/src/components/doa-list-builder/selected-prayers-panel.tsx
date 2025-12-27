@@ -153,7 +153,7 @@ export function SelectedPrayersPanel({
   }
 
   return (
-    <div className="bg-card rounded-lg border h-full flex flex-col">
+    <div className="bg-card rounded-lg border h-full flex flex-col overflow-hidden">
       {/* Header */}
       <div className="p-4 border-b">
         <div className="space-y-3">
@@ -180,7 +180,7 @@ export function SelectedPrayersPanel({
       </div>
 
       {/* Prayers List */}
-      <div className="flex-1 overflow-y-auto p-4">
+      <div className="flex-1 overflow-y-auto p-4 min-h-0">
         {selectedPrayers.length === 0 ? (
           <div className="h-full flex flex-col items-center justify-center text-center">
             <div className="w-16 h-16 rounded-full bg-muted flex items-center justify-center mb-4">
