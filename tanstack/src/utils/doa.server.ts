@@ -3,7 +3,7 @@ import path from 'node:path'
 import type { DoaItem } from '@/types/doa.types'
 
 // Path to DOA data file (relative to this file)
-const DOA_DATA_PATH = path.resolve(import.meta.dirname, '../data/doa.json')
+const DOA_DATA_PATH = path.resolve(import.meta.dirname, '../../data/doa.json')
 
 // In-memory cache for DOA data (avoids repeated file reads)
 let cachedDoaData: DoaItem[] | null = null
@@ -76,7 +76,7 @@ export interface PaginatedDoaResponse {
  */
 export async function getPaginatedDoa(
   page: number,
-  limit: number
+  limit: number,
 ): Promise<PaginatedDoaResponse> {
   const allDoa = await loadDoaData()
 
@@ -107,9 +107,7 @@ export async function getPaginatedDoa(
 /**
  * Get a random DOA item, optionally filtered by category
  */
-export async function getRandomDoa(
-  category?: string
-): Promise<DoaItem | null> {
+export async function getRandomDoa(category?: string): Promise<DoaItem | null> {
   const allDoa = await loadDoaData()
 
   // If no category specified, return random from all
@@ -121,8 +119,8 @@ export async function getRandomDoa(
   // Filter by category (case-insensitive)
   const filteredDoa = allDoa.filter((item) =>
     item.category_names?.some(
-      (cat) => cat.toLowerCase() === category.toLowerCase()
-    )
+      (cat) => cat.toLowerCase() === category.toLowerCase(),
+    ),
   )
 
   if (filteredDoa.length === 0) {
@@ -138,7 +136,7 @@ export async function getRandomDoa(
  */
 export async function getRandomDoaBatch(
   count: number,
-  category?: string
+  category?: string,
 ): Promise<DoaItem[]> {
   const allDoa = await loadDoaData()
 
@@ -148,8 +146,8 @@ export async function getRandomDoaBatch(
   if (category) {
     pool = allDoa.filter((item) =>
       item.category_names?.some(
-        (cat) => cat.toLowerCase() === category.toLowerCase()
-      )
+        (cat) => cat.toLowerCase() === category.toLowerCase(),
+      ),
     )
   }
 
