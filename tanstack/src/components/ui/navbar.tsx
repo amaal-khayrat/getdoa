@@ -70,19 +70,21 @@ export function Navbar({
         <p className="font-medium text-sm text-foreground">{userName}</p>
       </div>
       <DropdownMenu>
-        <DropdownMenuTrigger asChild>
-          <Button
-            variant="ghost"
-            size="icon-sm"
-            className="h-8 w-8"
-            aria-label="User menu"
-          >
-            <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-            </svg>
-          </Button>
+        <DropdownMenuTrigger
+          render={
+            <Button
+              variant="ghost"
+              size="icon-sm"
+              className="h-8 w-8"
+              aria-label="User menu"
+            />
+          }
+        >
+          <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+          </svg>
         </DropdownMenuTrigger>
-        <DropdownMenuContent className="w-56" align="end" forceMount>
+        <DropdownMenuContent className="w-56" align="end">
           <div className="flex items-center justify-start gap-2 p-2">
             <div className="flex flex-col space-y-1 leading-none">
               {userName && <p className="font-medium text-sm">{userName}</p>}
@@ -94,10 +96,8 @@ export function Navbar({
             </div>
           </div>
           <DropdownMenuSeparator />
-          <DropdownMenuItem asChild>
-            <Link to="/profile" className="cursor-pointer">
-              Profile
-            </Link>
+          <DropdownMenuItem render={<Link to="/profile" />} className="cursor-pointer">
+            Profile
           </DropdownMenuItem>
           <DropdownMenuItem onClick={handleSignOut} className="cursor-pointer">
             Sign out
@@ -142,9 +142,9 @@ export function Navbar({
                 variant="primary-gradient"
                 size="default"
                 className="font-medium px-6 shadow-green hover:shadow-green-lg hover:-translate-y-0.5 transition-all duration-300"
-                asChild
+                render={<Link to="/login" />}
               >
-                <Link to="/login">Sign In with Google</Link>
+                Sign In with Google
               </Button>
             )
           ) : (
@@ -194,9 +194,9 @@ export function Navbar({
                   variant="green-outline"
                   size="default"
                   className="font-medium px-4"
-                  asChild
+                  render={<Link to="/login" />}
                 >
-                  <Link to="/login">Sign In with Google</Link>
+                  Sign In with Google
                 </Button>
               )}
             </>
@@ -262,11 +262,9 @@ export function Navbar({
                   <Button
                     variant="primary-gradient"
                     className="w-full font-medium py-3 shadow-green hover:shadow-green-lg transition-all duration-300"
-                    asChild
+                    render={<Link to="/login" onClick={handleLinkClick} />}
                   >
-                    <Link to="/login" onClick={handleLinkClick}>
-                      Sign In with Google
-                    </Link>
+                    Sign In with Google
                   </Button>
                 )
               ) : (
@@ -329,11 +327,9 @@ export function Navbar({
                     <Button
                       variant="green-outline"
                       className="w-full font-medium py-3 shadow-green hover:shadow-green-lg transition-all duration-300"
-                      asChild
+                      render={<Link to="/login" onClick={handleLinkClick} />}
                     >
-                      <Link to="/login" onClick={handleLinkClick}>
-                        Sign In with Google
-                      </Link>
+                      Sign In with Google
                     </Button>
                   )}
                 </>

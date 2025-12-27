@@ -70,8 +70,8 @@ export function TermsPage() {
             <p className="text-sm text-muted-foreground mb-4">
               Questions about our terms? We're here to help.
             </p>
-            <Button asChild variant="ghost">
-              <a href="/contact">Contact Support</a>
+            <Button render={<a href="/contact" />} variant="ghost">
+              Contact Support
             </Button>
           </div>
         </div>

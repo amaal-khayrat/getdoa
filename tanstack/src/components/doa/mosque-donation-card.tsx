@@ -101,12 +101,12 @@ export function MosqueDonationCard({
               Verify the QR code&apos;s validity or visit
               <SiteLink url={SITE_URL} /> for trusted options.
             </p>
-            <p className="flex pt-4 text-xs text-gray-600">
+            <div className="flex pt-4 text-xs text-gray-600">
               <img src={masjid} alt="Masjid Icon" className="h-9 w-9 mr-2" />
-              <p className="flex items-center mt-1">
+              <span className="flex items-center mt-1">
                 Powered by <SiteLink url={SITE_URL} />
-              </p>
-            </p>
+              </span>
+            </div>
           </Section>
         </div>
       </CardContent>

@@ -433,11 +433,11 @@ export function PricingPage() {
               Still have questions? We're here to help.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Button asChild>
-                <a href="/contact">Contact Support</a>
+              <Button render={<a href="/contact" />}>
+                Contact Support
               </Button>
-              <Button asChild variant="outline">
-                <a href="/refund">View Refund Policy</a>
+              <Button render={<a href="/refund" />} variant="outline">
+                View Refund Policy
               </Button>
             </div>
           </div>
