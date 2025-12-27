@@ -1,5 +1,13 @@
 import { relations } from 'drizzle-orm'
-import { boolean, index, pgTable, text, timestamp } from 'drizzle-orm/pg-core'
+import {
+  boolean,
+  index,
+  integer,
+  pgTable,
+  text,
+  timestamp,
+  unique,
+} from 'drizzle-orm/pg-core'
 
 export const user = pgTable('user', {
   id: text('id').primaryKey(),
@@ -73,9 +81,51 @@ export const verification = pgTable(
   (table) => [index('verification_identifier_idx').on(table.identifier)],
 )
 
+// Space - a collection of doas belonging to a user
+export const space = pgTable(
+  'space',
+  {
+    id: text('id')
+      .primaryKey()
+      .$defaultFn(() => crypto.randomUUID()),
+    userId: text('user_id')
+      .notNull()
+      .references(() => user.id, { onDelete: 'cascade' }),
+    name: text('name').notNull(),
+    icon: text('icon').default('BookOpen'),
+    createdAt: timestamp('created_at').defaultNow().notNull(),
+    updatedAt: timestamp('updated_at')
+      .defaultNow()
+      .$onUpdate(() => /* @__PURE__ */ new Date())
+      .notNull(),
+  },
+  (table) => [index('space_userId_idx').on(table.userId)],
+)
+
+// SpaceDoa - junction table linking spaces to doa slugs
+export const spaceDoa = pgTable(
+  'space_doa',
+  {
+    id: text('id')
+      .primaryKey()
+      .$defaultFn(() => crypto.randomUUID()),
+    spaceId: text('space_id')
+      .notNull()
+      .references(() => space.id, { onDelete: 'cascade' }),
+    doaSlug: text('doa_slug').notNull(),
+    order: integer('order').default(0).notNull(),
+    addedAt: timestamp('added_at').defaultNow().notNull(),
+  },
+  (table) => [
+    index('spaceDoa_spaceId_idx').on(table.spaceId),
+    unique('spaceDoa_spaceId_doaSlug_unique').on(table.spaceId, table.doaSlug),
+  ],
+)
+
 export const userRelations = relations(user, ({ many }) => ({
   sessions: many(session),
   accounts: many(account),
+  spaces: many(space),
 }))
 
 export const sessionRelations = relations(session, ({ one }) => ({
@@ -89,5 +139,20 @@ export const accountRelations = relations(account, ({ one }) => ({
   user: one(user, {
     fields: [account.userId],
     references: [user.id],
+  }),
+}))
+
+export const spaceRelations = relations(space, ({ one, many }) => ({
+  user: one(user, {
+    fields: [space.userId],
+    references: [user.id],
+  }),
+  doaItems: many(spaceDoa),
+}))
+
+export const spaceDoaRelations = relations(spaceDoa, ({ one }) => ({
+  space: one(space, {
+    fields: [spaceDoa.spaceId],
+    references: [space.id],
   }),
 }))

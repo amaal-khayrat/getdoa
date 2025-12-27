@@ -270,16 +270,16 @@ export function ContactPage() {
                     questions, support, or feedback.
                   </p>
                   <Button
-                    asChild
                     className="w-full bg-gradient-to-r from-teal-500 to-emerald-600 hover:from-teal-600 hover:to-emerald-700"
+                    render={
+                      <a
+                        href={`mailto:${contactContent.information.email}`}
+                        className="flex items-center justify-center"
+                      />
+                    }
                   >
-                    <a
-                      href={`mailto:${contactContent.information.email}`}
-                      className="flex items-center justify-center"
-                    >
-                      <Mail className="w-4 h-4 mr-2" />
-                      Email
-                    </a>
+                    <Mail className="w-4 h-4 mr-2" />
+                    Email
                   </Button>
                 </CardContent>
               </Card>
@@ -292,43 +292,39 @@ export function ContactPage() {
                   </h3>
                   <div className="space-y-3">
                     <Button
-                      asChild
                       variant="ghost"
                       className="w-full justify-start text-left h-auto p-4"
+                      render={<a href="/pricing" className="flex items-center gap-3" />}
                     >
-                      <a href="/pricing" className="flex items-center gap-3">
-                        <div className="w-8 h-8 rounded-lg bg-teal-100 dark:bg-teal-900/30 text-teal-600 dark:text-teal-400 flex items-center justify-center">
-                          <span className="text-xs font-bold">P</span>
+                      <div className="w-8 h-8 rounded-lg bg-teal-100 dark:bg-teal-900/30 text-teal-600 dark:text-teal-400 flex items-center justify-center">
+                        <span className="text-xs font-bold">P</span>
+                      </div>
+                      <div>
+                        <div className="font-medium text-foreground">
+                          View Pricing Plans
                         </div>
-                        <div>
-                          <div className="font-medium text-foreground">
-                            View Pricing Plans
-                          </div>
-                          <div className="text-sm text-muted-foreground">
-                            Compare our subscription options
-                          </div>
+                        <div className="text-sm text-muted-foreground">
+                          Compare our subscription options
                         </div>
-                      </a>
+                      </div>
                     </Button>
 
                     <Button
-                      asChild
                       variant="ghost"
                       className="w-full justify-start text-left h-auto p-4"
+                      render={<a href="/refund" className="flex items-center gap-3" />}
                     >
-                      <a href="/refund" className="flex items-center gap-3">
-                        <div className="w-8 h-8 rounded-lg bg-emerald-100 dark:bg-emerald-900/30 text-emerald-600 dark:text-emerald-400 flex items-center justify-center">
-                          <span className="text-xs font-bold">R</span>
+                      <div className="w-8 h-8 rounded-lg bg-emerald-100 dark:bg-emerald-900/30 text-emerald-600 dark:text-emerald-400 flex items-center justify-center">
+                        <span className="text-xs font-bold">R</span>
+                      </div>
+                      <div>
+                        <div className="font-medium text-foreground">
+                          Refund Policy
                         </div>
-                        <div>
-                          <div className="font-medium text-foreground">
-                            Refund Policy
-                          </div>
-                          <div className="text-sm text-muted-foreground">
-                            Learn about our 14-day guarantee
-                          </div>
+                        <div className="text-sm text-muted-foreground">
+                          Learn about our 14-day guarantee
                         </div>
-                      </a>
+                      </div>
                     </Button>
                   </div>
                 </CardContent>

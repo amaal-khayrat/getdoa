@@ -149,9 +149,9 @@ export function RefundPage() {
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Button
                 className="bg-gradient-to-r from-teal-500 to-emerald-600 hover:from-teal-600 hover:to-emerald-700"
-                asChild
+                render={<a href="mailto:hazqeel@ellzaf.com" />}
               >
-                <a href="mailto:hazqeel@ellzaf.com">Email Support Team</a>
+                Email Support Team
               </Button>
             </div>
           </CardContent>
