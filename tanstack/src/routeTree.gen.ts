@@ -22,7 +22,9 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as DoaIndexRouteImport } from './routes/doa.index'
 import { Route as DoaSlugRouteImport } from './routes/doa.$slug'
 import { Route as ApiShopeeReferralsRouteImport } from './routes/api/shopee-referrals'
+import { Route as ApiDoaRouteImport } from './routes/api/doa'
 import { Route as ApiShopeeOgSplatRouteImport } from './routes/api/shopee-og/$'
+import { Route as ApiDoaRandomRouteImport } from './routes/api/doa/random'
 import { Route as ApiAuthSplatRouteImport } from './routes/api/auth/$'
 
 const TermsRoute = TermsRouteImport.update({
@@ -90,10 +92,20 @@ const ApiShopeeReferralsRoute = ApiShopeeReferralsRouteImport.update({
   path: '/api/shopee-referrals',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiDoaRoute = ApiDoaRouteImport.update({
+  id: '/api/doa',
+  path: '/api/doa',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiShopeeOgSplatRoute = ApiShopeeOgSplatRouteImport.update({
   id: '/api/shopee-og/$',
   path: '/api/shopee-og/$',
   getParentRoute: () => rootRouteImport,
+} as any)
+const ApiDoaRandomRoute = ApiDoaRandomRouteImport.update({
+  id: '/random',
+  path: '/random',
+  getParentRoute: () => ApiDoaRoute,
 } as any)
 const ApiAuthSplatRoute = ApiAuthSplatRouteImport.update({
   id: '/api/auth/$',
@@ -112,10 +124,12 @@ export interface FileRoutesByFullPath {
   '/privacy': typeof PrivacyRoute
   '/refund': typeof RefundRoute
   '/terms': typeof TermsRoute
+  '/api/doa': typeof ApiDoaRouteWithChildren
   '/api/shopee-referrals': typeof ApiShopeeReferralsRoute
   '/doa/$slug': typeof DoaSlugRoute
   '/doa/': typeof DoaIndexRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
+  '/api/doa/random': typeof ApiDoaRandomRoute
   '/api/shopee-og/$': typeof ApiShopeeOgSplatRoute
 }
 export interface FileRoutesByTo {
@@ -128,10 +142,12 @@ export interface FileRoutesByTo {
   '/privacy': typeof PrivacyRoute
   '/refund': typeof RefundRoute
   '/terms': typeof TermsRoute
+  '/api/doa': typeof ApiDoaRouteWithChildren
   '/api/shopee-referrals': typeof ApiShopeeReferralsRoute
   '/doa/$slug': typeof DoaSlugRoute
   '/doa': typeof DoaIndexRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
+  '/api/doa/random': typeof ApiDoaRandomRoute
   '/api/shopee-og/$': typeof ApiShopeeOgSplatRoute
 }
 export interface FileRoutesById {
@@ -146,10 +162,12 @@ export interface FileRoutesById {
   '/privacy': typeof PrivacyRoute
   '/refund': typeof RefundRoute
   '/terms': typeof TermsRoute
+  '/api/doa': typeof ApiDoaRouteWithChildren
   '/api/shopee-referrals': typeof ApiShopeeReferralsRoute
   '/doa/$slug': typeof DoaSlugRoute
   '/doa/': typeof DoaIndexRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
+  '/api/doa/random': typeof ApiDoaRandomRoute
   '/api/shopee-og/$': typeof ApiShopeeOgSplatRoute
 }
 export interface FileRouteTypes {
@@ -165,10 +183,12 @@ export interface FileRouteTypes {
     | '/privacy'
     | '/refund'
     | '/terms'
+    | '/api/doa'
     | '/api/shopee-referrals'
     | '/doa/$slug'
     | '/doa/'
     | '/api/auth/$'
+    | '/api/doa/random'
     | '/api/shopee-og/$'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -181,10 +201,12 @@ export interface FileRouteTypes {
     | '/privacy'
     | '/refund'
     | '/terms'
+    | '/api/doa'
     | '/api/shopee-referrals'
     | '/doa/$slug'
     | '/doa'
     | '/api/auth/$'
+    | '/api/doa/random'
     | '/api/shopee-og/$'
   id:
     | '__root__'
@@ -198,10 +220,12 @@ export interface FileRouteTypes {
     | '/privacy'
     | '/refund'
     | '/terms'
+    | '/api/doa'
     | '/api/shopee-referrals'
     | '/doa/$slug'
     | '/doa/'
     | '/api/auth/$'
+    | '/api/doa/random'
     | '/api/shopee-og/$'
   fileRoutesById: FileRoutesById
 }
@@ -216,6 +240,7 @@ export interface RootRouteChildren {
   PrivacyRoute: typeof PrivacyRoute
   RefundRoute: typeof RefundRoute
   TermsRoute: typeof TermsRoute
+  ApiDoaRoute: typeof ApiDoaRouteWithChildren
   ApiShopeeReferralsRoute: typeof ApiShopeeReferralsRoute
   ApiAuthSplatRoute: typeof ApiAuthSplatRoute
   ApiShopeeOgSplatRoute: typeof ApiShopeeOgSplatRoute
@@ -314,12 +339,26 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiShopeeReferralsRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/doa': {
+      id: '/api/doa'
+      path: '/api/doa'
+      fullPath: '/api/doa'
+      preLoaderRoute: typeof ApiDoaRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/shopee-og/$': {
       id: '/api/shopee-og/$'
       path: '/api/shopee-og/$'
       fullPath: '/api/shopee-og/$'
       preLoaderRoute: typeof ApiShopeeOgSplatRouteImport
       parentRoute: typeof rootRouteImport
+    }
+    '/api/doa/random': {
+      id: '/api/doa/random'
+      path: '/random'
+      fullPath: '/api/doa/random'
+      preLoaderRoute: typeof ApiDoaRandomRouteImport
+      parentRoute: typeof ApiDoaRoute
     }
     '/api/auth/$': {
       id: '/api/auth/$'
@@ -345,6 +384,17 @@ const DoaRouteRouteWithChildren = DoaRouteRoute._addFileChildren(
   DoaRouteRouteChildren,
 )
 
+interface ApiDoaRouteChildren {
+  ApiDoaRandomRoute: typeof ApiDoaRandomRoute
+}
+
+const ApiDoaRouteChildren: ApiDoaRouteChildren = {
+  ApiDoaRandomRoute: ApiDoaRandomRoute,
+}
+
+const ApiDoaRouteWithChildren =
+  ApiDoaRoute._addFileChildren(ApiDoaRouteChildren)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   DoaRouteRoute: DoaRouteRouteWithChildren,
@@ -356,6 +406,7 @@ const rootRouteChildren: RootRouteChildren = {
   PrivacyRoute: PrivacyRoute,
   RefundRoute: RefundRoute,
   TermsRoute: TermsRoute,
+  ApiDoaRoute: ApiDoaRouteWithChildren,
   ApiShopeeReferralsRoute: ApiShopeeReferralsRoute,
   ApiAuthSplatRoute: ApiAuthSplatRoute,
   ApiShopeeOgSplatRoute: ApiShopeeOgSplatRoute,
