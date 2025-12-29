@@ -16,3 +16,11 @@ export const auth = betterAuth({
     },
   },
 })
+
+// Get session from request (server-side)
+export async function getSessionFromRequest(request: Request) {
+  const session = await auth.api.getSession({
+    headers: request.headers,
+  })
+  return session
+}

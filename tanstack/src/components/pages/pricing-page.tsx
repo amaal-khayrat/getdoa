@@ -1,8 +1,13 @@
-import { ArrowRight, Check, HelpCircle, Star, X } from 'lucide-react'
+import { ArrowRight, Check, HelpCircle, Star, X, Loader2 } from 'lucide-react'
+import { useState } from 'react'
+import { useNavigate } from '@tanstack/react-router'
 import { Card, CardContent } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { LANDING_CONTENT } from '@/lib/constants'
+import { useSession } from '@/lib/auth-client'
+import { useSubscription } from '@/hooks/useSubscription'
+import { toast } from 'sonner'
 
 // Reusable component for contribution cards
 function ContributionCard({
@@ -81,6 +86,52 @@ function ContributorCallout() {
 
 export function PricingPage() {
   const pricingContent = LANDING_CONTENT.pages.pricing
+  const navigate = useNavigate()
+  const { data: session } = useSession()
+  const { isSubscribed, isLoading: isSubscriptionLoading, createSubscription } = useSubscription()
+  const [isCreatingSubscription, setIsCreatingSubscription] = useState(false)
+
+  const handleSubscribe = async () => {
+    // Redirect to login if not authenticated
+    if (!session?.user) {
+      toast.info('Please sign in to subscribe')
+      navigate({ to: '/login' })
+      return
+    }
+
+    // Already subscribed
+    if (isSubscribed) {
+      toast.info('You already have an active subscription')
+      navigate({ to: '/dashboard' })
+      return
+    }
+
+    try {
+      setIsCreatingSubscription(true)
+      await createSubscription()
+      // User will be redirected to Razorpay checkout
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : 'Failed to create subscription')
+    } finally {
+      setIsCreatingSubscription(false)
+    }
+  }
+
+  const handleGetStarted = (planName: string) => {
+    if (planName === 'Free') {
+      // Navigate to dashboard or signup
+      if (session?.user) {
+        navigate({ to: '/dashboard' })
+      } else {
+        navigate({ to: '/login' })
+      }
+    } else if (planName === 'Unlimited Access') {
+      handleSubscribe()
+    } else {
+      // Basic and Complete are one-time purchases, not implemented yet
+      toast.info('Coming soon! For now, subscribe to Unlimited Access for the best value.')
+    }
+  }
 
   return (
     <div className="min-h-screen">
@@ -185,11 +236,33 @@ export function PricingPage() {
                             ? 'default'
                             : 'outline'
                         }
+                        onClick={() => handleGetStarted(plan.name)}
+                        disabled={
+                          (plan.name === 'Unlimited Access' && (isCreatingSubscription || isSubscriptionLoading)) ||
+                          (plan.name === 'Unlimited Access' && isSubscribed)
+                        }
                       >
-                        {plan.name === 'Free'
-                          ? 'Get Started Free'
-                          : 'Get Started'}
-                        <ArrowRight className="w-4 h-4 ml-2" />
+                        {plan.name === 'Unlimited Access' && isCreatingSubscription ? (
+                          <>
+                            <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                            Processing...
+                          </>
+                        ) : plan.name === 'Unlimited Access' && isSubscribed ? (
+                          <>
+                            <Check className="w-4 h-4 mr-2" />
+                            Subscribed
+                          </>
+                        ) : plan.name === 'Free' ? (
+                          <>
+                            Get Started Free
+                            <ArrowRight className="w-4 h-4 ml-2" />
+                          </>
+                        ) : (
+                          <>
+                            Get Started
+                            <ArrowRight className="w-4 h-4 ml-2" />
+                          </>
+                        )}
                       </Button>
                     </div>
                   </CardContent>
