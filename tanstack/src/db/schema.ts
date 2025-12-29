@@ -126,6 +126,8 @@ export const userRelations = relations(user, ({ many }) => ({
   sessions: many(session),
   accounts: many(account),
   spaces: many(space),
+  subscriptions: many(subscription),
+  payments: many(payment),
 }))
 
 export const sessionRelations = relations(session, ({ one }) => ({
@@ -154,5 +156,70 @@ export const spaceDoaRelations = relations(spaceDoa, ({ one }) => ({
   space: one(space, {
     fields: [spaceDoa.spaceId],
     references: [space.id],
+  }),
+}))
+
+// Subscription - Razorpay subscription for Unlimited Access
+export const subscription = pgTable(
+  'subscription',
+  {
+    id: text('id').primaryKey(), // Razorpay subscription ID (sub_xxx)
+    userId: text('user_id')
+      .notNull()
+      .references(() => user.id, { onDelete: 'cascade' }),
+    planId: text('plan_id').notNull(), // Razorpay plan ID
+    status: text('status').notNull().default('created'), // created, authenticated, active, pending, halted, paused, cancelled, expired, completed
+    currentPeriodStart: timestamp('current_period_start'),
+    currentPeriodEnd: timestamp('current_period_end'),
+    chargeAt: timestamp('charge_at'),
+    totalCount: integer('total_count'), // Total billing cycles
+    paidCount: integer('paid_count').default(0),
+    shortUrl: text('short_url'), // Payment authorization URL
+    createdAt: timestamp('created_at').defaultNow().notNull(),
+    updatedAt: timestamp('updated_at')
+      .defaultNow()
+      .$onUpdate(() => new Date())
+      .notNull(),
+  },
+  (table) => [index('subscription_userId_idx').on(table.userId)],
+)
+
+// Payment - Transaction log for subscription payments
+export const payment = pgTable(
+  'payment',
+  {
+    id: text('id').primaryKey(), // Razorpay payment ID (pay_xxx)
+    subscriptionId: text('subscription_id').references(() => subscription.id),
+    userId: text('user_id')
+      .notNull()
+      .references(() => user.id, { onDelete: 'cascade' }),
+    amount: integer('amount').notNull(), // In smallest currency unit (sen)
+    currency: text('currency').default('MYR'),
+    status: text('status').notNull(), // captured, failed, refunded
+    method: text('method'), // fpx, card, wallet
+    createdAt: timestamp('created_at').defaultNow().notNull(),
+  },
+  (table) => [
+    index('payment_userId_idx').on(table.userId),
+    index('payment_subscriptionId_idx').on(table.subscriptionId),
+  ],
+)
+
+export const subscriptionRelations = relations(subscription, ({ one, many }) => ({
+  user: one(user, {
+    fields: [subscription.userId],
+    references: [user.id],
+  }),
+  payments: many(payment),
+}))
+
+export const paymentRelations = relations(payment, ({ one }) => ({
+  user: one(user, {
+    fields: [payment.userId],
+    references: [user.id],
+  }),
+  subscription: one(subscription, {
+    fields: [payment.subscriptionId],
+    references: [subscription.id],
   }),
 }))
