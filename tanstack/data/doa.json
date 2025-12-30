@@ -1580,5 +1580,52 @@
     "description_en": "This supplication is narrated from the Prophet Muhammad (peace be upon him), seeking a good outcome in all affairs and protection from worldly disgrace and hereafter punishment.",
     "context_my": "Dibaca untuk memohon agar segala urusan diakhiri dengan baik dan dilindungi dari segala kehinaan.",
     "context_en": "Recited to seek that all affairs end well and to be protected from all humiliations."
+  },
+  [
+  {
+    "name_my": "Doa Ketika Ditimpa Musibah",
+    "name_en": "Dua When Afflicted by a Calamity",
+    "content": "إِنَّا لِلَّهِ وَإِنَّا إِلَيْهِ رَاجِعُونَ اللَّهُمَّ أْجُرْنِي فِي مُصِيبَتِي وَأَخْلِفْ لِي خَيْرًا مِنْهَا",
+    "reference_my": "Riwayat Sahih Muslim (918)",
+    "reference_en": "Narrated in Sahih Muslim (918)",
+    "meaning_my": "Sesungguhnya kami adalah kepunyaan Allah dan kepada-Nya jualah kami kembali. Ya Allah, berilah aku pahala pada musibah yang menimpaku ini, dan berilah ganti kepadaku yang lebih baik daripadanya.",
+    "meaning_en": "We belong to Allah and to Him we shall return. O Allah, reward me for my affliction and give me something better than it in exchange.",
+    "category_names": ["Musibah", "Calamity", "Kesabaran", "Patience", "Pahala", "Reward", "Penggantian", "Compensation"],
+    "slug": "doa-ketika-ditimpa-musibah",
+    "description_my": "Doa ini diriwayatkan daripada Ummu Salamah RA, memohon pahala dan pengganti yang lebih baik ketika ditimpa musibah.",
+    "description_en": "This supplication is narrated from Umm Salamah RA, seeking reward and a better replacement when afflicted by a calamity.",
+    "context_my": "Dibaca ketika menghadapi musibah, kehilangan atau kesulitan.",
+    "context_en": "Recited when facing calamity, loss, or hardship."
+  },
+  {
+    "name_my": "Doa Solat Jenazah Lelaki",
+    "name_en": "Dua for Funeral Prayer for Male",
+    "content": "اللَّهُمَّ اغْفِرْ لَهُ وَارْحَمْهُ وَعَافِهِ وَاعْفُ عَنْهُ وَأَكْرِمْ نُزُلَهُ وَوَسِّعْ مُدْخَلَهُ وَاغْسِلْهُ بِالْمَاءِ وَالثَّلْجِ وَالْبَرَدِ وَنَقِّهِ مِنَ الْخَطَايَا كَمَا نَقَّيْتَ الثَّوْبَ الأَبْيَضَ مِنَ الدَّنَسِ وَأَبْدِلْهُ دَارًا خَيْرًا مِنْ دَارِهِ وَأَهْلاً خَيْرًا مِنْ أَهْلِهِ وَزَوْجًا خَيْرًا مِنْ زَوْجِهِ وَأَدْخِلْهُ الْجَنَّةَ وَأَعِذْهُ مِنْ عَذَابِ الْقَبْرِ وَعَذَابِ النَّارِ",
+    "reference_my": "Riwayat Muslim (963)",
+    "reference_en": "Narrated in Muslim (963)",
+    "meaning_my": "Ya Allah, ampunilah dia, rahmatilah dia, selamatkanlah dia, maafkanlah dia, muliakanlah tempat tinggalnya, luaskanlah tempat masuknya, cucilah dia dengan air, salji dan embun, bersihkanlah dia dari kesalahan-kesalahan sebagaimana Engkau membersihkan baju putih dari kotoran, gantikanlah baginya rumah yang lebih baik dari rumahnya, keluarga yang lebih baik dari keluarganya, pasangan yang lebih baik dari pasangannya, masukkanlah dia ke dalam syurga dan lindungilah dia dari azab kubur dan azab neraka.",
+    "meaning_en": "O Allah, forgive him and have mercy on him, and give him strength and pardon him. Be generous to him, and cause his entrance to be wide, and wash him with water and snow and hail. Cleanse him of his transgressions as white cloth is cleansed of stains. Give him an abode better than his home, and a family better than his family, and a wife better than his wife. Take him into Paradise and protect him from the punishment of the grave and from the punishment of Hell-fire.",
+    "category_names": ["Jenazah", "Funeral", "Lelaki", "Male", "Ampunan", "Forgiveness", "Rahmat", "Mercy"],
+    "slug": "doa-solat-jenazah-lelaki",
+    "description_my": "Doa ini dibaca semasa solat jenazah untuk lelaki dewasa, memohon ampunan, rahmat dan syurga daripada Allah.",
+    "description_en": "This supplication is recited during the funeral prayer for an adult male, seeking forgiveness, mercy, and Paradise from Allah.",
+    "context_my": "Dibaca selepas takbir ketiga dalam solat jenazah lelaki.",
+    "context_en": "Recited after the third takbir in the male funeral prayer."
+  },
+  {
+    "name_my": "Doa Solat Jenazah Perempuan",
+    "name_en": "Dua for Funeral Prayer for Female",
+    "content": "اللَّهُمَّ اغْفِرْ لَهَا وَارْحَمْهَا وَعَافِهَا وَاعْفُ عَنْهَا وَأَكْرِمْ نُزُلَهَا وَوَسِّعْ مُدْخَلَهَا وَاغْسِلْهَا بِالْمَاءِ وَالثَّلْجِ وَالْبَرَدِ وَنَقِّهَا مِنَ الْخَطَايَا كَمَا نَقَّيْتَ الثَّوْبَ الأَبْيَضَ مِنَ الدَّنَسِ وَأَبْدِلْهَا دَارًا خَيْرًا مِنْ دَارِهَا وَأَهْلاً خَيْرًا مِنْ أَهْلِهَا وَزَوْجًا خَيْرًا مِنْ زَوْجِهَا وَأَدْخِلْهَا الْجَنَّةَ وَأَعِذْهَا مِنْ عَذَابِ الْقَبْرِ وَعَذَابِ النَّارِ",
+    "reference_my": "Riwayat Muslim (963)",
+    "reference_en": "Narrated in Muslim (963)",
+    "meaning_my": "Ya Allah, ampunilah dia, rahmatilah dia, selamatkanlah dia, maafkanlah dia, muliakanlah tempat tinggalnya, luaskanlah tempat masuknya, cucilah dia dengan air, salji dan embun, bersihkanlah dia dari kesalahan-kesalahan sebagaimana Engkau membersihkan baju putih dari kotoran, gantikanlah baginya rumah yang lebih baik dari rumahnya, keluarga yang lebih baik dari keluarganya, pasangan yang lebih baik dari pasangannya, masukkanlah dia ke dalam syurga dan lindungilah dia dari azab kubur dan azab neraka.",
+    "meaning_en": "O Allah, forgive her and have mercy on her, and give her strength and pardon her. Be generous to her, and cause her entrance to be wide, and wash her with water and snow and hail. Cleanse her of her transgressions as white cloth is cleansed of stains. Give her an abode better than her home, and a family better than her family, and a husband better than her husband. Take her into Paradise and protect her from the punishment of the grave and from the punishment of Hell-fire.",
+    "category_names": ["Jenazah", "Funeral", "Perempuan", "Female", "Ampunan", "Forgiveness", "Rahmat", "Mercy"],
+    "slug": "doa-solat-jenazah-perempuan",
+    "description_my": "Doa ini dibaca semasa solat jenazah untuk perempuan dewasa, memohon ampunan, rahmat dan syurga daripada Allah.",
+    "description_en": "This supplication is recited during the funeral prayer for an adult female, seeking forgiveness, mercy, and Paradise from Allah.",
+    "context_my": "Dibaca selepas takbir ketiga dalam solat jenazah perempuan.",
+    "context_en": "Recited after the third takbir in the female funeral prayer."
   }
+]
 ]
