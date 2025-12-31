@@ -63,12 +63,12 @@ function renderMultilineText(
   x: number,
   startY: number,
   lineHeight: number,
-  className: string
+  className: string,
 ): string {
   return lines
     .map(
       (line, i) =>
-        `<text x="${x}" y="${startY + i * lineHeight}" class="${className}">${escapeXml(line)}</text>`
+        `<text x="${x}" y="${startY + i * lineHeight}" class="${className}">${escapeXml(line)}</text>`,
     )
     .join('\n')
 }
@@ -85,18 +85,18 @@ function createTextOverlaySvg(config: {
   const { arabicText, translation, doaName, fontBase64, width, height } = config
 
   // Wrap text for proper display
-  const wrappedArabic = wrapArabicText(arabicText, 40)
+  const wrappedArabic = wrapArabicText(arabicText, 50)
   const wrappedTranslation = wrapTranslationText(translation, 65)
 
   // Calculate positions
   const doaNameY = 180
-  const arabicStartY = 320
-  const arabicLineHeight = 100
+  const arabicStartY = 380
+  const arabicLineHeight = 179
   const arabicEndY = arabicStartY + wrappedArabic.length * arabicLineHeight
 
   // Translation starts after Arabic with some spacing
   const translationStartY = Math.min(arabicEndY + 150, height - 500)
-  const translationLineHeight = 52
+  const translationLineHeight = 63
 
   return `
     <svg width="${width}" height="${height}" xmlns="http://www.w3.org/2000/svg">
@@ -108,7 +108,7 @@ function createTextOverlaySvg(config: {
           }
           .arabic-text {
             font-family: 'Simpo', 'Traditional Arabic', 'Scheherazade New', serif;
-            font-size: 72px;
+            font-size: 99px;
             fill: white;
             text-anchor: middle;
             direction: rtl;
@@ -124,7 +124,7 @@ function createTextOverlaySvg(config: {
           }
           .translation {
             font-family: 'Roboto', 'Segoe UI', Arial, sans-serif;
-            font-size: 36px;
+            font-size: 45px;
             fill: rgba(255, 255, 255, 0.95);
             text-anchor: middle;
             text-shadow: 1px 1px 4px rgba(0,0,0,0.4);
@@ -184,12 +184,18 @@ function createBrandingOverlaySvg(config: {
 }
 
 export async function generateDoaImageWithSharp(
-  config: GenerateDoaImageConfig
+  config: GenerateDoaImageConfig,
 ): Promise<Buffer> {
   const { doa, backgroundId, language } = config
 
   // 1. Load background image
-  const bgPath = path.join(process.cwd(), 'src', 'assets', 'ai', `${backgroundId}.jpeg`)
+  const bgPath = path.join(
+    process.cwd(),
+    'src',
+    'assets',
+    'ai',
+    `${backgroundId}.jpeg`,
+  )
   const bgBuffer = await fs.readFile(bgPath)
 
   // 2. Load font for Arabic text
