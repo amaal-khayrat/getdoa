@@ -39,10 +39,10 @@
     "meaning_en": "O Allah, You are my Lord, there is no deity worthy of worship except You, You created me and I am Your servant. I am committed to my covenant with You (to worship You alone) and believe in Your promise (of Paradise for me) to the best of my ability. I seek refuge in You from the evil of what I have done. I acknowledge Your blessings upon me and I confess my sins, so forgive me. Indeed, none can forgive sins except You.",
     "category_names": ["Keampunan", "Forgiveness", "Taubat", "Repentance"],
     "slug": "penghulu-bagi-doa-keampunan",
-    "description_my": "Doa ini dikenali sebagai Sayyidul Istighfar, iaitu doa yang sangat dianjurkan untuk memohon keampunan kepada Allah. Ia merangkumi pengakuan terhadap keesaan Allah, pengakuan dosa, dan permohonan ampunan yang tulus. Ia diamalkan untuk mendekatkan diri kepada Allah serta menghapuskan dosa-dosa yang lalu.",
-    "description_en": "This supplication is known as Sayyidul Istighfar, regarded as one of the most comprehensive prayers for seeking forgiveness from Allah. It includes an acknowledgment of Allah's oneness, confession of sins, and a sincere plea for pardon. It is practiced to draw closer to Allah and cleanse oneself of past sins.",
-    "context_my": "Doa ini disarankan untuk diamalkan pada waktu pagi dan petang sebagai bentuk istighfar yang utama. Membacanya dengan penuh keikhlasan diharap dapat membawa keampunan dan rahmat Allah, khususnya selepas solat dan dalam keadaan bertaubat.",
-    "context_en": "This supplication is recommended to be recited in the morning and evening as a primary form of seeking forgiveness. Reciting it sincerely is hoped to bring Allah's forgiveness and mercy, especially after prayers and during moments of repentance."
+    "description_my": "",
+    "description_en": "",
+    "context_my": "",
+    "context_en": ""
   },
   {
     "name_my": "[JEMAAH] Penghulu Bagi Doa Keampunan",
@@ -57,13 +57,14 @@
       "Forgiveness",
       "Taubat",
       "Repentance",
-      "Jamaah"
+      "Jamaah",
+      "Congregation"
     ],
     "slug": "jemaah-penghulu-bagi-doa-keampunan",
-    "description_my": "Doa ini dikenali sebagai Sayyidul Istighfar, iaitu doa yang sangat dianjurkan untuk memohon keampunan kepada Allah. Ia merangkumi pengakuan terhadap keesaan Allah, pengakuan dosa, dan permohonan ampunan yang tulus. Ia diamalkan untuk mendekatkan diri kepada Allah serta menghapuskan dosa-dosa yang lalu.",
-    "description_en": "This supplication is known as Sayyidul Istighfar, regarded as one of the most comprehensive prayers for seeking forgiveness from Allah. It includes an acknowledgment of Allah's oneness, confession of sins, and a sincere plea for pardon. It is practiced to draw closer to Allah and cleanse oneself of past sins.",
-    "context_my": "Doa ini disarankan untuk diamalkan pada waktu pagi dan petang sebagai bentuk istighfar yang utama. Membacanya dengan penuh keikhlasan diharap dapat membawa keampunan dan rahmat Allah, khususnya selepas solat dan dalam keadaan bertaubat.",
-    "context_en": "This supplication is recommended to be recited in the morning and evening as a primary form of seeking forgiveness. Reciting it sincerely is hoped to bring Allah's forgiveness and mercy, especially after prayers and during moments of repentance."
+    "description_my": "",
+    "description_en": "",
+    "context_my": "",
+    "context_en": ""
   },
   {
     "name_my": "Doa Mohon Keampunan",
@@ -93,7 +94,8 @@
       "Forgiveness",
       "Taubat",
       "Repentance",
-      "Jamaah"
+      "Jamaah",
+      "Congregation"
     ],
     "slug": "jemaah-doa-mohon-keampunan",
     "description_my": "",
@@ -109,7 +111,7 @@
     "reference_en": "Narrated by Muslim (2722)",
     "meaning_my": "Ya Allah, berikanlah ketakwaan pada jiwaku, dan bersihkanlah ia kerana Engkaulah  sebaik-baik yang dapat membersihkannya. Engkaulah pelindung dan Tuan kepadanya",
     "meaning_en": "O Allah, grant piety to my soul, and cleanse it for You are the best to cleanse it. You are its Protector and Lord",
-    "category_names": ["Piety", "Taqwa"],
+    "category_names": ["Taqwa", "Piety"],
     "slug": "doa-mohon-taqwa",
     "description_my": "",
     "description_en": "",
@@ -124,7 +126,7 @@
     "reference_en": "Narrated by Muslim (2722)",
     "meaning_my": "Ya Allah, berikanlah ketakwaan pada jiwa kami, dan bersihkanlah ia kerana Engkaulah  sebaik-baik yang dapat membersihkannya. Engkaulah pelindung dan Tuan kepadanya",
     "meaning_en": "O Allah, grant piety to our soul, and cleanse it for You are the best to cleanse it. You are its Protector and Lord",
-    "category_names": ["Piety", "Taqwa", "Jamaah"],
+    "category_names": ["Taqwa", "Piety", "Jamaah", "Congregation"],
     "slug": "jemaah-doa-mohon-taqwa",
     "description_my": "",
     "description_en": "",
@@ -176,7 +178,8 @@
       "Calm",
       "Heart",
       "Soul",
-      "Jamaah"
+      "Jamaah",
+      "Congregation"
     ],
     "slug": "jemaah-doa-kelapangan-hati-dan-jiwa",
     "description_my": "",
@@ -192,7 +195,7 @@
     "reference_en": "Narrated by Abu Daud (5096)",
     "meaning_my": "Dengan nama Allah, aku bertawakkal kepada Allah. Tiada upaya dan tiada kekuatan kecuali dengan Allah",
     "meaning_en": "In the name of Allah, I place my trust in Allah. There is no might nor power except with Allah",
-    "category_names": ["Selamat", "Safety", "Protection", "Perlindungan"],
+    "category_names": ["Selamat", "Safety", "Perlindungan", "Protection"],
     "slug": "doa-keluar-dari-rumah",
     "description_my": "",
     "description_en": "",
@@ -210,9 +213,10 @@
     "category_names": [
       "Selamat",
       "Safety",
-      "Protection",
       "Perlindungan",
-      "Jamaah"
+      "Protection",
+      "Jamaah",
+      "Congregation"
     ],
     "slug": "jemaah-doa-keluar-dari-rumah",
     "description_my": "",
@@ -261,7 +265,8 @@
       "Chastity",
       "Kekayaan",
       "Wealth",
-      "Jamaah"
+      "Jamaah",
+      "Congregation"
     ],
     "slug": "jemaah-doa-petunjuk-ketaqwaan-iffah-dan-kekayaan",
     "description_my": "",
@@ -306,7 +311,8 @@
       "Sustenance",
       "Amalan",
       "Deeds",
-      "Jamaah"
+      "Jamaah",
+      "Congregation"
     ],
     "slug": "jemaah-doa-ilmu-rezeki-dan-amalan-yang-diterima",
     "description_my": "",
@@ -351,7 +357,8 @@
       "Gratitude",
       "Ibadah",
       "Worship",
-      "Jamaah"
+      "Jamaah",
+      "Congregation"
     ],
     "slug": "jemaah-doa-pertolongan-untuk-zikir",
     "description_my": "",
@@ -382,7 +389,13 @@
     "reference_en": "Narrated by Tirmidzi (3513)",
     "meaning_my": "Ya Allah, sesungguhnya Engkau Maha Pengampun dan suka memberi keampunan, maka ampunilah kami",
     "meaning_en": "O Allah, indeed You are the Most Forgiving and You love forgiveness, so forgive us",
-    "category_names": ["Keampunan", "Forgiveness", "Lailatul Qadar", "Jamaah"],
+    "category_names": [
+      "Keampunan",
+      "Forgiveness",
+      "Lailatul Qadar",
+      "Jamaah",
+      "Congregation"
+    ],
     "slug": "jemaah-doa-keampunan",
     "description_my": "",
     "description_en": "",
@@ -397,7 +410,7 @@
     "reference_en": "Narrated by Tirmidzi (3522)",
     "meaning_my": "Wahai Tuhan yang membolak-balikkan hati, tetapkanlah hatiku di atas agama-Mu",
     "meaning_en": "O Turner of the hearts, make my heart firm upon Your religion",
-    "category_names": ["Hati", "Heart", "Firmness"],
+    "category_names": ["Hati", "Heart", "Keteguhan", "Firmness"],
     "slug": "doa-ditetapkan-hati",
     "description_my": "",
     "description_en": "",
@@ -412,7 +425,14 @@
     "reference_en": "Narrated by Tirmidzi (3522)",
     "meaning_my": "Wahai Tuhan yang membolak-balikkan hati, tetapkanlah hati kami di atas agama-Mu",
     "meaning_en": "O Turner of the hearts, make our hearts firm upon Your religion",
-    "category_names": ["Hati", "Heart", "Firmness", "Jamaah"],
+    "category_names": [
+      "Hati",
+      "Heart",
+      "Keteguhan",
+      "Firmness",
+      "Jamaah",
+      "Congregation"
+    ],
     "slug": "jemaah-doa-ditetapkan-hati",
     "description_my": "",
     "description_en": "",
@@ -449,10 +469,11 @@
     "meaning_en": "O Allah, we ask You for all goodness, whether we know it or not, whether it is immediate or delayed. We seek refuge in You from all evil, whether we know it or not, whether it is immediate or delayed. O Allah, we ask You for the good asked for by Your slave and Your Prophet, and we seek refuge in You from the evil sought refuge from by Your slave and Your Prophet. O Allah, we ask You for Paradise and whatever brings one closer to it in word or deed. And we seek refuge in You from the Fire and whatever brings one closer to it in word or deed. And we ask You for every decree that You have decreed concerning us to be good.",
     "category_names": [
       "Meminta Kebaikan",
-      "Menolak Kejahatan",
       "Seeking Goodness",
+      "Menolak Kejahatan",
       "Rejecting Evil",
-      "Jamaah"
+      "Jamaah",
+      "Congregation"
     ],
     "slug": "jemaah-doa-minta-kebaikan-dan-menolak-kejahatan",
     "description_my": "",
@@ -503,7 +524,8 @@
       "Intelligence",
       "Ilham",
       "Inspiration",
-      "Jamaah"
+      "Jamaah",
+      "Congregation"
     ],
     "slug": "jeamaah-doa-diilhamkan-kecerdasan",
     "description_my": "",
@@ -539,7 +561,8 @@
       "Death",
       "Penghujung Umur",
       "End of Life",
-      "Jamaah"
+      "Jamaah",
+      "Congregation"
     ],
     "slug": "jemaah-doa-penghujung-umur-yang-baik",
     "description_my": "",
@@ -610,7 +633,8 @@
       "Perlindungan",
       "Safety",
       "Protection",
-      "Jamaah"
+      "Jamaah",
+      "Congregation"
     ],
     "slug": "jemaah-doa-diselamatkan-dari-azab",
     "description_my": "",
@@ -646,7 +670,8 @@
       "Perlindungan",
       "Safety",
       "Protection",
-      "Jamaah"
+      "Jamaah",
+      "Congregation"
     ],
     "slug": "jemaah-doa-berlindung-dari-kejahatan",
     "description_my": "",
@@ -682,7 +707,8 @@
       "Perlindungan",
       "Safety",
       "Protection",
-      "Jamaah"
+      "Jamaah",
+      "Congregation"
     ],
     "slug": "jemaah-doa-berlindung-dari-empat-perkara",
     "description_my": "",
@@ -718,7 +744,8 @@
       "Perlindungan",
       "Safety",
       "Protection",
-      "Jamaah"
+      "Jamaah",
+      "Congregation"
     ],
     "slug": "jemaah-doa-berlindung-dari-penyakit-kronik",
     "description_my": "",
@@ -758,12 +785,13 @@
     "meaning_en": "O Allah, keep us away from evil manners, desires, and from all evil, and from the diseases that lead to destruction",
     "category_names": [
       "Keselamatan",
-      "Perlindungan",
-      "Sakit",
       "Safety",
+      "Perlindungan",
       "Protection",
+      "Sakit",
       "Disease",
-      "Jamaah"
+      "Jamaah",
+      "Congregation"
     ],
     "slug": "jemaah-doa-diselamatkan-dari-kemungkaran",
     "description_my": "",
@@ -799,7 +827,8 @@
       "Perlindungan",
       "Safety",
       "Protection",
-      "Jamaah"
+      "Jamaah",
+      "Congregation"
     ],
     "slug": "jemaah-doa-menolak-bala",
     "description_my": "",
@@ -835,7 +864,8 @@
       "Perlindungan",
       "Safety",
       "Protection",
-      "Jamaah"
+      "Jamaah",
+      "Congregation"
     ],
     "slug": "jemaah-doa-agar-tidak-dihilangkan-nikmat",
     "description_my": "",
@@ -866,7 +896,14 @@
     "reference_en": "Narrated by al-Tabarani in al-Mu'jam al-Kabir (10379) and Abu Nu'aim in Hilyah al-Auliya' (7/280). This hadith is classified as authentic by the author of al-Silsilah al-Sahihah.",
     "meaning_my": "Ya Allah, sesungguhnya kami memohon kepada-Mu agar diberi kurniaan dan rahmat-Mu. Sesungguhnya tiada yang memilikinya kecuali-Mu.",
     "meaning_en": "O Allah, we ask You for Your blessings and mercy. Indeed, no one possesses them except You",
-    "category_names": ["Kurniaan", "Blessings", "Rahmat", "Mercy", "Jamaah"],
+    "category_names": [
+      "Kurniaan",
+      "Blessings",
+      "Rahmat",
+      "Mercy",
+      "Jamaah",
+      "Congregation"
+    ],
     "slug": "jemaah-doa-mohon-kurniaan-dan-rahmatnya",
     "description_my": "",
     "description_en": "",
@@ -905,12 +942,13 @@
     "meaning_en": "O Allah, we seek refuge in You from grief and sadness, from weakness and laziness, from cowardice and miserliness, and from the burden of debt and the oppression.",
     "category_names": [
       "Keselamatan",
-      "Perlindungan",
-      "Sedih",
       "Safety",
+      "Perlindungan",
       "Protection",
+      "Sedih",
       "Grief",
-      "Jamaah"
+      "Jamaah",
+      "Congregation"
     ],
     "slug": "jemaah-doa-berlindung-dari-dukacita",
     "description_my": "",
@@ -986,7 +1024,7 @@
     "reference_en": "Al-Hashr (59:10)",
     "meaning_my": "Wahai Tuhan Kami! Ampunkanlah dosa kami dan dosa saudara-saudara kami yang mendahului kami dalam iman, dan janganlah Engkau jadikan dalam hati kami perasaan hasad dengki dan dendam terhadap orang-orang yang beriman. Wahai Tuhan kami! Sesungguhnya Engkau Amat Melimpah Belas kasihan dan RahmatMu.",
     "meaning_en": "Our Lord, forgive us and our brothers who preceded us in faith and put not in our hearts [any] resentment toward those who have believed. Our Lord, indeed You are Kind and Merciful.",
-    "category_names": ["Ampun", "Forgiveness", "Doa", "Prayer"],
+    "category_names": ["Keampunan", "Forgiveness", "Doa", "Supplication"],
     "slug": "doa-keampunan-dan-doa-saudara",
     "description_my": "",
     "description_en": "",
@@ -1055,7 +1093,7 @@
     "reference_en": "Al-Saffat (37:100)",
     "meaning_my": "Wahai Tuhanku! Kurniakanlah kepadaku anak yang terhitung dari orang-orang yang soleh.",
     "meaning_en": "My Lord, grant me [a child] from among the righteous.",
-    "category_names": ["Zuriat", "Soleh", "Solehah", "Offspring"],
+    "category_names": ["Zuriat", "Offspring", "Anak Soleh", "Righteous Child"],
     "slug": "doa-memohon-zuriat-solehsolehah",
     "description_my": "",
     "description_en": "",
@@ -1114,12 +1152,19 @@
     "reference_en": "Narrated by Abu Dawood (1425), Tirmidhi (464), and An-Nasa'i (1746)",
     "meaning_my": "Ya Allah, berilah aku petunjuk bersama orang-orang yang telah Engkau beri petunjuk, berilah aku kesihatan bersama orang-orang yang telah Engkau beri kesihatan, peliharalah aku bersama orang-orang yang telah Engkau pelihara, berkatilah untukku apa yang telah Engkau berikan, dan lindungilah aku dari kejahatan yang telah Engkau tetapkan. Sesungguhnya Engkau menetapkan dan tidak ada yang menetapkan atas-Mu. Tidak akan hina orang yang Engkau pimpin, dan tidak akan mulia orang yang Engkau musuhi. Maha Suci Engkau wahai Tuhan kami dan Maha Tinggi Engkau. Segala puji bagi-Mu atas apa yang telah Engkau tetapkan. Aku memohon ampun kepada-Mu dan bertaubat kepada-Mu. Semoga Allah mencurahkan rahmat dan salam kepada Nabi kami Muhammad, Nabi yang ummi, beserta keluarga dan sahabatnya.",
     "meaning_en": "O Allah, guide me among those whom You have guided, grant me health among those whom You have granted health, take me into Your care among those whom You have taken into Your care, bless me in what You have given, and protect me from the evil You have decreed. Indeed, You decree, and none can influence You. He is not humiliated whom You have befriended, and He is not honored whom You have antagonized. Blessed are You, our Lord, and Exalted. All praise is due to You for what You have decreed. I seek Your forgiveness and repent to You. May Allah bestow mercy and peace upon our leader Muhammad, the unlettered Prophet, and upon his family and companions.",
-    "category_names": ["Doa", "Dua", "Qunut", "Qunoot", "Solat", "Prayer"],
+    "category_names": [
+      "Doa",
+      "Supplication",
+      "Qunut",
+      "Qunoot",
+      "Solat",
+      "Prayer"
+    ],
     "slug": "doa-qunut",
-    "description_my": "Doa Qunut adalah doa yang dibaca dalam solat, khususnya dalam solat Subuh dan solat Witir pada separuh akhir bulan Ramadan. Doa ini memohon petunjuk, kesihatan, perlindungan, dan keberkatan daripada Allah.",
-    "description_en": "Dua Qunoot is a supplication recited during prayers, particularly in the Fajr (Subuh) prayer and the Witr prayer during the latter half of Ramadan. This dua seeks guidance, health, protection, and blessings from Allah.",
-    "context_my": "Doa Qunut dibaca dalam solat Subuh selepas bangun dari rukuk pada rakaat kedua, dan dalam solat Witir pada separuh akhir bulan Ramadan. Ia merupakan amalan sunnah yang dianjurkan untuk memohon kebaikan dan perlindungan daripada Allah.",
-    "context_en": "Dua Qunoot is recited in the Fajr prayer after rising from the bowing position in the second unit, and in the Witr prayer during the latter half of Ramadan. It is a recommended sunnah practice to seek goodness and protection from Allah."
+    "description_my": "",
+    "description_en": "",
+    "context_my": "",
+    "context_en": ""
   },
   {
     "name_my": "[JEMAAH] Doa Qunut",
@@ -1138,10 +1183,10 @@
       "Congregation"
     ],
     "slug": "jemaah-doa-qunut",
-    "description_my": "Doa Qunut Jemaah adalah doa yang dibaca dalam solat secara berjemaah, khususnya dalam solat Subuh dan solat Witir pada separuh akhir bulan Ramadan. Dalam bacaan ini, lafaz 'aku' ditukar kepada 'kami' untuk disesuaikan dengan bilangan jemaah yang ramai.",
-    "description_en": "The Congregational Dua Qunoot is a supplication recited during prayers in congregation, particularly in the Fajr (Subuh) prayer and the Witr prayer during the latter half of Ramadan. In this recitation, singular pronouns are changed to plural to suit the congregation.",
-    "context_my": "Dalam solat berjemaah, Doa Qunut dibaca oleh imam pada rakaat kedua solat Subuh selepas bangun dari rukuk, dan dalam solat Witir pada separuh akhir bulan Ramadan. Makmum mengaminkan doa yang dibaca oleh imam, memohon kebaikan dan perlindungan daripada Allah secara bersama.",
-    "context_en": "In congregational prayers, the Dua Qunoot is recited by the imam in the second unit of the Fajr prayer after rising from the bowing position, and in the Witr prayer during the latter half of Ramadan. The congregation responds with 'Ameen', collectively seeking goodness and protection from Allah."
+    "description_my": "",
+    "description_en": "",
+    "context_my": "",
+    "context_en": ""
   },
   {
     "name_my": "Doa Berbuka Puasa",
@@ -1153,10 +1198,10 @@
     "meaning_en": "The thirst has gone, the veins are moistened, and the reward is certain, if Allah wills.",
     "category_names": ["Puasa", "Fasting", "Berbuka Puasa", "Breaking Fast"],
     "slug": "doa-berbuka-puasa",
-    "description_my": "Doa Berbuka Puasa adalah doa yang diajarkan oleh Rasulullah SAW untuk dibaca ketika berbuka puasa. Doa ini mengingatkan kita akan nikmat Allah yang menghilangkan dahaga dan memberikan kekuatan setelah seharian berpuasa.",
-    "description_en": "The Dua for Breaking the Fast is a supplication taught by Prophet Muhammad (peace be upon him) to be recited when breaking the fast. This dua reminds us of Allah's blessings in quenching our thirst and providing strength after a day of fasting.",
-    "context_my": "Doa ini dibaca sebaik sahaja berbuka puasa sebagai tanda kesyukuran kepada Allah atas nikmat yang diberikan. Amalan ini juga mengingatkan kita bahawa segala kekuatan dan rezeki datangnya daripada Allah.",
-    "context_en": "This dua is recited immediately upon breaking the fast as an expression of gratitude to Allah for His blessings. It also serves as a reminder that all strength and provision come from Allah."
+    "description_my": "",
+    "description_en": "",
+    "context_my": "",
+    "context_en": ""
   },
   {
     "name_my": "Doa Berbuka Puasa (2)",
@@ -1168,10 +1213,10 @@
     "meaning_en": "O Allah, for You I have fasted, and with Your provision I break my fast.",
     "category_names": ["Puasa", "Fasting", "Berbuka Puasa", "Breaking Fast"],
     "slug": "doa-berbuka-puasa-2",
-    "description_my": "Doa Berbuka Puasa adalah doa yang diajarkan oleh Rasulullah SAW untuk dibaca ketika berbuka puasa. Doa ini merupakan sunnah yang diajarkan untuk mengungkapkan rasa syukur kepada Allah atas kemudahan dalam menjalankan puasa dan rezeki yang diberikan untuk berbuka.",
-    "description_en": "The Dua for Breaking the Fast is recited when about to break the fast after completing the day's fast. This supplication is a sunnah taught by Prophet Muhammad (peace be upon him) to express gratitude to Allah for the ease in observing the fast and the provision granted for breaking it.",
-    "context_my": "Doa ini dibaca sebaik sahaja masuk waktu Maghrib, sebelum memulakan makan atau minum untuk berbuka puasa. Ia adalah amalan yang dianjurkan untuk mengingatkan diri tentang niat puasa yang telah dilaksanakan kerana Allah dan mensyukuri nikmat rezeki yang diberikan.",
-    "context_en": "This dua is recited immediately upon the arrival of Maghrib time, before commencing to eat or drink to break the fast. It is a recommended practice to remind oneself of the intention behind fasting for Allah and to express gratitude for the provision granted."
+    "description_my": "",
+    "description_en": "",
+    "context_my": "",
+    "context_en": ""
   },
   {
     "name_my": "[JEMAAH] Doa Berbuka Puasa (2)",
@@ -1190,10 +1235,10 @@
       "Congregation"
     ],
     "slug": "jemaah-doa-berbuka-puasa-2",
-    "description_my": "Doa Berbuka Puasa Jemaah adalah doa yang dibaca secara bersama-sama ketika hendak berbuka setelah menunaikan ibadah puasa. Dalam bacaan ini, lafaz 'aku' ditukar kepada 'kami' untuk disesuaikan dengan bilangan jemaah yang ramai.",
-    "description_en": "The Congregational Dua for Breaking the Fast is recited collectively when about to break the fast after completing the day's fast. In this recitation, singular pronouns are changed to plural to suit the congregation.",
-    "context_my": "Doa ini dibaca bersama-sama oleh jemaah sebaik sahaja masuk waktu Maghrib, sebelum memulakan makan atau minum untuk berbuka puasa. Ia adalah amalan yang dianjurkan untuk mengingatkan diri tentang niat puasa yang telah dilaksanakan kerana Allah dan mensyukuri nikmat rezeki yang diberikan.",
-    "context_en": "This dua is recited collectively by the congregation immediately upon the arrival of Maghrib time, before commencing to eat or drink to break the fast. It is a recommended practice to remind oneself of the intention behind fasting for Allah and to express gratitude for the provision granted."
+    "description_my": "",
+    "description_en": "",
+    "context_my": "",
+    "context_en": ""
   },
   {
     "name_my": "Doa Sebelum Tidur",
@@ -1205,10 +1250,10 @@
     "meaning_en": "In Your name, O Allah, I die and I live.",
     "category_names": ["Tidur", "Sleep", "Amalan Harian", "Daily Practices"],
     "slug": "doa-sebelum-tidur",
-    "description_my": "Doa Sebelum Tidur adalah doa yang diajarkan oleh Rasulullah SAW untuk dibaca sebelum tidur. Doa ini mengingatkan kita akan kebergantungan kepada Allah dalam kehidupan dan kematian, serta memohon perlindungan-Nya selama kita tidur.",
-    "description_en": "The Dua Before Sleeping is a supplication taught by Prophet Muhammad (peace be upon him) to be recited before going to sleep. This dua reminds us of our dependence on Allah in life and death, and seeks His protection during our sleep.",
-    "context_my": "Doa ini dibaca sebelum tidur sebagai tanda penyerahan diri kepada Allah dan pengakuan bahawa hidup dan mati adalah di tangan-Nya. Amalan ini juga disertai dengan sunnah lain seperti berwudhu sebelum tidur dan tidur menghadap ke kanan.",
-    "context_en": "This dua is recited before sleeping as a sign of submission to Allah and acknowledgment that life and death are in His hands. This practice is also accompanied by other sunnahs, such as performing ablution before sleeping and lying on the right side."
+    "description_my": "",
+    "description_en": "",
+    "context_my": "",
+    "context_en": ""
   },
   {
     "name_my": "Doa Bangun Tidur",
@@ -1218,12 +1263,19 @@
     "reference_en": "Narrated by Bukhari (6324)",
     "meaning_my": "Segala puji bagi Allah yang telah menghidupkan kami setelah mematikan kami, dan kepada-Nya kami akan kembali.",
     "meaning_en": "All praise is for Allah who gave us life after having taken it from us, and unto Him is the resurrection.",
-    "category_names": ["Tidur", "Bangun Tidur", "Daily Practices"],
+    "category_names": [
+      "Tidur",
+      "Sleep",
+      "Bangun Tidur",
+      "Waking Up",
+      "Amalan Harian",
+      "Daily Practices"
+    ],
     "slug": "doa-bangun-tidur",
-    "description_my": "Doa Bangun Tidur adalah doa yang diajarkan oleh Rasulullah SAW untuk dibaca ketika bangun tidur. Doa ini mengingatkan kita untuk bersyukur kepada Allah atas kehidupan yang diberikan semula setelah tidur, yang diibaratkan seperti kematian sementara.",
-    "description_en": "The Dua Upon Waking Up is a supplication taught by Prophet Muhammad (peace be upon him) to be recited upon waking up. This dua reminds us to thank Allah for restoring life after sleep, which is likened to temporary death.",
-    "context_my": "Doa ini dibaca ketika bangun tidur sebagai tanda kesyukuran kepada Allah atas nikmat kehidupan yang diberikan semula. Amalan ini disertai dengan sunnah lain seperti berwudhu dan solat sunat jika memungkinkan.",
-    "context_en": "This dua is recited upon waking up as an expression of gratitude to Allah for granting life again. It is often accompanied by other sunnahs, such as performing ablution and offering voluntary prayers if possible."
+    "description_my": "",
+    "description_en": "",
+    "context_my": "",
+    "context_en": ""
   },
   {
     "name_my": "Doa Naik Kenderaan",
@@ -1235,10 +1287,10 @@
     "meaning_en": "Glory be to Him who has subjected this to us, and we could not have [otherwise] subdued it, and indeed we, to our Lord, will [surely] return.",
     "category_names": ["Perjalanan", "Travel", "Kenderaan", "Vehicle"],
     "slug": "doa-naik-kenderaan",
-    "description_my": "Doa Naik Kenderaan adalah doa yang dibaca ketika seseorang hendak memulakan perjalanan dengan menaiki kenderaan, sama ada di darat, laut, atau udara. Doa ini diambil daripada Surah Az-Zukhruf, ayat 13-14, dan diamalkan untuk memohon keselamatan serta keberkatan sepanjang perjalanan.",
-    "description_en": "The Dua for Riding a Vehicle is recited when one is about to commence a journey using any mode of transportation, be it on land, sea, or air. This supplication is derived from Surah Az-Zukhruf, verses 13-14, and is practiced to seek safety and blessings throughout the journey.",
-    "context_my": "Doa ini dibaca sebelum memulakan perjalanan sebagai tanda kesyukuran kepada Allah yang telah memudahkan kenderaan untuk digunakan. Ia juga mengingatkan kita bahawa segala nikmat dan kemudahan datangnya daripada Allah, dan kepada-Nya kita akan kembali. Amalan ini disertai dengan adab-adab perjalanan seperti membaca Bismillah, memulakan dengan langkah kanan, dan berdoa untuk keselamatan.",
-    "context_en": "This dua is recited before starting a journey as an expression of gratitude to Allah for providing the means of transportation. It also serves as a reminder that all blessings and conveniences are from Allah, and to Him we shall return. This practice is accompanied by etiquettes of travel, such as saying Bismillah, starting with the right foot, and praying for safety."
+    "description_my": "",
+    "description_en": "",
+    "context_my": "",
+    "context_en": ""
   },
   {
     "name_my": "Doa Iftitah (2)",
@@ -1248,12 +1300,12 @@
     "reference_en": "Narrated by Bukhari (744), Muslim (598)",
     "meaning_my": "Ya Allah, jauhkanlah aku dari kesalahan-kesalahanku sebagaimana Engkau menjauhkan antara timur dan barat. Ya Allah, bersihkanlah aku dari kesalahan-kesalahanku sebagaimana dibersihkannya pakaian putih dari kotoran. Ya Allah, cucilah aku dari kesalahan-kesalahanku dengan air, salju, dan embun.",
     "meaning_en": "O Allah, distance me from my sins as You have distanced the east from the west. O Allah, purify me from my sins as a white garment is purified from dirt. O Allah, cleanse me of my sins with water, snow, and ice.",
-    "category_names": ["Solat", "Prayer", "Iftitah"],
+    "category_names": ["Solat", "Prayer", "Iftitah", "Opening Prayer"],
     "slug": "doa-iftitah-2",
-    "description_my": "Doa Iftitah adalah doa yang dibaca setelah takbiratul ihram dalam solat, sebelum membaca Surah Al-Fatihah. Doa ini merupakan sunnah yang diajarkan oleh Rasulullah SAW untuk memuji dan mengagungkan Allah serta memohon penyucian diri dari dosa.",
-    "description_en": "Dua Iftitah is the supplication recited after the opening takbir in prayer, before reciting Surah Al-Fatihah. This dua is a sunnah taught by Prophet Muhammad (peace be upon him) to praise and glorify Allah and to seek purification from sins.",
-    "context_my": "Doa ini dibaca dalam solat selepas takbiratul ihram dan sebelum Surah Al-Fatihah pada rakaat pertama. Ia adalah amalan sunnah yang menambah kekhusyukan dalam solat dengan memuji kebesaran Allah dan memohon penyucian diri.",
-    "context_en": "This dua is recited in prayer after the opening takbir and before Surah Al-Fatihah in the first unit (rak'ah). It is a sunnah practice that enhances concentration in prayer by praising Allah's greatness and seeking self-purification."
+    "description_my": "",
+    "description_en": "",
+    "context_my": "",
+    "context_en": ""
   },
   {
     "name_my": "Doa Iftitah",
@@ -1263,12 +1315,12 @@
     "reference_en": "Narrated by Muslim (601)",
     "meaning_my": "Allah Maha Besar dengan sebesar-besarnya, segala puji bagi Allah dengan pujian yang banyak, Maha Suci Allah pada waktu pagi dan petang. Aku hadapkan wajahku kepada (Allah) yang menciptakan langit dan bumi dengan cenderung kepada agama yang benar, dan aku bukanlah termasuk orang-orang yang mempersekutukan Allah. Sesungguhnya solatku, ibadahku, hidupku, dan matiku adalah untuk Allah, Tuhan semesta alam. Tiada sekutu bagi-Nya. Dan dengan itu aku diperintahkan, dan aku termasuk orang-orang Muslim.",
     "meaning_en": "Allah is the Greatest, very great. All praise is due to Allah, abundantly. Glory be to Allah, in the morning and the evening. I have turned my face toward Him who created the heavens and the earth, as a pure monotheist, and I am not among those who associate others with Allah. Verily, my prayer, my sacrifice, my life, and my death are for Allah, the Lord of the worlds. He has no partner, and with this, I have been commanded, and I am of the Muslims.",
-    "category_names": ["Solat", "Prayer", "Iftitah"],
+    "category_names": ["Solat", "Prayer", "Iftitah", "Opening Prayer"],
     "slug": "doa-iftitah",
-    "description_my": "Doa Iftitah ini adalah salah satu doa yang dibaca selepas takbiratul ihram dalam solat sebelum membaca Surah Al-Fatihah. Doa ini memuji kebesaran Allah dan mensucikan-Nya, serta mengisytiharkan keikhlasan dalam beribadah kepada-Nya.",
-    "description_en": "This version of Dua Iftitah is one of the supplications recited after the opening takbir in prayer, before Surah Al-Fatihah. It glorifies Allah's greatness, praises Him abundantly, and declares sincere devotion to Him.",
-    "context_my": "Doa ini dibaca dalam solat selepas takbiratul ihram pada rakaat pertama. Ia merupakan sunnah yang menambah kekhusyukan dalam solat dengan memuji dan membesarkan Allah serta menyatakan keikhlasan dalam beribadah.",
-    "context_en": "This dua is recited in prayer after the opening takbir in the first rak'ah. It is a sunnah practice that enhances focus and humility in worship by glorifying Allah, praising Him abundantly, and affirming sincere devotion to Him."
+    "description_my": "",
+    "description_en": "",
+    "context_my": "",
+    "context_en": ""
   },
   {
     "name_my": "Doa Selepas Azan",
@@ -1280,10 +1332,10 @@
     "meaning_en": "O Allah, Lord of this perfect call (Adhan) and the established prayer. Grant Muhammad the intercession and favor, and raise him to the honored station You have promised. Indeed, You do not fail in Your promise.",
     "category_names": ["Azan", "Adhan"],
     "slug": "doa-selepas-azan",
-    "description_my": "Doa Selepas Azan adalah doa yang disunnahkan untuk dibaca setelah mendengar azan. Doa ini memohon kepada Allah agar Nabi Muhammad SAW diberikan kedudukan yang mulia dan syafaat di hari kiamat.",
-    "description_en": "The Dua After the Adhan is a supplication recommended to be recited after hearing the call to prayer. This dua asks Allah to grant Prophet Muhammad (peace be upon him) an exalted position and intercession on the Day of Judgment.",
-    "context_my": "Selepas mendengar azan, umat Islam disunnahkan untuk mengulangi lafaz azan bersama muazin, kemudian membaca selawat ke atas Nabi Muhammad SAW, diikuti dengan doa ini. Amalan ini bertujuan untuk mendapatkan syafaat Nabi di hari kiamat.",
-    "context_en": "After hearing the Adhan, Muslims are encouraged to repeat the phrases along with the caller, then send blessings upon Prophet Muhammad (peace be upon him), followed by reciting this dua. This practice aims to attain the Prophet's intercession on the Day of Judgment."
+    "description_my": "",
+    "description_en": "",
+    "context_my": "",
+    "context_en": ""
   },
   {
     "name_my": "Doa Selepas Wudhu",
@@ -1295,10 +1347,10 @@
     "meaning_en": "I bear witness that there is no deity except Allah, alone without partner, and I bear witness that Muhammad is His servant and Messenger. O Allah, make me among those who repent often, and make me among those who purify themselves.",
     "category_names": ["Wudhu", "Ablution", "Ibadah", "Worship"],
     "slug": "doa-selepas-wudhu",
-    "description_my": "Doa Selepas Wudhu adalah doa yang disunnahkan untuk dibaca setelah selesai berwudhu. Doa ini mengandungi pengakuan keesaan Allah dan kerasulan Nabi Muhammad SAW, serta permohonan agar dijadikan termasuk dalam golongan yang bertaubat dan mensucikan diri.",
-    "description_en": "The Dua After Ablution is a supplication recommended to be recited after completing wudu (ablution). This dua includes the declaration of Allah's oneness and the messengership of Prophet Muhammad (peace be upon him), along with a plea to be among those who repent and purify themselves.",
-    "context_my": "Selepas menyempurnakan wudhu, umat Islam disunnahkan untuk membaca doa ini sebagai tanda kesempurnaan ibadah dan pengharapan agar diterima sebagai hamba yang bersih dan bertaubat. Membaca doa ini juga dikatakan membuka pintu-pintu syurga bagi yang mengamalkannya.",
-    "context_en": "After completing ablution, Muslims are encouraged to recite this supplication to perfect their act of worship and to hope for acceptance as purified and repentant servants. Reciting this dua is also said to open the gates of paradise for those who practice it."
+    "description_my": "",
+    "description_en": "",
+    "context_my": "",
+    "context_en": ""
   },
   {
     "name_my": "Doa Selepas Solat Taubat",
@@ -1310,10 +1362,10 @@
     "meaning_en": "O Allah, You are my Lord; there is no deity except You. You created me, and I am Your servant. I uphold Your covenant and promise as best I can. I seek refuge in You from the evil of what I have done. I acknowledge Your favor upon me, and I acknowledge my sin. So forgive me, for verily none can forgive sins except You.",
     "category_names": ["Taubat", "Repentance", "Solat", "Prayer"],
     "slug": "doa-selepas-solat-taubat",
-    "description_my": "Doa Selepas Solat Taubat adalah doa yang disunnahkan untuk dibaca setelah menunaikan solat sunat taubat. Doa ini, yang dikenali sebagai Sayyidul Istighfar, merupakan bentuk pengakuan atas keesaan Allah, pengakuan dosa, dan permohonan ampunan yang tulus kepada-Nya.",
-    "description_en": "The Dua After the Prayer of Repentance is a supplication recommended to be recited after performing the Sunnah prayer of repentance. This dua, known as Sayyidul Istighfar, is an acknowledgment of Allah's oneness, an admission of one's sins, and a sincere plea for His forgiveness.",
-    "context_my": "Selepas menunaikan solat sunat taubat, umat Islam dianjurkan untuk membaca doa ini sebagai manifestasi penyesalan dan keinginan untuk kembali kepada Allah. Membaca Sayyidul Istighfar dengan penuh keikhlasan diharapkan dapat menghapus dosa-dosa yang telah dilakukan dan mendekatkan diri kepada rahmat Allah.",
-    "context_en": "After completing the Sunnah prayer of repentance, Muslims are encouraged to recite this supplication as an expression of remorse and a desire to return to Allah. Reciting Sayyidul Istighfar sincerely is hoped to erase past sins and bring one closer to Allah's mercy."
+    "description_my": "",
+    "description_en": "",
+    "context_my": "",
+    "context_en": ""
   },
   {
     "name_my": "Doa Dalam Solat Tahajjud",
@@ -1325,10 +1377,10 @@
     "meaning_en": "O Allah, all praise is due to You; You are the Sustainer of the heavens and the earth and whatever is in them. All praise is due to You; You own the heavens and the earth and whatever is in them. All praise is due to You; You are the Light of the heavens and the earth. You are the Truth; Your promise is true; the meeting with You is true; Your word is true; Paradise is true; Hellfire is true; the prophets are true; Prophet Muhammad (peace be upon him) is true; and the Hour is true. O Allah, to You I submit; in You I believe; upon You I rely; to You I turn in repentance; with Your help I contend; and to You I seek judgment. Forgive me for my past and future sins; those I have committed secretly and openly. You are the One who brings forward and delays. There is no deity except You or no deity besides You. There is no power or might except through Allah.",
     "category_names": ["Solat", "Prayer", "Tahajjud", "Night Prayer"],
     "slug": "doa-dalam-solat-tahajjud",
-    "description_my": "Doa Dalam Solat Tahajjud adalah doa yang disunnahkan untuk dibaca semasa menunaikan solat sunat Tahajjud. Doa ini mengandungi pujian kepada Allah, pengakuan akan kebenaran janji-Nya, dan permohonan ampunan atas dosa-dosa yang telah lalu dan akan datang.",
-    "description_en": "The Dua During Tahajjud Prayer is a supplication recommended to be recited while performing the Tahajjud (night) prayer. This dua includes praises to Allah, acknowledgment of the truth of His promises, and a plea for forgiveness for past and future sins.",
-    "context_my": "Semasa menunaikan solat sunat Tahajjud, umat Islam dianjurkan untuk membaca doa ini sebagai manifestasi pengakuan akan kebesaran Allah dan kebenaran janji-janji-Nya. Membaca doa ini dengan penuh keikhlasan diharapkan dapat mendekatkan diri kepada Allah dan memperoleh keampunan serta rahmat-Nya.",
-    "context_en": "While performing the Tahajjud prayer, Muslims are encouraged to recite this supplication as an acknowledgment of Allah's greatness and the truth of His promises. Reciting this dua sincerely is hoped to bring one closer to Allah and attain His forgiveness and mercy."
+    "description_my": "",
+    "description_en": "",
+    "context_my": "",
+    "context_en": ""
   },
   {
     "name_my": "Doa Selepas Solat Istikharah",
@@ -1340,10 +1392,10 @@
     "meaning_en": "O Allah, I seek the better choice through Your knowledge and seek ability through Your power, and I ask You from Your immense favor. For indeed, You are capable while I am not, and You know while I do not, and You are the Knower of the unseen. O Allah, if You know that this matter [mention your need here] is good for me in my religion, my livelihood, and the outcome of my affairs, then decree it for me, make it easy for me, and bless me in it. But if You know that this matter [mention your need here] is bad for me in my religion, my livelihood, and the outcome of my affairs, then turn it away from me and turn me away from it. Decree for me what is good wherever it may be, and make me content with it.",
     "category_names": ["Istikharah", "Guidance", "Solat", "Prayer"],
     "slug": "doa-selepas-solat-istikharah",
-    "description_my": "Doa Selepas Solat Istikharah adalah doa yang disunnahkan untuk dibaca setelah menunaikan solat sunat Istikharah. Doa ini memohon petunjuk Allah dalam membuat keputusan yang terbaik dalam urusan yang dihadapi, dengan menyerahkan sepenuhnya kepada ilmu dan kekuasaan-Nya.",
-    "description_en": "The Dua After Istikharah Prayer is a supplication recommended to be recited after performing the Sunnah prayer of Istikharah. This dua seeks Allah's guidance in making the best decision regarding a matter at hand, fully entrusting it to His knowledge and power.",
-    "context_my": "Selepas menunaikan solat sunat Istikharah, umat Islam dianjurkan untuk membaca doa ini dengan menyebut secara spesifik urusan atau hajat yang ingin dipohon petunjuk. Doa ini boleh dibaca sama ada sebelum atau selepas salam, dan ia menunjukkan kebergantungan penuh kepada Allah dalam menentukan yang terbaik bagi hamba-Nya.",
-    "context_en": "After completing the Sunnah prayer of Istikharah, Muslims are encouraged to recite this supplication, specifically mentioning the matter for which guidance is sought. This dua can be recited either before or after the concluding salutation, demonstrating complete reliance on Allah in determining what is best for His servant."
+    "description_my": "",
+    "description_en": "",
+    "context_my": "",
+    "context_en": ""
   },
   {
     "name_my": "Doa Selepas Solat Sunat Hajat",
@@ -1355,10 +1407,10 @@
     "meaning_en": "There is no deity worthy of worship except Allah, the Forbearing, the Generous. Glory be to Allah, Lord of the Mighty Throne. All praise is due to Allah, Lord of the worlds. I ask You for the means of Your mercy, the resolutions of Your forgiveness, the acquisition of every virtue, and the safety from every sin. Do not leave for me any sin except that You forgive it, no worry except that You relieve it, and no need that You are pleased with except that You fulfill it, O Most Merciful of the merciful.",
     "category_names": ["Solat Sunat", "Voluntary Prayer", "Hajat", "Need"],
     "slug": "doa-selepas-solat-sunat-hajat",
-    "description_my": "Doa ini disunnahkan untuk dibaca selepas menunaikan solat sunat Hajat. Ia mengandungi pujian kepada Allah dan permohonan agar segala dosa diampuni, kesusahan dihilangkan, dan hajat yang diridhai Allah dikabulkan.",
-    "description_en": "This supplication is recommended to be recited after performing the Hajat prayer. It includes praises to Allah and requests for forgiveness of sins, relief from worries, and fulfillment of needs that are pleasing to Allah.",
-    "context_my": "Selepas menunaikan solat sunat Hajat, umat Islam dianjurkan untuk membaca doa ini sebagai manifestasi kebergantungan kepada Allah dalam memohon agar hajat dan keperluan mereka dipenuhi. Doa ini mencerminkan pengharapan kepada Allah untuk memberikan yang terbaik dalam segala urusan.",
-    "context_en": "After completing the Hajat prayer, Muslims are encouraged to recite this supplication as an expression of reliance on Allah to fulfill their needs and desires. This dua reflects the hope that Allah will grant the best in all matters."
+    "description_my": "",
+    "description_en": "",
+    "context_my": "",
+    "context_en": ""
   },
   {
     "name_my": "Doa Dua Ayat Akhir Al-Baqarah",
@@ -1377,10 +1429,10 @@
       "Forgiveness"
     ],
     "slug": "dua-ayat-akhir-al-baqarah",
-    "description_my": "Dua ayat ini merupakan ayat penutup Surah Al-Baqarah yang mengandungi pengakuan keimanan, doa memohon perlindungan, keampunan, dan pertolongan dari Allah.",
-    "description_en": "These two verses are the concluding verses of Surah Al-Baqarah, containing declarations of faith, supplications for protection, forgiveness, and assistance from Allah.",
-    "context_my": "Dua ayat terakhir Surah Al-Baqarah ini memiliki keutamaan besar. Menurut hadis, sesiapa yang membacanya pada malam hari, itu akan mencukupinya sebagai perlindungan.",
-    "context_en": "The last two verses of Surah Al-Baqarah hold great significance. According to hadith, whoever recites them at night will find them sufficient as protection."
+    "description_my": "",
+    "description_en": "",
+    "context_my": "",
+    "context_en": ""
   },
   {
     "name_my": "Doa Ayat Kursi",
@@ -1395,13 +1447,14 @@
       "Faith",
       "Perlindungan",
       "Protection",
-      "Tauhid"
+      "Tauhid",
+      "Monotheism"
     ],
     "slug": "ayat-kursi",
-    "description_my": "Ayat Kursi adalah ayat yang menegaskan keesaan dan kekuasaan Allah. Ia sering dibaca untuk perlindungan daripada kejahatan dan gangguan syaitan.",
-    "description_en": "Ayatul Kursi is a verse that affirms Allah's oneness and supreme authority. It is often recited for protection against evil and satanic disturbances.",
-    "context_my": "Ayat Kursi memiliki keutamaan yang besar dalam Islam. Menurut hadis, ia adalah ayat paling agung dalam Al-Quran dan memberi perlindungan kepada sesiapa yang membacanya sebelum tidur atau selepas solat.",
-    "context_en": "Ayatul Kursi holds great significance in Islam. According to hadith, it is the greatest verse in the Quran and provides protection to those who recite it before sleeping or after prayers."
+    "description_my": "",
+    "description_en": "",
+    "context_my": "",
+    "context_en": ""
   },
   {
     "name_my": "Doa Ketika Mendengar Guruh atau Petir",
@@ -1413,10 +1466,10 @@
     "meaning_en": "Glory be to Allah, whom the thunder glorifies with His praise, and the angels out of fear of Him.",
     "category_names": ["Guruh", "Thunder", "Tasbih", "Glorification"],
     "slug": "doa-ketika-mendengar-guruh-atau-petir",
-    "description_my": "Doa ini diriwayatkan daripada Abdullah bin Zubair RA, yang mengucapkannya ketika mendengar bunyi guruh, sebagai tanda pengagungan kepada Allah.",
-    "description_en": "This supplication is narrated from Abdullah bin Zubair RA, who would recite it upon hearing the sound of thunder, as a sign of glorifying Allah.",
-    "context_my": "Apabila mendengar bunyi guruh, umat Islam disunatkan membaca tasbih ini sebagai pengiktirafan akan kebesaran dan kekuasaan Allah.",
-    "context_en": "When hearing the sound of thunder, Muslims are encouraged to recite this tasbih as an acknowledgment of Allah's greatness and power."
+    "description_my": "",
+    "description_en": "",
+    "context_my": "",
+    "context_en": ""
   },
   {
     "name_my": "Doa Ketika Turunnya Hujan",
@@ -1428,10 +1481,10 @@
     "meaning_en": "O Allah, make this rain beneficial.",
     "category_names": ["Hujan", "Rain", "Rahmat", "Mercy"],
     "slug": "doa-ketika-turunnya-hujan",
-    "description_my": "Doa ini diajarkan oleh Nabi Muhammad SAW untuk dibaca ketika hujan turun, memohon agar hujan yang turun membawa manfaat dan kebaikan.",
-    "description_en": "This supplication was taught by the Prophet Muhammad (peace be upon him) to be recited when rain falls, seeking that the rain brings benefit and goodness.",
-    "context_my": "Apabila hujan turun, umat Islam disunatkan membaca doa ini sebagai tanda syukur dan memohon agar hujan tersebut membawa rahmat serta tidak mendatangkan mudarat.",
-    "context_en": "When rain falls, Muslims are encouraged to recite this supplication as an expression of gratitude and to ask that the rain brings mercy and does not cause harm."
+    "description_my": "",
+    "description_en": "",
+    "context_my": "",
+    "context_en": ""
   },
   {
     "name_my": "Doa Untuk Berkat Di Rajab Dan Sha'ban Serta Sampai Ramadan",
@@ -1442,17 +1495,17 @@
     "meaning_my": "Ya Allah, berkatilah kami dalam bulan Rajab dan Sha'ban, dan sampaikanlah kami kepada bulan Ramadan.",
     "meaning_en": "O Allah, bless us in Rajab and Sha'ban and enable us to reach Ramadan.",
     "category_names": [
+      "Bulan Islam",
+      "Islamic Months",
       "Rajab",
       "Sha'ban",
-      "Ramadan",
-      "Bulan Islam",
-      "Islamic Months"
+      "Ramadan"
     ],
     "slug": "doa-untuk-berkat-di-rajab-dan-shaaban-serta-sampai-ramadan",
-    "description_my": "Doa ini diriwayatkan daripada Anas bin Malik RA, walaupun sanadnya da'if, tetapi ia sering diamalkan untuk memohon berkat dan panjang umur hingga Ramadan.",
-    "description_en": "This supplication is narrated from Anas bin Malik RA, although its chain is weak, it is commonly practiced to seek blessings and longevity to reach Ramadan.",
-    "context_my": "Doa ini dibaca ketika memasuki bulan Rajab sebagai persediaan menyambut Ramadan, walaupun hadisnya da'if, tetapi kandungannya baik dan boleh diamalkan.",
-    "context_en": "This dua is recited upon entering the month of Rajab as preparation for welcoming Ramadan, even though the hadith is weak, its content is good and permissible to practice."
+    "description_my": "",
+    "description_en": "",
+    "context_my": "",
+    "context_en": ""
   },
   {
     "name_my": "Doa Untuk Qana'ah Dengan Rezeki Dan Berkat Di Dalamnya",
@@ -1471,10 +1524,10 @@
       "Blessing"
     ],
     "slug": "doa-untuk-qanaah-dengan-rezeki-dan-berkat-di-dalamnya",
-    "description_my": "Doa ini diriwayatkan daripada Ibn Abbas RA, di mana Nabi Muhammad SAW mengajar untuk memohon qana'ah dengan rezeki yang diberi, berkat di dalamnya, dan pengganti yang lebih baik untuk apa yang hilang.",
-    "description_en": "This supplication is narrated from Ibn Abbas RA, where the Prophet Muhammad (peace be upon him) taught to seek contentment with the provided sustenance, blessings in it, and a better replacement for what is lost.",
-    "context_my": "Doa ini dibaca untuk memupuk sikap qana'ah atau redha dengan rezeki Allah, memohon berkat dan pengganti yang baik bagi segala kerugian.",
-    "context_en": "This dua is recited to cultivate contentment or satisfaction with Allah's provision, seeking blessings and good replacement for any losses."
+    "description_my": "",
+    "description_en": "",
+    "context_my": "",
+    "context_en": ""
   },
   {
     "name_my": "Doa Hidup Dan Mati Dengan Iman Serta Ampunan Untuk Ibu Bapa",
@@ -1493,10 +1546,10 @@
       "Parents"
     ],
     "slug": "doa-hidup-dan-mati-dengan-iman-serta-ampunan-untuk-ibu-bapa",
-    "description_my": "Doa ini memohon agar hidup dan mati dalam iman serta ampunan untuk diri dan ibu bapa, sering diamalkan dalam doa harian.",
-    "description_en": "This supplication seeks to live and die in faith and forgiveness for oneself and parents, commonly practiced in daily prayers.",
-    "context_my": "Dibaca selepas solat atau dalam doa harian untuk memperkukuh iman dan memohon ampunan.",
-    "context_en": "Recited after prayer or in daily supplications to strengthen faith and seek forgiveness."
+    "description_my": "",
+    "description_en": "",
+    "context_my": "",
+    "context_en": ""
   },
   {
     "name_my": "Doa Husnul Khotimah",
@@ -1515,8 +1568,8 @@
       "Hereafter"
     ],
     "slug": "doa-husnul-khotimah",
-    "description_my": "Doa ini memohon akhir yang baik dalam kehidupan, sering dibaca untuk menghindari akhir yang buruk. Walaupun tiada riwayat hadis sahih dengan lafaz tepat, maknanya selaras dengan ajaran Islam.",
-    "description_en": "This supplication asks for a good conclusion to life, commonly recited to avoid a bad end. Although there is no specific authentic hadith with the exact wording, its meaning aligns with Islamic teachings.",
+    "description_my": "",
+    "description_en": "",
     "context_my": "Dibaca dalam doa harian atau selepas solat untuk memohon kematian yang baik. Menurut https://muftiwp.gov.my/ms/artikel/irsyad-al-hadith/2278-irsyad-al-hadith-siri-ke-245-doa-mati-dalam-kebaikan, doa merupakan salah satu ibadah yang hebat kerana ia berhubung terus kepada Allah SWT. Di samping itu, di dalam bab berdoa terdapat keluasan yang mana kita tidak semestinya perlu berdoa dengan doa yang diajar oleh Allah SWT di dalam al-Quran dan juga yang diajar oleh Nabi SAW di dalam hadith sahaja walaupun sebaik-baik doa atau lafaz doa adalah yang daripada Allah SWT dan Nabi SAW. Kita boleh berdoa dengan apa jua doa sekalipun selagimana makna atau maksud doa tersebut adalah baik dan tidak bercanggah dengan agama.",
     "context_en": "Recited in daily supplications or after prayer to seek a good death. According to https://muftiwp.gov.my/ms/artikel/irsyad-al-hadith/2278-irsyad-al-hadith-siri-ke-245-doa-mati-dalam-kebaikan, supplication is one of the greatest acts of worship as it connects directly to Allah SWT. Additionally, there is flexibility in supplication where we do not necessarily have to supplicate with the supplications taught by Allah SWT in the Quran or by the Prophet SAW in the hadith, although the best supplications or wording are those from Allah SWT and the Prophet SAW. We can supplicate with any supplication as long as its meaning or intent is good and does not contradict the religion."
   },
@@ -1537,10 +1590,10 @@
       "Mercy"
     ],
     "slug": "doa-agar-hati-tidak-menyimpang",
-    "description_my": "Doa ini dari al-Quran, memohon agar hati tetap teguh pada petunjuk dan rahmat Allah.",
-    "description_en": "This Quranic supplication seeks steadfastness in guidance and Allah's mercy.",
-    "context_my": "Dibaca untuk menjaga iman dan memohon rahmat Allah.",
-    "context_en": "Recited to maintain faith and seek Allah's mercy."
+    "description_my": "",
+    "description_en": "",
+    "context_my": "",
+    "context_en": ""
   },
   {
     "name_my": "Doa Kebaikan Dunia Dan Akhirat",
@@ -1559,10 +1612,10 @@
       "Goodness"
     ],
     "slug": "doa-kebaikan-dunia-dan-akhirat",
-    "description_my": "Doa ini dari al-Quran, memohon kebaikan di dunia dan akhirat serta perlindungan dari azab neraka.",
-    "description_en": "This Quranic supplication seeks goodness in both worlds and protection from Hellfire.",
-    "context_my": "Dibaca selepas solat atau dalam doa harian sebagai permohonan kebaikan menyeluruh.",
-    "context_en": "Recited after prayer or in daily supplications for comprehensive goodness."
+    "description_my": "",
+    "description_en": "",
+    "context_my": "",
+    "context_en": ""
   },
   {
     "name_my": "Doa Penerimaan Solat Dan Doa",
@@ -1590,8 +1643,8 @@
     "name_my": "Doa Keselamatan Dalam Agama Dan Dunia Akhirat",
     "name_en": "Dua for Safety in Religion and This World and Hereafter",
     "content": "اللَّهُمَّ إِنَّا نَسْأَلُكَ سَلَامَةً فِي الدِّينِ وَعَافِيَةً فِي الْجَسَدِ وَزِيَادَةً فِي الْعِلْمِ وَبَرَكَةً فِي الرِّزْقِ وَتَوْبَةً قَبْلَ الْمَوْتِ وَرَحْمَةً عِنْدَ الْمَوْتِ وَمَغْفِرَةً بَعْدَ الْمَوْتِ. اللَّهُمَّ هَوِّنْ عَلَيْنَا فِي سَكَرَاتِ الْمَوْتِ وَالنَّجَاةَ مِنَ النَّارِ وَالْعَفْوَ عِنْدَ الْحِسَابِ",
-    "reference_my": "Riwayat al-Hakim dalam al-Mustadrak (1/523)",
-    "reference_en": "Narrated by al-Hakim in al-Mustadrak (1/523)",
+    "reference_my": "Tiada riwayat hadis sahih dengan lafaz tepat",
+    "reference_en": "No specific authentic hadith with exact wording",
     "meaning_my": "Ya Allah, kami memohon kepada-Mu keselamatan dalam agama, kesehatan badan, pertambahan ilmu, berkah dalam rezeki, taubat sebelum mati, rahmat ketika mati, dan ampunan sesudah mati. Ya Allah, mudahkanlah kami ketika sakaratul maut, selamatkan dari neraka dan maafkan ketika hisab.",
     "meaning_en": "O Allah, we ask You for safety in religion, well-being in the body, increase in knowledge, blessing in provision, repentance before death, mercy at death, and forgiveness after death. O Allah, ease for us the throes of death, salvation from the Fire, and pardon at the reckoning.",
     "category_names": [
@@ -1605,10 +1658,10 @@
       "Knowledge"
     ],
     "slug": "doa-keselamatan-dalam-agama-dan-dunia-akhirat",
-    "description_my": "Doa ini diriwayatkan daripada Ibn Umar RA, memohon keselamatan menyeluruh di dunia dan akhirat.",
-    "description_en": "This supplication is narrated from Ibn Umar RA, seeking comprehensive safety in this world and the hereafter.",
-    "context_my": "Dibaca selepas solat fardhu sebagai doa selamat dunia akhirat.",
-    "context_en": "Recited after obligatory prayers as a supplication for safety in both worlds."
+    "description_my": "",
+    "description_en": "",
+    "context_my": "Dibaca dalam doa harian atau selepas solat untuk memohon kematian yang baik. Menurut https://muftiwp.gov.my/ms/artikel/irsyad-al-hadith/2278-irsyad-al-hadith-siri-ke-245-doa-mati-dalam-kebaikan, doa merupakan salah satu ibadah yang hebat kerana ia berhubung terus kepada Allah SWT. Di samping itu, di dalam bab berdoa terdapat keluasan yang mana kita tidak semestinya perlu berdoa dengan doa yang diajar oleh Allah SWT di dalam al-Quran dan juga yang diajar oleh Nabi SAW di dalam hadith sahaja walaupun sebaik-baik doa atau lafaz doa adalah yang daripada Allah SWT dan Nabi SAW. Kita boleh berdoa dengan apa jua doa sekalipun selagimana makna atau maksud doa tersebut adalah baik dan tidak bercanggah dengan agama.",
+    "context_en": "Recited in daily supplications or after prayer to seek a good death. According to https://muftiwp.gov.my/ms/artikel/irsyad-al-hadith/2278-irsyad-al-hadith-siri-ke-245-doa-mati-dalam-kebaikan, supplication is one of the greatest acts of worship as it connects directly to Allah SWT. Additionally, there is flexibility in supplication where we do not necessarily have to supplicate with the supplications taught by Allah SWT in the Quran or by the Prophet SAW in the hadith, although the best supplications or wording are those from Allah SWT and the Prophet SAW. We can supplicate with any supplication as long as its meaning or intent is good and does not contradict the religion."
   },
   {
     "name_my": "Doa Untuk Pengakhiran Yang Baik Dalam Segala Urusan",
@@ -1634,100 +1687,98 @@
     "context_my": "Dibaca untuk memohon agar segala urusan diakhiri dengan baik dan dilindungi dari segala kehinaan.",
     "context_en": "Recited to seek that all affairs end well and to be protected from all humiliations."
   },
-  [
-    {
-      "name_my": "Doa Ketika Ditimpa Musibah",
-      "name_en": "Dua When Afflicted by a Calamity",
-      "content": "إِنَّا لِلَّهِ وَإِنَّا إِلَيْهِ رَاجِعُونَ اللَّهُمَّ أْجُرْنِي فِي مُصِيبَتِي وَأَخْلِفْ لِي خَيْرًا مِنْهَا",
-      "reference_my": "Riwayat Sahih Muslim (918)",
-      "reference_en": "Narrated in Sahih Muslim (918)",
-      "meaning_my": "Sesungguhnya kami adalah kepunyaan Allah dan kepada-Nya jualah kami kembali. Ya Allah, berilah aku pahala pada musibah yang menimpaku ini, dan berilah ganti kepadaku yang lebih baik daripadanya.",
-      "meaning_en": "We belong to Allah and to Him we shall return. O Allah, reward me for my affliction and give me something better than it in exchange.",
-      "category_names": [
-        "Musibah",
-        "Calamity",
-        "Kesabaran",
-        "Patience",
-        "Pahala",
-        "Reward",
-        "Penggantian",
-        "Compensation"
-      ],
-      "slug": "doa-ketika-ditimpa-musibah",
-      "description_my": "Doa ini diriwayatkan daripada Ummu Salamah RA, memohon pahala dan pengganti yang lebih baik ketika ditimpa musibah.",
-      "description_en": "This supplication is narrated from Umm Salamah RA, seeking reward and a better replacement when afflicted by a calamity.",
-      "context_my": "Dibaca ketika menghadapi musibah, kehilangan atau kesulitan.",
-      "context_en": "Recited when facing calamity, loss, or hardship."
-    },
-    {
-      "name_my": "Doa Solat Jenazah Lelaki",
-      "name_en": "Dua for Funeral Prayer for Male",
-      "content": "اللَّهُمَّ اغْفِرْ لَهُ وَارْحَمْهُ وَعَافِهِ وَاعْفُ عَنْهُ وَأَكْرِمْ نُزُلَهُ وَوَسِّعْ مُدْخَلَهُ وَاغْسِلْهُ بِالْمَاءِ وَالثَّلْجِ وَالْبَرَدِ وَنَقِّهِ مِنَ الْخَطَايَا كَمَا نَقَّيْتَ الثَّوْبَ الأَبْيَضَ مِنَ الدَّنَسِ وَأَبْدِلْهُ دَارًا خَيْرًا مِنْ دَارِهِ وَأَهْلاً خَيْرًا مِنْ أَهْلِهِ وَزَوْجًا خَيْرًا مِنْ زَوْجِهِ وَأَدْخِلْهُ الْجَنَّةَ وَأَعِذْهُ مِنْ عَذَابِ الْقَبْرِ وَعَذَابِ النَّارِ",
-      "reference_my": "Riwayat Muslim (963)",
-      "reference_en": "Narrated in Muslim (963)",
-      "meaning_my": "Ya Allah, ampunilah dia, rahmatilah dia, selamatkanlah dia, maafkanlah dia, muliakanlah tempat tinggalnya, luaskanlah tempat masuknya, cucilah dia dengan air, salji dan embun, bersihkanlah dia dari kesalahan-kesalahan sebagaimana Engkau membersihkan baju putih dari kotoran, gantikanlah baginya rumah yang lebih baik dari rumahnya, keluarga yang lebih baik dari keluarganya, pasangan yang lebih baik dari pasangannya, masukkanlah dia ke dalam syurga dan lindungilah dia dari azab kubur dan azab neraka.",
-      "meaning_en": "O Allah, forgive him and have mercy on him, and give him strength and pardon him. Be generous to him, and cause his entrance to be wide, and wash him with water and snow and hail. Cleanse him of his transgressions as white cloth is cleansed of stains. Give him an abode better than his home, and a family better than his family, and a wife better than his wife. Take him into Paradise and protect him from the punishment of the grave and from the punishment of Hell-fire.",
-      "category_names": [
-        "Jenazah",
-        "Funeral",
-        "Lelaki",
-        "Male",
-        "Ampunan",
-        "Forgiveness",
-        "Rahmat",
-        "Mercy"
-      ],
-      "slug": "doa-solat-jenazah-lelaki",
-      "description_my": "Doa ini dibaca semasa solat jenazah untuk lelaki dewasa, memohon ampunan, rahmat dan syurga daripada Allah.",
-      "description_en": "This supplication is recited during the funeral prayer for an adult male, seeking forgiveness, mercy, and Paradise from Allah.",
-      "context_my": "Dibaca selepas takbir ketiga dalam solat jenazah lelaki.",
-      "context_en": "Recited after the third takbir in the male funeral prayer."
-    },
-    {
-      "name_my": "Doa Solat Jenazah Perempuan",
-      "name_en": "Dua for Funeral Prayer for Female",
-      "content": "اللَّهُمَّ اغْفِرْ لَهَا وَارْحَمْهَا وَعَافِهَا وَاعْفُ عَنْهَا وَأَكْرِمْ نُزُلَهَا وَوَسِّعْ مُدْخَلَهَا وَاغْسِلْهَا بِالْمَاءِ وَالثَّلْجِ وَالْبَرَدِ وَنَقِّهَا مِنَ الْخَطَايَا كَمَا نَقَّيْتَ الثَّوْبَ الأَبْيَضَ مِنَ الدَّنَسِ وَأَبْدِلْهَا دَارًا خَيْرًا مِنْ دَارِهَا وَأَهْلاً خَيْرًا مِنْ أَهْلِهَا وَزَوْجًا خَيْرًا مِنْ زَوْجِهَا وَأَدْخِلْهَا الْجَنَّةَ وَأَعِذْهَا مِنْ عَذَابِ الْقَبْرِ وَعَذَابِ النَّارِ",
-      "reference_my": "Riwayat Muslim (963)",
-      "reference_en": "Narrated in Muslim (963)",
-      "meaning_my": "Ya Allah, ampunilah dia, rahmatilah dia, selamatkanlah dia, maafkanlah dia, muliakanlah tempat tinggalnya, luaskanlah tempat masuknya, cucilah dia dengan air, salji dan embun, bersihkanlah dia dari kesalahan-kesalahan sebagaimana Engkau membersihkan baju putih dari kotoran, gantikanlah baginya rumah yang lebih baik dari rumahnya, keluarga yang lebih baik dari keluarganya, pasangan yang lebih baik dari pasangannya, masukkanlah dia ke dalam syurga dan lindungilah dia dari azab kubur dan azab neraka.",
-      "meaning_en": "O Allah, forgive her and have mercy on her, and give her strength and pardon her. Be generous to her, and cause her entrance to be wide, and wash her with water and snow and hail. Cleanse her of her transgressions as white cloth is cleansed of stains. Give her an abode better than her home, and a family better than her family, and a husband better than her husband. Take her into Paradise and protect her from the punishment of the grave and from the punishment of Hell-fire.",
-      "category_names": [
-        "Jenazah",
-        "Funeral",
-        "Perempuan",
-        "Female",
-        "Ampunan",
-        "Forgiveness",
-        "Rahmat",
-        "Mercy"
-      ],
-      "slug": "doa-solat-jenazah-perempuan",
-      "description_my": "Doa ini dibaca semasa solat jenazah untuk perempuan dewasa, memohon ampunan, rahmat dan syurga daripada Allah.",
-      "description_en": "This supplication is recited during the funeral prayer for an adult female, seeking forgiveness, mercy, and Paradise from Allah.",
-      "context_my": "Dibaca selepas takbir ketiga dalam solat jenazah perempuan.",
-      "context_en": "Recited after the third takbir in the female funeral prayer."
-    },
-    {
-      "name_my": "Doa Mohon Rezeki",
-      "name_en": "Dua for Seeking Provision",
-      "content": "اللَّهُمَّ إِنِّي أَسْأَلُكَ مِنْ فَضْلِكَ وَرَحْمَتِكَ فَإِنَّهُ لَا يَمْلِكُهَا إِلَّا أَنْتَ",
-      "reference_my": "Riwayat Al-Tabarani dalam al-Mu'jam al-Kabir (10379) daripada Abu Nu'aim dalam Hilyah al-Auliya' (7/280)",
-      "reference_en": "Narrated by Al-Tabarani in al-Mu'jam al-Kabir (10379) from Abu Nu'aim in Hilyah al-Auliya' (7/280)",
-      "meaning_my": "Ya Allah, sesungguhnya aku memohon kepada-Mu daripada kurniaan-Mu dan rahmat-Mu, maka sesungguhnya tiada yang memilikinya kecuali Engkau.",
-      "meaning_en": "O Allah, indeed I ask You for Your favour and Your mercy, for indeed none possesses them except You.",
-      "category_names": [
-        "Rezeki",
-        "Provision",
-        "Kurniaan",
-        "Bounty",
-        "Rahmat",
-        "Mercy"
-      ],
-      "slug": "doa-mohon-rezeki",
-      "description_my": "Doa ini diriwayatkan daripada Abdullah ibn Mas'ud RA melalui riwayat Al-Tabarani, memohon kurniaan dan rahmat Allah untuk rezeki. Hadis ini terdapat dalam koleksi hadis tetapi gradingnya mungkin hasan atau da'if menurut sesetengah ulama, namun sering diamalkan untuk memohon rezeki.",
-      "description_en": "This supplication is narrated from Abdullah ibn Mas'ud RA via Al-Tabarani, seeking Allah's bounty and mercy for provision. The hadith is found in hadith collections but may be graded as hasan or da'if by some scholars, yet commonly practiced for seeking sustenance.",
-      "context_my": "Dibaca ketika memohon rezeki, terutamanya dalam keadaan kesusahan atau kelaparan, seperti dalam kisah Nabi SAW.",
-      "context_en": "Recited when seeking provision, especially in times of hardship or hunger, as in the story of the Prophet SAW."
-    }
-  ]
+  {
+    "name_my": "Doa Ketika Ditimpa Musibah",
+    "name_en": "Dua When Afflicted by a Calamity",
+    "content": "إِنَّا لِلَّهِ وَإِنَّا إِلَيْهِ رَاجِعُونَ اللَّهُمَّ أْجُرْنِي فِي مُصِيبَتِي وَأَخْلِفْ لِي خَيْرًا مِنْهَا",
+    "reference_my": "Riwayat Sahih Muslim (918)",
+    "reference_en": "Narrated in Sahih Muslim (918)",
+    "meaning_my": "Sesungguhnya kami adalah kepunyaan Allah dan kepada-Nya jualah kami kembali. Ya Allah, berilah aku pahala pada musibah yang menimpaku ini, dan berilah ganti kepadaku yang lebih baik daripadanya.",
+    "meaning_en": "We belong to Allah and to Him we shall return. O Allah, reward me for my affliction and give me something better than it in exchange.",
+    "category_names": [
+      "Musibah",
+      "Calamity",
+      "Kesabaran",
+      "Patience",
+      "Pahala",
+      "Reward",
+      "Penggantian",
+      "Compensation"
+    ],
+    "slug": "doa-ketika-ditimpa-musibah",
+    "description_my": "Doa ini diriwayatkan daripada Ummu Salamah RA, memohon pahala dan pengganti yang lebih baik ketika ditimpa musibah.",
+    "description_en": "This supplication is narrated from Umm Salamah RA, seeking reward and a better replacement when afflicted by a calamity.",
+    "context_my": "Dibaca ketika menghadapi musibah, kehilangan atau kesulitan.",
+    "context_en": "Recited when facing calamity, loss, or hardship."
+  },
+  {
+    "name_my": "Doa Solat Jenazah Lelaki",
+    "name_en": "Dua for Funeral Prayer for Male",
+    "content": "اللَّهُمَّ اغْفِرْ لَهُ وَارْحَمْهُ وَعَافِهِ وَاعْفُ عَنْهُ وَأَكْرِمْ نُزُلَهُ وَوَسِّعْ مُدْخَلَهُ وَاغْسِلْهُ بِالْمَاءِ وَالثَّلْجِ وَالْبَرَدِ وَنَقِّهِ مِنَ الْخَطَايَا كَمَا نَقَّيْتَ الثَّوْبَ الأَبْيَضَ مِنَ الدَّنَسِ وَأَبْدِلْهُ دَارًا خَيْرًا مِنْ دَارِهِ وَأَهْلاً خَيْرًا مِنْ أَهْلِهِ وَزَوْجًا خَيْرًا مِنْ زَوْجِهِ وَأَدْخِلْهُ الْجَنَّةَ وَأَعِذْهُ مِنْ عَذَابِ الْقَبْرِ وَعَذَابِ النَّارِ",
+    "reference_my": "Riwayat Muslim (963)",
+    "reference_en": "Narrated in Muslim (963)",
+    "meaning_my": "Ya Allah, ampunilah dia, rahmatilah dia, selamatkanlah dia, maafkanlah dia, muliakanlah tempat tinggalnya, luaskanlah tempat masuknya, cucilah dia dengan air, salji dan embun, bersihkanlah dia dari kesalahan-kesalahan sebagaimana Engkau membersihkan baju putih dari kotoran, gantikanlah baginya rumah yang lebih baik dari rumahnya, keluarga yang lebih baik dari keluarganya, pasangan yang lebih baik dari pasangannya, masukkanlah dia ke dalam syurga dan lindungilah dia dari azab kubur dan azab neraka.",
+    "meaning_en": "O Allah, forgive him and have mercy on him, and give him strength and pardon him. Be generous to him, and cause his entrance to be wide, and wash him with water and snow and hail. Cleanse him of his transgressions as white cloth is cleansed of stains. Give him an abode better than his home, and a family better than his family, and a wife better than his wife. Take him into Paradise and protect him from the punishment of the grave and from the punishment of Hell-fire.",
+    "category_names": [
+      "Jenazah",
+      "Funeral",
+      "Lelaki",
+      "Male",
+      "Ampunan",
+      "Forgiveness",
+      "Rahmat",
+      "Mercy"
+    ],
+    "slug": "doa-solat-jenazah-lelaki",
+    "description_my": "Doa ini dibaca semasa solat jenazah untuk lelaki dewasa, memohon ampunan, rahmat dan syurga daripada Allah.",
+    "description_en": "This supplication is recited during the funeral prayer for an adult male, seeking forgiveness, mercy, and Paradise from Allah.",
+    "context_my": "Dibaca selepas takbir ketiga dalam solat jenazah lelaki.",
+    "context_en": "Recited after the third takbir in the male funeral prayer."
+  },
+  {
+    "name_my": "Doa Solat Jenazah Perempuan",
+    "name_en": "Dua for Funeral Prayer for Female",
+    "content": "اللَّهُمَّ اغْفِرْ لَهَا وَارْحَمْهَا وَعَافِهَا وَاعْفُ عَنْهَا وَأَكْرِمْ نُزُلَهَا وَوَسِّعْ مُدْخَلَهَا وَاغْسِلْهَا بِالْمَاءِ وَالثَّلْجِ وَالْبَرَدِ وَنَقِّهَا مِنَ الْخَطَايَا كَمَا نَقَّيْتَ الثَّوْبَ الأَبْيَضَ مِنَ الدَّنَسِ وَأَبْدِلْهَا دَارًا خَيْرًا مِنْ دَارِهَا وَأَهْلاً خَيْرًا مِنْ أَهْلِهَا وَزَوْجًا خَيْرًا مِنْ زَوْجِهَا وَأَدْخِلْهَا الْجَنَّةَ وَأَعِذْهَا مِنْ عَذَابِ الْقَبْرِ وَعَذَابِ النَّارِ",
+    "reference_my": "Riwayat Muslim (963)",
+    "reference_en": "Narrated in Muslim (963)",
+    "meaning_my": "Ya Allah, ampunilah dia, rahmatilah dia, selamatkanlah dia, maafkanlah dia, muliakanlah tempat tinggalnya, luaskanlah tempat masuknya, cucilah dia dengan air, salji dan embun, bersihkanlah dia dari kesalahan-kesalahan sebagaimana Engkau membersihkan baju putih dari kotoran, gantikanlah baginya rumah yang lebih baik dari rumahnya, keluarga yang lebih baik dari keluarganya, pasangan yang lebih baik dari pasangannya, masukkanlah dia ke dalam syurga dan lindungilah dia dari azab kubur dan azab neraka.",
+    "meaning_en": "O Allah, forgive her and have mercy on her, and give her strength and pardon her. Be generous to her, and cause her entrance to be wide, and wash her with water and snow and hail. Cleanse her of her transgressions as white cloth is cleansed of stains. Give her an abode better than her home, and a family better than her family, and a husband better than her husband. Take her into Paradise and protect her from the punishment of the grave and from the punishment of Hell-fire.",
+    "category_names": [
+      "Jenazah",
+      "Funeral",
+      "Perempuan",
+      "Female",
+      "Ampunan",
+      "Forgiveness",
+      "Rahmat",
+      "Mercy"
+    ],
+    "slug": "doa-solat-jenazah-perempuan",
+    "description_my": "Doa ini dibaca semasa solat jenazah untuk perempuan dewasa, memohon ampunan, rahmat dan syurga daripada Allah.",
+    "description_en": "This supplication is recited during the funeral prayer for an adult female, seeking forgiveness, mercy, and Paradise from Allah.",
+    "context_my": "Dibaca selepas takbir ketiga dalam solat jenazah perempuan.",
+    "context_en": "Recited after the third takbir in the female funeral prayer."
+  },
+  {
+    "name_my": "Doa Mohon Rezeki",
+    "name_en": "Dua for Seeking Provision",
+    "content": "اللَّهُمَّ إِنِّي أَسْأَلُكَ مِنْ فَضْلِكَ وَرَحْمَتِكَ فَإِنَّهُ لَا يَمْلِكُهَا إِلَّا أَنْتَ",
+    "reference_my": "Riwayat Al-Tabarani dalam al-Mu'jam al-Kabir (10379) daripada Abu Nu'aim dalam Hilyah al-Auliya' (7/280)",
+    "reference_en": "Narrated by Al-Tabarani in al-Mu'jam al-Kabir (10379) from Abu Nu'aim in Hilyah al-Auliya' (7/280)",
+    "meaning_my": "Ya Allah, sesungguhnya aku memohon kepada-Mu daripada kurniaan-Mu dan rahmat-Mu, maka sesungguhnya tiada yang memilikinya kecuali Engkau.",
+    "meaning_en": "O Allah, indeed I ask You for Your favour and Your mercy, for indeed none possesses them except You.",
+    "category_names": [
+      "Rezeki",
+      "Provision",
+      "Kurniaan",
+      "Bounty",
+      "Rahmat",
+      "Mercy"
+    ],
+    "slug": "doa-mohon-rezeki",
+    "description_my": "",
+    "description_en": "",
+    "context_my": "",
+    "context_en": ""
+  }
 ]
