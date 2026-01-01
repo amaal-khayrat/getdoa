@@ -24,9 +24,13 @@ export function DoaImageGenerator() {
   // State
   const [selectedDoa, setSelectedDoa] = useState<DoaItem | null>(null)
   const [selectedBackground, setSelectedBackground] = useState(1)
-  const [language, setLanguage] = useState<Language>(contextLanguage as Language)
+  const [language, setLanguage] = useState<Language>(
+    contextLanguage as Language,
+  )
   const [isGenerating, setIsGenerating] = useState(false)
-  const [generatedImageUrl, setGeneratedImageUrl] = useState<string | null>(null)
+  const [generatedImageUrl, setGeneratedImageUrl] = useState<string | null>(
+    null,
+  )
   const [error, setError] = useState<string | null>(null)
 
   // Handle doa selection
@@ -89,7 +93,9 @@ export function DoaImageGenerator() {
     } catch (err) {
       console.error('Failed to generate image:', err)
       setError(
-        err instanceof Error ? err.message : 'Failed to generate image. Please try again.'
+        err instanceof Error
+          ? err.message
+          : 'Failed to generate image. Please try again.',
       )
     } finally {
       setIsGenerating(false)
@@ -110,7 +116,10 @@ export function DoaImageGenerator() {
         {/* Language Toggle */}
         <div className="flex items-center gap-2">
           <Languages className="w-4 h-4 text-muted-foreground" />
-          <Select value={language} onValueChange={(v) => handleLanguageChange(v as Language)}>
+          <Select
+            value={language}
+            onValueChange={(v) => handleLanguageChange(v as Language)}
+          >
             <SelectTrigger className="w-[140px]">
               <SelectValue />
             </SelectTrigger>
@@ -199,12 +208,12 @@ export function DoaImageGenerator() {
               </CardHeader>
               <CardContent className="pt-0">
                 <p className="font-medium">
-                  {language === 'my' ? selectedDoa.name_my : selectedDoa.name_en}
+                  {language === 'my' ? selectedDoa.nameMy : selectedDoa.nameEn}
                 </p>
                 <p className="text-sm text-muted-foreground mt-1">
                   {language === 'my'
-                    ? selectedDoa.reference_my
-                    : selectedDoa.reference_en}
+                    ? selectedDoa.referenceMy
+                    : selectedDoa.referenceEn}
                 </p>
               </CardContent>
             </Card>

@@ -5,7 +5,7 @@ import { Card } from '@/components/ui/card'
 import { useLanguage } from '@/contexts/language-context'
 
 export function DoaNotFound({ searchedSlug }: { searchedSlug?: string }) {
-  const { language, t } = useLanguage()
+  const { language } = useLanguage()
 
   const suggestedPrayers = [
     {

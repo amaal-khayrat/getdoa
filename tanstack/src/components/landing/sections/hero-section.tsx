@@ -28,7 +28,7 @@ export function HeroSection() {
         {/* CTA Buttons */}
         <div className="flex flex-col sm:flex-row items-center justify-center gap-4 w-full max-w-md mx-auto sm:max-w-none sm:mx-0">
           <Link
-            to="/dashboard"
+            to="/onboarding"
             className={cn(
               buttonVariants({ size: 'lg', variant: 'primary-gradient' }),
               'w-full sm:w-auto px-8 py-4 text-lg shadow-green hover:shadow-green-lg hover:-translate-y-0.5 transition-all duration-300 flex items-center gap-2 min-h-14 justify-center',

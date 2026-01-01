@@ -57,7 +57,8 @@ export function ShopeeReferralsSection({
 
   // Calculate partial success
   const successfulCount = referrals.filter((r) => r.ogData?.image).length
-  const showPartialSuccess = successfulCount > 0 && successfulCount < referrals.length
+  const showPartialSuccess =
+    successfulCount > 0 && successfulCount < referrals.length
 
   return (
     <section className="mt-8">

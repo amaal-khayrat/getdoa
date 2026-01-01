@@ -1,6 +1,6 @@
-import type { SpaceTemplate } from '@/types/space.types'
+import type { ListTemplate } from '@/types/doa-list.types'
 
-export const SPACE_TEMPLATES: SpaceTemplate[] = [
+export const LIST_TEMPLATES: ListTemplate[] = [
   {
     id: 'morning-azkar',
     name: 'Morning Azkar',
@@ -68,6 +68,6 @@ export const SPACE_TEMPLATES: SpaceTemplate[] = [
   },
 ]
 
-export function getTemplateById(id: string): SpaceTemplate | undefined {
-  return SPACE_TEMPLATES.find((t) => t.id === id)
+export function getTemplateById(id: string): ListTemplate | undefined {
+  return LIST_TEMPLATES.find((t) => t.id === id)
 }

@@ -16,13 +16,13 @@ export function searchPrayers(prayers: Array<any>, query: string): Array<any> {
 
   return prayers.filter((prayer) => {
     return (
-      prayer.name_en?.toLowerCase().includes(searchTerm) ||
-      prayer.name_my?.toLowerCase().includes(searchTerm) ||
+      prayer.nameEn?.toLowerCase().includes(searchTerm) ||
+      prayer.nameMy?.toLowerCase().includes(searchTerm) ||
       prayer.content?.toLowerCase().includes(searchTerm) ||
-      prayer.meaning_en?.toLowerCase().includes(searchTerm) ||
-      prayer.meaning_my?.toLowerCase().includes(searchTerm) ||
-      prayer.reference_en?.toLowerCase().includes(searchTerm) ||
-      prayer.reference_my?.toLowerCase().includes(searchTerm)
+      prayer.meaningEn?.toLowerCase().includes(searchTerm) ||
+      prayer.meaningMy?.toLowerCase().includes(searchTerm) ||
+      prayer.referenceEn?.toLowerCase().includes(searchTerm) ||
+      prayer.referenceMy?.toLowerCase().includes(searchTerm)
     )
   })
 }
@@ -36,7 +36,7 @@ export function filterByCategory(
 ): Array<any> {
   if (!category || category === 'All Categories') return prayers
 
-  return prayers.filter((prayer) => prayer.category_names?.includes(category))
+  return prayers.filter((prayer) => prayer.categoryNames?.includes(category))
 }
 
 /**
@@ -187,7 +187,7 @@ export function analyzeContent(
       sum +
       (prayer.content?.length || 0) +
       (showTranslations
-        ? (prayer.meaning_en?.length || 0) + (prayer.meaning_my?.length || 0)
+        ? (prayer.meaningEn?.length || 0) + (prayer.meaningMy?.length || 0)
         : 0)
     )
   }, 0)
@@ -213,7 +213,7 @@ export function analyzeContent(
 
     // Translation text calculation
     if (showTranslations) {
-      const translationText = prayer.meaning_en || prayer.meaning_my || ''
+      const translationText = prayer.meaningEn || prayer.meaningMy || ''
       const translationWords = translationText.split(' ')
       const translationLinesPerPrayer = Math.ceil(translationWords.length / 12) // Average 12 words per line
       const translationHeight =
@@ -247,7 +247,7 @@ export function analyzeContent(
 
   // Description space if needed
   const hasDescription = prayers.some(
-    (p) => p.description_en || p.description_my,
+    (p) => p.descriptionEn || p.descriptionMy,
   )
   if (hasDescription) {
     contentHeight += 40 // Description space

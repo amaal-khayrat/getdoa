@@ -134,6 +134,25 @@ export const LANDING_CONTENT = {
     ],
   },
 
+  prayerCard: {
+    arabicText: 'رَبَّنَا آتِنَا فِي الدُّنْيَا حَسَنَةً وَفِي الْآخِرَةِ حَسَنَةً وَقِنَا عَذَابَ النَّارِ',
+    translation:
+      'Our Lord, give us in this world [that which is] good and in the Hereafter [that which is] good and protect us from the punishment of the Fire.',
+    reference: 'Surah Al-Baqarah 2:201',
+  },
+
+  spiritualGrowth: {
+    title: 'Nurture Your Spiritual Growth',
+    description:
+      'Develop a consistent prayer habit with tools designed to support your spiritual journey. Track your progress and stay connected to your faith.',
+    features: [
+      'Daily prayer reminders',
+      'Progress tracking',
+      'Personalized recommendations',
+      'Community support',
+    ],
+  },
+
   prayerCarousel: [
     {
       title: 'Morning Adhkar',

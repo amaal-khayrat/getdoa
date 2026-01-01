@@ -7,9 +7,17 @@ import {
 } from '@tanstack/react-router'
 import { TanStackRouterDevtoolsPanel } from '@tanstack/react-router-devtools'
 import { TanStackDevtools } from '@tanstack/react-devtools'
+import { z } from 'zod'
 
 import appCss from '../styles.css?url'
 import { FontPreloader } from '@/components/font-preloader'
+import { ReferralCapture } from '@/components/referral-capture'
+import { Toaster } from '@/components/ui/sonner'
+
+// Define search params at root level for type safety
+const rootSearchSchema = z.object({
+  ref: z.string().optional(),
+})
 
 function NotFound() {
   return (
@@ -36,10 +44,13 @@ function NotFound() {
 }
 
 export const Route = createRootRoute({
+  validateSearch: rootSearchSchema,
   component: () => (
     <>
       <FontPreloader />
+      <ReferralCapture />
       <Outlet />
+      <Toaster />
     </>
   ),
   notFoundComponent: NotFound,

@@ -11,7 +11,7 @@ interface QrCodeDisplayProps {
 
 export function QrCodeDisplay({
   qrContent,
-  supportedPayment,
+  supportedPayment: _supportedPayment,
   size = 250,
   className,
 }: QrCodeDisplayProps) {

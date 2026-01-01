@@ -1,67 +1,37 @@
-import { useEffect, useMemo, useState } from 'react'
-import { Link, useParams } from '@tanstack/react-router'
+import { useEffect, useState } from 'react'
+import { Link, getRouteApi } from '@tanstack/react-router'
 import { BookOpen, Copy, Heart, Share2 } from 'lucide-react'
-import doaDataRaw from '../../../data/doa.json'
-import { DoaNotFound } from './doa-not-found'
 import { MosqueDonationCard } from './mosque-donation-card'
+import { DoaNotFound } from './doa-not-found'
 import { ShopeeReferralsSection } from '@/components/shopee/shopee-referrals-section'
 import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { useLanguage } from '@/contexts/language-context'
 import { SedekahJeApiError, getRandomMosque } from '@/lib/sedekah-je-api'
+import { getAllDoas } from '@/routes/dashboard/functions/doa'
+import type { Doa } from '@/types/doa.types'
 import type { ShopeeOgData } from '@/types/shopee.types'
 
-// Type definitions
-interface DoaItem {
-  name_my: string
-  name_en: string
-  content: string
-  reference_my: string
-  reference_en: string
-  meaning_my: string
-  meaning_en: string
-  category_names: Array<string>
-  slug: string
-  description_my: string
-  description_en: string
-  context_my: string
-  context_en: string
-}
-
-// Type guard for doa data
-const isDoaItem = (item: any): item is DoaItem => {
-  return (
-    typeof item === 'object' &&
-    item !== null &&
-    typeof item.name_my === 'string' &&
-    typeof item.name_en === 'string' &&
-    typeof item.content === 'string' &&
-    typeof item.reference_my === 'string' &&
-    typeof item.reference_en === 'string' &&
-    typeof item.meaning_my === 'string' &&
-    typeof item.meaning_en === 'string' &&
-    Array.isArray(item.category_names) &&
-    typeof item.slug === 'string'
-  )
-}
+// Get the route API for typed access to loader data
+const routeApi = getRouteApi('/doa/$slug')
 
 // Structured data for SEO
 function StructuredData({
   doa,
   language,
 }: {
-  doa: DoaItem
+  doa: Doa
   language: 'en' | 'my'
 }) {
   const structuredData = {
     '@context': 'https://schema.org',
     '@type': 'Article',
-    headline: language === 'my' ? doa.name_my : doa.name_en,
+    headline: language === 'my' ? doa.nameMy : doa.nameEn,
     description:
       language === 'my'
-        ? doa.description_my || doa.meaning_my
-        : doa.description_en || doa.meaning_en,
+        ? doa.descriptionMy || doa.meaningMy
+        : doa.descriptionEn || doa.meaningEn,
     author: {
       '@type': 'Organization',
       name: 'GetDoa',
@@ -72,8 +42,8 @@ function StructuredData({
       '@type': 'WebPage',
       '@id': `https://getdoa.com/doa/${doa.slug}`,
     },
-    articleSection: doa.category_names.join(', '),
-    keywords: doa.category_names.join(', '),
+    articleSection: doa.categoryNames.join(', '),
+    keywords: doa.categoryNames.join(', '),
     inLanguage: language,
   }
 
@@ -88,8 +58,8 @@ function StructuredData({
 }
 
 // Breadcrumb navigation
-function BreadcrumbNav({ doa }: { doa: DoaItem }) {
-  const { t, language } = useLanguage()
+function BreadcrumbNav({ doa }: { doa: Doa }) {
+  const { language } = useLanguage()
 
   return (
     <nav className="flex items-center space-x-2 text-sm text-muted-foreground mb-6">
@@ -102,7 +72,7 @@ function BreadcrumbNav({ doa }: { doa: DoaItem }) {
       </Link>
       <span>/</span>
       <span className="text-foreground truncate max-w-[200px]">
-        {language === 'my' ? doa.name_my : doa.name_en}
+        {language === 'my' ? doa.nameMy : doa.nameEn}
       </span>
     </nav>
   )
@@ -143,13 +113,7 @@ function PrayerDisplay({ content, title }: { content: string; title: string }) {
 }
 
 // Reference card component
-function ReferenceCard({
-  doa,
-  language,
-}: {
-  doa: DoaItem
-  language: 'en' | 'my'
-}) {
+function ReferenceCard({ doa, language }: { doa: Doa; language: 'en' | 'my' }) {
   return (
     <Card className="p-6 bg-slate-50 dark:bg-slate-900/50 border-slate-200 dark:border-slate-700">
       <div className="flex items-center space-x-2 mb-3">
@@ -159,7 +123,7 @@ function ReferenceCard({
         </h3>
       </div>
       <p className="text-muted-foreground">
-        {language === 'my' ? doa.reference_my : doa.reference_en}
+        {language === 'my' ? doa.referenceMy : doa.referenceEn}
       </p>
     </Card>
   )
@@ -170,10 +134,10 @@ function MeaningSection({
   doa,
   language,
 }: {
-  doa: DoaItem
+  doa: Doa
   language: 'en' | 'my'
 }) {
-  const meaning = language === 'my' ? doa.meaning_my : doa.meaning_en
+  const meaning = language === 'my' ? doa.meaningMy : doa.meaningEn
   const title = language === 'my' ? 'Maksud' : 'Meaning'
 
   return (
@@ -189,12 +153,11 @@ function ContextSection({
   doa,
   language,
 }: {
-  doa: DoaItem
+  doa: Doa
   language: 'en' | 'my'
 }) {
-  const context = language === 'my' ? doa.context_my : doa.context_en
-  const description =
-    language === 'my' ? doa.description_my : doa.description_en
+  const context = language === 'my' ? doa.contextMy : doa.contextEn
+  const description = language === 'my' ? doa.descriptionMy : doa.descriptionEn
   const title =
     language === 'my' ? 'Konteks & Penjelasan' : 'Context & Explanation'
 
@@ -217,14 +180,14 @@ function ContextSection({
 }
 
 // Action buttons component
-function ActionButtons({ doa }: { doa: DoaItem }) {
+function ActionButtons({ doa }: { doa: Doa }) {
   const { language } = useLanguage()
   const [isFavorited, setIsFavorited] = useState(false)
 
   const shareText =
     language === 'my'
-      ? `${doa.name_my} - ${doa.meaning_my.slice(0, 100)}...`
-      : `${doa.name_en} - ${doa.meaning_en.slice(0, 100)}...`
+      ? `${doa.nameMy} - ${(doa.meaningMy || '').slice(0, 100)}...`
+      : `${doa.nameEn} - ${(doa.meaningEn || '').slice(0, 100)}...`
 
   // Fix SSR issue by using useEffect to get window.location.href
   const [shareUrl, setShareUrl] = useState('')
@@ -239,7 +202,7 @@ function ActionButtons({ doa }: { doa: DoaItem }) {
     if (navigator.share) {
       try {
         await navigator.share({
-          title: language === 'my' ? doa.name_my : doa.name_en,
+          title: language === 'my' ? doa.nameMy : doa.nameEn,
           text: shareText,
           url: shareUrl,
         })
@@ -280,31 +243,48 @@ function ActionButtons({ doa }: { doa: DoaItem }) {
   )
 }
 
-// Related prayers component
+// Related prayers component - fetches from database
 function RelatedPrayers({
   currentDoa,
   language,
 }: {
-  currentDoa: DoaItem
+  currentDoa: Doa
   language: 'en' | 'my'
 }) {
-  const doaDataTyped = useMemo(() => doaDataRaw.filter(isDoaItem), [])
+  const [relatedPrayers, setRelatedPrayers] = useState<Doa[]>([])
+  const [isLoading, setIsLoading] = useState(true)
 
-  const relatedPrayers = useMemo(() => {
-    return doaDataTyped
-      .filter(
-        (item) =>
-          item.slug !== currentDoa.slug && // Exclude current prayer
-          item.category_names.some(
-            (
-              cat, // Find prayers with same categories
-            ) => currentDoa.category_names.includes(cat),
-          ),
-      )
-      .slice(0, 3) // Limit to 3 related prayers
-  }, [currentDoa, doaDataTyped])
+  useEffect(() => {
+    // Fetch related prayers based on category
+    const fetchRelated = async () => {
+      if (currentDoa.categoryNames.length === 0) {
+        setIsLoading(false)
+        return
+      }
 
-  if (relatedPrayers.length === 0) return null
+      try {
+        // Get the first category to find related prayers
+        const result = await getAllDoas({
+          data: { category: currentDoa.categoryNames[0], limit: 4 },
+        })
+
+        // Filter out the current doa and limit to 3
+        const filtered = result.data
+          .filter((d: Doa) => d.slug !== currentDoa.slug)
+          .slice(0, 3)
+
+        setRelatedPrayers(filtered)
+      } catch (error) {
+        console.error('Failed to fetch related prayers:', error)
+      } finally {
+        setIsLoading(false)
+      }
+    }
+
+    fetchRelated()
+  }, [currentDoa.slug, currentDoa.categoryNames])
+
+  if (isLoading || relatedPrayers.length === 0) return null
 
   const title = language === 'my' ? 'Doa Berkaitan' : 'Related Prayers'
 
@@ -323,13 +303,13 @@ function RelatedPrayers({
               className="block group"
             >
               <h4 className="font-medium text-foreground group-hover:text-primary transition-colors mb-2">
-                {language === 'my' ? prayer.name_my : prayer.name_en}
+                {language === 'my' ? prayer.nameMy : prayer.nameEn}
               </h4>
               <p className="text-sm text-muted-foreground line-clamp-2">
-                {language === 'my' ? prayer.meaning_my : prayer.meaning_en}
+                {language === 'my' ? prayer.meaningMy : prayer.meaningEn}
               </p>
               <div className="flex flex-wrap gap-1 mt-2">
-                {prayer.category_names.slice(0, 2).map((category, index) => (
+                {prayer.categoryNames.slice(0, 2).map((category, index) => (
                   <Badge key={index} variant="secondary" className="text-xs">
                     {category}
                   </Badge>
@@ -344,13 +324,8 @@ function RelatedPrayers({
 }
 
 export function DoaDetailContent() {
-  const { slug } = useParams({ from: '/doa/$slug' })
+  const { doa } = routeApi.useLoaderData()
   const { language } = useLanguage()
-
-  const doa = useMemo(() => {
-    const doaDataTyped = doaDataRaw.filter(isDoaItem)
-    return doaDataTyped.find((item) => item.slug === slug)
-  }, [slug])
 
   // Mosque donation state management
   const [mosqueData, setMosqueData] = useState<Awaited<
@@ -360,7 +335,9 @@ export function DoaDetailContent() {
   const [isMosqueLoading, setIsMosqueLoading] = useState(false)
 
   // Shopee referrals state management
-  const [shopeeReferrals, setShopeeReferrals] = useState<Array<{ url: string; ogData?: ShopeeOgData }>>([])
+  const [shopeeReferrals, setShopeeReferrals] = useState<
+    Array<{ url: string; ogData?: ShopeeOgData }>
+  >([])
   const [shopeeError, setShopeeError] = useState<Error | null>(null)
   const [isShopeeLoading, setIsShopeeLoading] = useState(false)
 
@@ -405,7 +382,9 @@ export function DoaDetailContent() {
         setShopeeReferrals(data.items || [])
       } catch (error) {
         console.error('Failed to fetch shopee referrals:', error)
-        setShopeeError(error instanceof Error ? error : new Error('Unknown error'))
+        setShopeeError(
+          error instanceof Error ? error : new Error('Unknown error'),
+        )
       } finally {
         setIsShopeeLoading(false)
       }
@@ -415,10 +394,10 @@ export function DoaDetailContent() {
   }, [mosqueData, isMosqueLoading])
 
   if (!doa) {
-    return <DoaNotFound searchedSlug={slug} />
+    return <DoaNotFound searchedSlug="" />
   }
 
-  const title = language === 'my' ? doa.name_my : doa.name_en
+  const title = language === 'my' ? doa.nameMy : doa.nameEn
   const prayerTitle = language === 'my' ? 'Doa' : 'Prayer'
 
   return (
@@ -435,7 +414,7 @@ export function DoaDetailContent() {
 
           {/* Categories */}
           <div className="flex flex-wrap gap-2 mb-6">
-            {doa.category_names.map((category, index) => (
+            {doa.categoryNames.map((category: string, index: number) => (
               <Badge key={index} variant="default">
                 {category}
               </Badge>
@@ -525,7 +504,11 @@ export function DoaDetailContent() {
                         setIsShopeeLoading(false)
                       })
                       .catch((err) => {
-                        setShopeeError(err instanceof Error ? err : new Error('Unknown error'))
+                        setShopeeError(
+                          err instanceof Error
+                            ? err
+                            : new Error('Unknown error'),
+                        )
                         setIsShopeeLoading(false)
                       })
                   }}

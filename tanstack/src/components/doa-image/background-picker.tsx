@@ -9,7 +9,10 @@ interface BackgroundPickerProps {
   onSelect: (id: number) => void
 }
 
-export function BackgroundPicker({ selectedId, onSelect }: BackgroundPickerProps) {
+export function BackgroundPicker({
+  selectedId,
+  onSelect,
+}: BackgroundPickerProps) {
   const backgrounds = Array.from({ length: BACKGROUND_COUNT }, (_, i) => i + 1)
 
   return (
@@ -32,7 +35,7 @@ export function BackgroundPicker({ selectedId, onSelect }: BackgroundPickerProps
                 'relative aspect-[3/4] rounded-lg overflow-hidden border-2 transition-all hover:scale-105 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2',
                 isSelected
                   ? 'border-primary ring-2 ring-primary/30'
-                  : 'border-transparent hover:border-muted-foreground/30'
+                  : 'border-transparent hover:border-muted-foreground/30',
               )}
             >
               <img

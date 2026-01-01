@@ -1,6 +1,6 @@
 import { BookOpen, CheckCircle } from 'lucide-react'
 import { PrayerCard } from '../components/prayer-card'
-import { Card, CardContent } from '@/components/ui/card'
+import { Card } from '@/components/ui/card'
 import { LANDING_CONTENT } from '@/lib/constants'
 
 export function ExperienceSection() {

@@ -61,7 +61,8 @@ export function ShopeeReferralCard({
   }
 
   // Success state - full card with OG data
-  const hasDiscount = ogData.originalPrice && ogData.originalPrice !== ogData.price
+  const hasDiscount =
+    ogData.originalPrice && ogData.originalPrice !== ogData.price
 
   return (
     <a href={url} target="_blank" rel="noopener noreferrer">
@@ -76,7 +77,10 @@ export function ShopeeReferralCard({
             onError={() => setImageError(true)}
           />
           {hasDiscount && (
-            <Badge variant="destructive" className="absolute top-2 right-2 text-xs">
+            <Badge
+              variant="destructive"
+              className="absolute top-2 right-2 text-xs"
+            >
               Sale
             </Badge>
           )}

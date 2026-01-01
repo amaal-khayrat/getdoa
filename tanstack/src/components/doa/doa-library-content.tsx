@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState, useCallback } from 'react'
 import { Link } from '@tanstack/react-router'
 import {
   BookOpen,
@@ -9,10 +9,14 @@ import {
   Search,
   Share,
 } from 'lucide-react'
-import doaDataRaw from '../../../data/doa.json'
+import { toast } from 'sonner'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { useLanguage } from '@/contexts/language-context'
+import { useSession } from '@/lib/auth-client'
+import { getAllDoas } from '@/routes/dashboard/functions/doa'
+import { getSavedDoas, saveDoa, unsaveDoa } from '@/routes/dashboard/functions'
+import type { Doa } from '@/types/doa.types'
 
 // Dynamic meta component for SEO
 function DynamicMetaTags() {
@@ -26,7 +30,7 @@ function DynamicMetaTags() {
     'meta[name="description"]',
   )
   if (existingMetaDescription) {
-    existingMetaDescription.content = t('pageDescription')
+    existingMetaDescription.setAttribute('content', t('pageDescription'))
   } else {
     const metaDescription = document.createElement('meta')
     metaDescription.name = 'description'
@@ -37,68 +41,45 @@ function DynamicMetaTags() {
   return null // This component doesn't render anything
 }
 
-// Type definitions
-interface DoaItem {
-  name_my: string
-  name_en: string
-  content: string
-  reference_my: string
-  reference_en: string
-  meaning_my: string
-  meaning_en: string
-  category_names: Array<string>
-  slug: string
-  description_my: string
-  description_en: string
-  context_my: string
-  context_en: string
-}
-
-// Type guard for doa data
-const isDoaItem = (item: any): item is DoaItem => {
-  return (
-    typeof item === 'object' &&
-    item !== null &&
-    typeof item.name_my === 'string' &&
-    typeof item.name_en === 'string' &&
-    typeof item.content === 'string' &&
-    typeof item.reference_my === 'string' &&
-    typeof item.reference_en === 'string' &&
-    typeof item.meaning_my === 'string' &&
-    typeof item.meaning_en === 'string' &&
-    Array.isArray(item.category_names)
-  )
-}
-
 // Constants
 const DOAS_PER_PAGE = 10
 
 // Prayer Card Component
+interface PrayerCardProps {
+  doa: Doa
+  language: 'en' | 'my'
+  isSaved: boolean
+  isAuthenticated: boolean
+  isSaving: boolean
+  onToggleSave: (slug: string) => void
+}
+
 function PrayerCard({
   doa,
   language,
-}: {
-  doa: DoaItem
-  language: 'en' | 'my'
-}) {
+  isSaved,
+  isAuthenticated,
+  isSaving,
+  onToggleSave,
+}: PrayerCardProps) {
   // Get localized content
   const getTitle = () => {
     if (language === 'my') {
-      return doa.name_my
+      return doa.nameMy
         .replace(/^\[PAGI\]|\[PETANG\]|\[JEMA'AH\]\s*/i, '')
         .trim()
     }
-    return doa.name_en
+    return doa.nameEn
       .replace(/^(MORNING|EVENING|JEMA'AH)\s*[-:]?\s*/i, '')
       .trim()
   }
 
   const getMeaning = () => {
-    return language === 'my' ? doa.meaning_my : doa.meaning_en
+    return language === 'my' ? doa.meaningMy : doa.meaningEn
   }
 
   const getReference = () => {
-    return language === 'my' ? doa.reference_my : doa.reference_en
+    return language === 'my' ? doa.referenceMy : doa.referenceEn
   }
 
   const getCategories = () => {
@@ -106,7 +87,7 @@ function PrayerCard({
     const malayCategories = ['Bacaan Pagi', 'Bacaan Petang', 'Bacaan Harian']
     const englishCategories = ['Morning Supplication', 'Evening Supplication']
 
-    return doa.category_names.filter((cat) => {
+    return doa.categoryNames.filter((cat) => {
       if (language === 'my') {
         return (
           malayCategories.some((mc) => cat.includes(mc)) ||
@@ -133,20 +114,72 @@ function PrayerCard({
           <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
             <button
               className="p-2 rounded-full text-muted-foreground hover:text-primary hover:bg-secondary transition-colors"
-              title="Copy"
-              onClick={() => navigator.clipboard.writeText(doa.content)}
+              title={language === 'my' ? 'Salin' : 'Copy'}
+              onClick={(e) => {
+                e.preventDefault()
+                navigator.clipboard.writeText(doa.content)
+                toast.success(
+                  language === 'my' ? 'Disalin ke papan klip' : 'Copied to clipboard',
+                )
+              }}
             >
               <Copy className="w-5 h-5" />
             </button>
             <button
-              className="p-2 rounded-full text-muted-foreground hover:text-primary hover:bg-secondary transition-colors"
-              title="Favorite"
+              className={`p-2 rounded-full transition-colors ${
+                isSaved
+                  ? 'text-red-500 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-950/30'
+                  : 'text-muted-foreground hover:text-red-500 hover:bg-secondary'
+              } ${isSaving ? 'opacity-50 cursor-not-allowed' : ''}`}
+              title={
+                !isAuthenticated
+                  ? language === 'my'
+                    ? 'Log masuk untuk simpan'
+                    : 'Sign in to save'
+                  : isSaved
+                    ? language === 'my'
+                      ? 'Buang dari simpanan'
+                      : 'Remove from saved'
+                    : language === 'my'
+                      ? 'Simpan doa'
+                      : 'Save prayer'
+              }
+              onClick={(e) => {
+                e.preventDefault()
+                onToggleSave(doa.slug)
+              }}
+              disabled={isSaving}
             >
-              <Heart className="w-5 h-5" />
+              <Heart
+                className={`w-5 h-5 ${isSaved ? 'fill-current' : ''}`}
+              />
             </button>
             <button
               className="p-2 rounded-full text-muted-foreground hover:text-primary hover:bg-secondary transition-colors"
-              title="Share"
+              title={language === 'my' ? 'Kongsi' : 'Share'}
+              onClick={(e) => {
+                e.preventDefault()
+                const shareUrl = `${window.location.origin}/doa/${doa.slug}`
+                const shareText =
+                  language === 'my'
+                    ? `${doa.nameMy} - ${doa.meaningMy?.slice(0, 100) || ''}...`
+                    : `${doa.nameEn} - ${doa.meaningEn?.slice(0, 100) || ''}...`
+
+                if (navigator.share) {
+                  navigator.share({
+                    title: language === 'my' ? doa.nameMy : doa.nameEn,
+                    text: shareText,
+                    url: shareUrl,
+                  })
+                } else {
+                  navigator.clipboard.writeText(shareUrl)
+                  toast.success(
+                    language === 'my'
+                      ? 'Pautan disalin ke papan klip'
+                      : 'Link copied to clipboard',
+                  )
+                }
+              }}
             >
               <Share className="w-5 h-5" />
             </button>
@@ -202,19 +235,21 @@ function PrayerCard({
 function Pagination({
   currentPage,
   totalPages,
+  totalItems,
   onPageChange,
   t,
 }: {
   currentPage: number
   totalPages: number
+  totalItems: number
   onPageChange: (page: number) => void
   t: (key: string) => string
 }) {
   const pages = useMemo(() => {
     const delta = 2
-    const range = []
-    const rangeWithDots = []
-    let l
+    const range: number[] = []
+    const rangeWithDots: (number | string)[] = []
+    let l: number | undefined
 
     for (let i = 1; i <= totalPages; i++) {
       if (
@@ -296,9 +331,9 @@ function Pagination({
           .replace('{from}', String((currentPage - 1) * DOAS_PER_PAGE + 1))
           .replace(
             '{to}',
-            String(Math.min(currentPage * DOAS_PER_PAGE, filteredDoas.length)),
+            String(Math.min(currentPage * DOAS_PER_PAGE, totalItems)),
           )
-          .replace('{total}', String(filteredDoas.length))}
+          .replace('{total}', String(totalItems))}
       </p>
     </div>
   )
@@ -332,19 +367,126 @@ function FilterBar({
   )
 }
 
-// Filter and search logic
-let filteredDoas: Array<DoaItem> = []
-const doaDataTyped = (doaDataRaw as Array<any>).filter(isDoaItem)
-
 // Main content component
 export function DoaLibraryContent() {
   const { language, t } = useLanguage()
+  const { data: session } = useSession()
   const [searchQuery, setSearchQuery] = useState('')
   const [currentPage, setCurrentPage] = useState(1)
+  const [allDoas, setAllDoas] = useState<Doa[]>([])
+  const [isLoading, setIsLoading] = useState(true)
+  const [savedSlugs, setSavedSlugs] = useState<Set<string>>(new Set())
+  const [savingSlug, setSavingSlug] = useState<string | null>(null)
 
-  // Filter and search logic
-  filteredDoas = useMemo(() => {
-    let filtered = doaDataTyped
+  const user = session?.user
+  const isAuthenticated = !!user
+
+  // Fetch all duas and saved doas on mount
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        // Fetch duas
+        const result = await getAllDoas({ data: { limit: 100 } })
+        setAllDoas(result.data)
+      } catch (error) {
+        console.error('Failed to fetch duas:', error)
+      } finally {
+        setIsLoading(false)
+      }
+    }
+
+    fetchData()
+  }, [])
+
+  // Fetch saved doas when user becomes authenticated
+  useEffect(() => {
+    if (!user) {
+      setSavedSlugs(new Set())
+      return
+    }
+
+    const fetchSavedDoas = async () => {
+      try {
+        const saved = await getSavedDoas({ data: { userId: user.id } })
+        setSavedSlugs(new Set(saved.map((s) => s.doaSlug)))
+      } catch (error) {
+        console.error('Failed to fetch saved doas:', error)
+      }
+    }
+
+    fetchSavedDoas()
+  }, [user])
+
+  // Handle toggle save with optimistic updates
+  const handleToggleSave = useCallback(
+    async (slug: string) => {
+      if (!user) {
+        toast.error(
+          language === 'my'
+            ? 'Sila log masuk untuk simpan doa'
+            : 'Please sign in to save prayers',
+        )
+        return
+      }
+
+      // Prevent double-clicks
+      if (savingSlug) return
+      setSavingSlug(slug)
+
+      const wasSaved = savedSlugs.has(slug)
+
+      // Optimistic update
+      setSavedSlugs((prev) => {
+        const next = new Set(prev)
+        if (wasSaved) {
+          next.delete(slug)
+        } else {
+          next.add(slug)
+        }
+        return next
+      })
+
+      try {
+        if (wasSaved) {
+          await unsaveDoa({ data: { userId: user.id, doaSlug: slug } })
+          toast.success(
+            language === 'my'
+              ? 'Doa dibuang dari simpanan'
+              : 'Prayer removed from saved',
+          )
+        } else {
+          await saveDoa({ data: { userId: user.id, doaSlug: slug } })
+          toast.success(
+            language === 'my' ? 'Doa disimpan!' : 'Prayer saved!',
+          )
+        }
+      } catch (error) {
+        // Rollback on error
+        setSavedSlugs((prev) => {
+          const next = new Set(prev)
+          if (wasSaved) {
+            next.add(slug)
+          } else {
+            next.delete(slug)
+          }
+          return next
+        })
+        console.error('Failed to toggle save:', error)
+        toast.error(
+          language === 'my'
+            ? 'Gagal menyimpan. Sila cuba lagi.'
+            : 'Failed to save. Please try again.',
+        )
+      } finally {
+        setSavingSlug(null)
+      }
+    },
+    [user, savedSlugs, savingSlug, language],
+  )
+
+  // Filter and search logic (client-side for instant feedback)
+  const filteredDoas = useMemo(() => {
+    let filtered = allDoas
 
     // Language-aware search filter
     if (searchQuery.trim()) {
@@ -357,25 +499,25 @@ export function DoaLibraryContent() {
         if (language === 'my') {
           return (
             contentMatch ||
-            doa.name_my.toLowerCase().includes(query) ||
-            doa.meaning_my.toLowerCase().includes(query) ||
-            doa.reference_my.toLowerCase().includes(query) ||
-            doa.category_names.some((cat) => cat.toLowerCase().includes(query))
+            doa.nameMy.toLowerCase().includes(query) ||
+            (doa.meaningMy || '').toLowerCase().includes(query) ||
+            (doa.referenceMy || '').toLowerCase().includes(query) ||
+            doa.categoryNames.some((cat) => cat.toLowerCase().includes(query))
           )
         } else {
           return (
             contentMatch ||
-            doa.name_en.toLowerCase().includes(query) ||
-            doa.meaning_en.toLowerCase().includes(query) ||
-            doa.reference_en.toLowerCase().includes(query) ||
-            doa.category_names.some((cat) => cat.toLowerCase().includes(query))
+            doa.nameEn.toLowerCase().includes(query) ||
+            (doa.meaningEn || '').toLowerCase().includes(query) ||
+            (doa.referenceEn || '').toLowerCase().includes(query) ||
+            doa.categoryNames.some((cat) => cat.toLowerCase().includes(query))
           )
         }
       })
     }
 
     return filtered
-  }, [searchQuery, language])
+  }, [searchQuery, language, allDoas])
 
   // Pagination
   const totalPages = Math.ceil(filteredDoas.length / DOAS_PER_PAGE)
@@ -396,6 +538,19 @@ export function DoaLibraryContent() {
     window.scrollTo({ top: 200, behavior: 'smooth' })
   }
 
+  if (isLoading) {
+    return (
+      <main className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8 md:py-12 pb-24">
+        <div className="flex items-center justify-center py-16">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mr-3"></div>
+          <span className="text-muted-foreground">
+            {language === 'my' ? 'Memuatkan doa...' : 'Loading prayers...'}
+          </span>
+        </div>
+      </main>
+    )
+  }
+
   return (
     <>
       <DynamicMetaTags />
@@ -409,7 +564,15 @@ export function DoaLibraryContent() {
 
         <div className="space-y-16">
           {currentDoas.map((doa) => (
-            <PrayerCard key={doa.slug} doa={doa} language={language} />
+            <PrayerCard
+              key={doa.slug}
+              doa={doa}
+              language={language}
+              isSaved={savedSlugs.has(doa.slug)}
+              isAuthenticated={isAuthenticated}
+              isSaving={savingSlug === doa.slug}
+              onToggleSave={handleToggleSave}
+            />
           ))}
         </div>
 
@@ -418,6 +581,7 @@ export function DoaLibraryContent() {
             <Pagination
               currentPage={currentPage}
               totalPages={totalPages}
+              totalItems={filteredDoas.length}
               onPageChange={handlePageChange}
               t={t}
             />

@@ -12,10 +12,6 @@ import { LANDING_CONTENT } from '@/lib/constants'
 export function RefundPage() {
   const refundContent = LANDING_CONTENT.pages.refund
 
-  const scrollToTop = () => {
-    window.scrollTo({ top: 0, behavior: 'smooth' })
-  }
-
   return (
     <div className="min-h-screen">
       {/* Hero Section */}

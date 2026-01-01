@@ -131,23 +131,23 @@ export function PrayerBrowserPanel({
                   <div className="flex justify-between items-start gap-3 sm:gap-4">
                     <div className="flex-1 min-w-0">
                       {/* Category Badge */}
-                      {prayer.category_names &&
-                        prayer.category_names.length > 0 && (
+                      {prayer.categoryNames &&
+                        prayer.categoryNames.length > 0 && (
                           <div className="mb-2">
                             <Badge
                               variant={getCategoryVariant(
-                                prayer.category_names[0],
+                                prayer.categoryNames[0],
                               )}
                               className="text-xs"
                             >
-                              {prayer.category_names[0]}
+                              {prayer.categoryNames[0]}
                             </Badge>
                           </div>
                         )}
 
                       {/* Prayer Title */}
                       <h4 className="font-medium text-sm sm:text-sm mb-2 leading-tight">
-                        {language === 'my' ? prayer.name_my : prayer.name_en}
+                        {language === 'my' ? prayer.nameMy : prayer.nameEn}
                       </h4>
 
                       {/* Arabic Text */}
@@ -161,15 +161,15 @@ export function PrayerBrowserPanel({
                       {/* Meaning */}
                       <p className="text-xs text-muted-foreground line-clamp-2 mb-2 leading-relaxed">
                         {language === 'my'
-                          ? prayer.meaning_my
-                          : prayer.meaning_en}
+                          ? prayer.meaningMy
+                          : prayer.meaningEn}
                       </p>
 
                       {/* Reference */}
                       <p className="text-xs text-muted-foreground">
                         {language === 'my'
-                          ? prayer.reference_my
-                          : prayer.reference_en}
+                          ? prayer.referenceMy
+                          : prayer.referenceEn}
                       </p>
                     </div>
 

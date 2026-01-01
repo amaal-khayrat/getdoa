@@ -143,9 +143,9 @@ export async function generateDoaImage(
     // Handle translations based on layout
     if (config.doaList.showTranslations) {
       const translation =
-        config.doaList.language === 'my' ? prayer.meaning_my : prayer.meaning_en
+        config.doaList.language === 'my' ? prayer.meaningMy : prayer.meaningEn
 
-      if (config.doaList.translationLayout === 'interleaved') {
+      if (config.doaList.translationLayout === 'interleaved' && translation) {
         // Translation immediately after prayer
         currentY += layout.spacing.translationSpacing
         ctx.font = `${suggestedFontSize.translations}px Arial, sans-serif`
@@ -208,7 +208,9 @@ export async function generateDoaImage(
 
     config.doaList.prayers.forEach((prayer) => {
       const translation =
-        config.doaList.language === 'my' ? prayer.meaning_my : prayer.meaning_en
+        config.doaList.language === 'my' ? prayer.meaningMy : prayer.meaningEn
+
+      if (!translation) return
 
       // Smart word wrap for grouped translations
       const maxWidth =

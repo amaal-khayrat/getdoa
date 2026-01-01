@@ -1,19 +1,60 @@
-// Base types from doa.json
-export interface DoaItem {
-  slug: string
-  name_my: string
-  name_en: string
-  content: string // Arabic text
-  meaning_my: string
-  meaning_en: string
-  reference_my: string
-  reference_en: string
-  category_names: Array<string>
-  description_my?: string
-  description_en?: string
-  context_my?: string
-  context_en?: string
-}
+import type { InferSelectModel } from 'drizzle-orm'
+import { z } from 'zod'
+import type { doa } from '@/db/schema'
+
+// ============================================
+// DATABASE TYPES
+// ============================================
+
+// Database model type - inferred from Drizzle schema
+export type Doa = InferSelectModel<typeof doa>
+
+// Alias for backward compatibility with existing code
+export type DoaItem = Doa
+
+// ============================================
+// ZOD VALIDATION SCHEMAS
+// ============================================
+
+// Pagination defaults and limits
+export const PAGINATION_DEFAULTS = {
+  page: 1,
+  limit: 20,
+  maxLimit: 100, // Prevent excessive queries
+} as const
+
+export const getAllDoasSchema = z.object({
+  search: z.string().max(200).optional(),
+  category: z.string().max(100).optional(),
+  page: z.number().int().positive().default(PAGINATION_DEFAULTS.page),
+  limit: z
+    .number()
+    .int()
+    .positive()
+    .max(PAGINATION_DEFAULTS.maxLimit)
+    .default(PAGINATION_DEFAULTS.limit),
+})
+
+export const getDoaBySlugSchema = z.object({
+  slug: z
+    .string()
+    .min(1)
+    .max(255)
+    .regex(/^[a-z0-9-]+$/, 'Invalid slug format'),
+})
+
+export const getDoasBySlugsSchema = z.object({
+  slugs: z.array(z.string().min(1).max(255)).max(100), // Limit to 100 slugs per request
+})
+
+export const getRandomDoaSchema = z.object({
+  category: z.string().max(100).optional(),
+})
+
+export type GetAllDoasInput = z.infer<typeof getAllDoasSchema>
+export type GetDoaBySlugInput = z.infer<typeof getDoaBySlugSchema>
+export type GetDoasBySlugsInput = z.infer<typeof getDoasBySlugsSchema>
+export type GetRandomDoaInput = z.infer<typeof getRandomDoaSchema>
 
 // Simplified DoaList for POC (no ID needed)
 export interface DoaList {

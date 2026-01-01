@@ -1,4 +1,3 @@
-import * as React from 'react'
 import {
   Sunrise,
   Sunset,
@@ -7,9 +6,15 @@ import {
   Plus,
   type LucideIcon,
 } from 'lucide-react'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card'
 import { cn } from '@/lib/utils'
-import type { SpaceTemplate } from '@/types/space.types'
+import type { ListTemplate } from '@/types/doa-list.types'
 
 // Map icon names to components
 const iconMap: Record<string, LucideIcon> = {
@@ -20,19 +25,19 @@ const iconMap: Record<string, LucideIcon> = {
   Plus,
 }
 
-interface TemplateCardProps {
-  template: SpaceTemplate
+interface ListTemplateCardProps {
+  template: ListTemplate
   isSelected: boolean
   onSelect: () => void
   language: 'en' | 'my'
 }
 
-export function TemplateCard({
+export function ListTemplateCard({
   template,
   isSelected,
   onSelect,
   language,
-}: TemplateCardProps) {
+}: ListTemplateCardProps) {
   const Icon = iconMap[template.icon] || Plus
   const name = language === 'my' ? template.nameMs : template.name
   const description =

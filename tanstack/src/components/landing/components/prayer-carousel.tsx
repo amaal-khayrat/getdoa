@@ -1,5 +1,4 @@
 import { Bookmark, Share2, Sun } from 'lucide-react'
-import { AnimatePresence, motion, useAnimation } from 'framer-motion'
 import { Card, CardContent } from '@/components/ui/card'
 import { LANDING_CONTENT } from '@/lib/constants'
 

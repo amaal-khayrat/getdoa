@@ -1,6 +1,5 @@
 import { Cookie, CreditCard, Eye, Lock, Shield, User } from 'lucide-react'
 import { Card, CardContent } from '@/components/ui/card'
-import { Button } from '@/components/ui/button'
 import { LANDING_CONTENT } from '@/lib/constants'
 
 // Icon mapping for privacy sections
@@ -15,10 +14,6 @@ const iconMap = {
 
 export function PrivacyPage() {
   const privacyContent = LANDING_CONTENT.pages.privacy
-
-  const scrollToTop = () => {
-    window.scrollTo({ top: 0, behavior: 'smooth' })
-  }
 
   // Map sections to icons based on content
   const getIconForSection = (title: string) => {

@@ -1,8 +1,11 @@
-import { createFileRoute, Outlet, useNavigate } from '@tanstack/react-router'
-import { useEffect } from 'react'
+import { createFileRoute, Outlet, redirect } from '@tanstack/react-router'
 import { LanguageProvider } from '@/contexts/language-context'
 import { AppSidebar } from '@/components/sidebar/app-sidebar'
-import { SidebarProvider, SidebarInset, SidebarTrigger } from '@/components/ui/sidebar'
+import {
+  SidebarProvider,
+  SidebarInset,
+  SidebarTrigger,
+} from '@/components/ui/sidebar'
 import { Separator } from '@/components/ui/separator'
 import {
   Breadcrumb,
@@ -10,119 +13,107 @@ import {
   BreadcrumbList,
   BreadcrumbPage,
 } from '@/components/ui/breadcrumb'
-import { useSession } from '@/lib/auth-client'
-import { useSpaceStore } from '@/stores/space-store'
-import { Loader2 } from 'lucide-react'
-import { getUserSpaces } from './dashboard/functions'
+import {
+  getSessionFromServer,
+  getUserDoaLists,
+  getUserListLimitInfo,
+} from './dashboard/functions'
+import { ReferralProcessor } from '@/components/referral-processor'
+import { isAdminEmail } from '@/lib/admin'
+import type { DoaListRecord } from '@/types/doa-list.types'
+import type { ListLimitInfo } from '@/lib/list-limit'
+
+// Extend route context type
+declare module '@tanstack/react-router' {
+  interface RouteContext {
+    user?: {
+      id: string
+      name: string
+      email: string
+      image: string | null
+    }
+    lists?: DoaListRecord[]
+    listLimitInfo?: ListLimitInfo
+    isAdmin?: boolean
+  }
+}
 
 export const Route = createFileRoute('/dashboard')({
+  // beforeLoad puts data into context for child routes
+  beforeLoad: async () => {
+    const session = await getSessionFromServer()
+
+    if (!session?.user) {
+      throw redirect({ to: '/login' })
+    }
+
+    const user = {
+      id: session.user.id,
+      name: session.user.name,
+      email: session.user.email,
+      image: session.user.image ?? null,
+    }
+
+    // Get list limit info - this goes into context for child routes
+    const listLimitInfo = await getUserListLimitInfo({
+      data: { userId: user.id },
+    })
+
+    // Check admin status server-side
+    const isAdmin = isAdminEmail(user.email)
+
+    // Return data to be available in context for child routes
+    return { user, listLimitInfo, isAdmin }
+  },
+  // loader fetches data needed for this route's component
+  loader: async ({ context }) => {
+    const { user } = context as { user: { id: string } }
+
+    // Load user's lists for dashboard display
+    const lists = await getUserDoaLists({ data: { userId: user.id } })
+
+    return { lists }
+  },
   component: DashboardLayout,
   head: () => ({
     title: 'Dashboard - GetDoa',
     meta: [
       {
         name: 'description',
-        content: 'Your personal prayer dashboard. Manage your doa lists and track your spiritual journey.',
+        content:
+          'Your personal prayer dashboard. Manage your doa lists and track your spiritual journey.',
       },
     ],
   }),
 })
 
 function DashboardLayout() {
-  const navigate = useNavigate()
-  const { data: session, isPending: isSessionPending } = useSession()
-
-  // Redirect to login if not authenticated
-  useEffect(() => {
-    if (!isSessionPending && !session?.user) {
-      navigate({ to: '/login' })
-    }
-  }, [isSessionPending, session, navigate])
-
-  // Show loading while checking auth
-  if (isSessionPending) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-background">
-        <div className="flex flex-col items-center gap-4">
-          <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
-          <p className="text-sm text-muted-foreground">Loading...</p>
-        </div>
-      </div>
-    )
-  }
-
-  // Don't render if not authenticated
-  if (!session?.user) {
-    return null
-  }
+  // user and isAdmin come from beforeLoad (context)
+  const { user, isAdmin } = Route.useRouteContext()
 
   return (
     <LanguageProvider>
-      <SpaceLoader userId={session.user.id}>
-        <SidebarProvider>
-          <AppSidebar />
-          <SidebarInset>
-            <header className="flex h-16 shrink-0 items-center gap-2 border-b px-4">
-              <SidebarTrigger className="-ml-1" />
-              <Separator orientation="vertical" className="mr-2 h-4" />
-              <Breadcrumb>
-                <BreadcrumbList>
-                  <BreadcrumbItem>
-                    <BreadcrumbPage>Dashboard</BreadcrumbPage>
-                  </BreadcrumbItem>
-                </BreadcrumbList>
-              </Breadcrumb>
-            </header>
-            <main className="flex-1 overflow-auto">
-              <Outlet />
-            </main>
-          </SidebarInset>
-        </SidebarProvider>
-      </SpaceLoader>
+      {/* Process referral on dashboard mount */}
+      <ReferralProcessor userId={user.id} />
+      <SidebarProvider>
+        <AppSidebar isAdmin={isAdmin} />
+        <SidebarInset>
+          <header className="flex h-16 shrink-0 items-center gap-2 border-b px-4">
+            <SidebarTrigger className="-ml-1" />
+            <Separator orientation="vertical" className="mr-2 h-4" />
+            <Breadcrumb>
+              <BreadcrumbList>
+                <BreadcrumbItem>
+                  <BreadcrumbPage>Dashboard</BreadcrumbPage>
+                </BreadcrumbItem>
+              </BreadcrumbList>
+            </Breadcrumb>
+          </header>
+          <main className="flex-1 overflow-auto">
+            <Outlet />
+          </main>
+        </SidebarInset>
+      </SidebarProvider>
     </LanguageProvider>
   )
-}
-
-// Client-side space loader component
-function SpaceLoader({ userId, children }: { userId: string; children: React.ReactNode }) {
-  const navigate = useNavigate()
-  const { spaces, setSpaces, isLoading, setLoading, isHydrated } = useSpaceStore()
-
-  useEffect(() => {
-    async function fetchSpaces() {
-      if (!userId || spaces.length > 0) return
-
-      setLoading(true)
-      try {
-        const userSpaces = await getUserSpaces({ data: { userId } })
-        setSpaces(userSpaces)
-
-        // Redirect to onboarding if no spaces
-        if (userSpaces.length === 0) {
-          navigate({ to: '/onboarding' })
-        }
-      } catch (error) {
-        console.error('Failed to fetch spaces:', error)
-      } finally {
-        setLoading(false)
-      }
-    }
-
-    if (isHydrated) {
-      fetchSpaces()
-    }
-  }, [userId, isHydrated, spaces.length, setSpaces, setLoading, navigate])
-
-  if (isLoading || !isHydrated) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-background">
-        <div className="flex flex-col items-center gap-4">
-          <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
-          <p className="text-sm text-muted-foreground">Loading your spaces...</p>
-        </div>
-      </div>
-    )
-  }
-
-  return <>{children}</>
 }

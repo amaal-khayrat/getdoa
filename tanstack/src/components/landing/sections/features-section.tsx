@@ -1,4 +1,4 @@
-import { Bookmark, CheckCircle, Clock, Languages } from 'lucide-react'
+import { Bookmark, Clock, Languages } from 'lucide-react'
 import { Card, CardContent } from '@/components/ui/card'
 import { LANDING_CONTENT } from '@/lib/constants'
 

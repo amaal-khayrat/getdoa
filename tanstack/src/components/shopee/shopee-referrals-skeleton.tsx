@@ -4,7 +4,9 @@ interface ShopeeReferralsSkeletonProps {
   count?: number
 }
 
-export function ShopeeReferralsSkeleton({ count = 4 }: ShopeeReferralsSkeletonProps) {
+export function ShopeeReferralsSkeleton({
+  count = 4,
+}: ShopeeReferralsSkeletonProps) {
   return (
     <section className="mt-8">
       <div className="flex items-center space-x-2 mb-4">
@@ -29,9 +31,5 @@ export function ShopeeReferralsSkeleton({ count = 4 }: ShopeeReferralsSkeletonPr
 }
 
 function Skeleton({ className }: { className?: string }) {
-  return (
-    <div
-      className={`bg-muted animate-pulse rounded ${className || ''}`}
-    />
-  )
+  return <div className={`bg-muted animate-pulse rounded ${className || ''}`} />
 }

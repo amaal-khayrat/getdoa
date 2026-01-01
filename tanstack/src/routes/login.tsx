@@ -1,5 +1,6 @@
 import { createFileRoute } from '@tanstack/react-router'
 import { useState } from 'react'
+import { z } from 'zod'
 import { signIn } from '@/lib/auth-client'
 import { Button } from '@/components/ui/button'
 import {
@@ -10,7 +11,13 @@ import {
   CardTitle,
 } from '@/components/ui/card'
 
+// Search params schema for redirect after login
+const loginSearchSchema = z.object({
+  ref: z.string().optional(),
+})
+
 export const Route = createFileRoute('/login')({
+  validateSearch: loginSearchSchema,
   component: LoginPage,
   head: () => ({
     title: 'Sign In - GetDoa',
@@ -27,15 +34,22 @@ export const Route = createFileRoute('/login')({
 function LoginPage() {
   const [error, setError] = useState('')
   const [isLoading, setIsLoading] = useState(false)
+  const search = Route.useSearch()
 
   const handleGoogleLogin = async () => {
     setError('')
     setIsLoading(true)
 
     try {
+      // Validate ref is an internal path to prevent open redirect vulnerability
+      let callbackURL = '/dashboard'
+      if (search.ref && search.ref.startsWith('/') && !search.ref.startsWith('//')) {
+        callbackURL = search.ref
+      }
+
       await signIn.social({
         provider: 'google',
-        callbackURL: '/',
+        callbackURL,
       })
     } catch {
       setError('Failed to sign in with Google. Please try again.')

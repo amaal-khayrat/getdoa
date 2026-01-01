@@ -294,7 +294,12 @@ export function ContactPage() {
                     <Button
                       variant="ghost"
                       className="w-full justify-start text-left h-auto p-4"
-                      render={<a href="/pricing" className="flex items-center gap-3" />}
+                      render={
+                        <a
+                          href="/pricing"
+                          className="flex items-center gap-3"
+                        />
+                      }
                     >
                       <div className="w-8 h-8 rounded-lg bg-teal-100 dark:bg-teal-900/30 text-teal-600 dark:text-teal-400 flex items-center justify-center">
                         <span className="text-xs font-bold">P</span>
@@ -312,7 +317,9 @@ export function ContactPage() {
                     <Button
                       variant="ghost"
                       className="w-full justify-start text-left h-auto p-4"
-                      render={<a href="/refund" className="flex items-center gap-3" />}
+                      render={
+                        <a href="/refund" className="flex items-center gap-3" />
+                      }
                     >
                       <div className="w-8 h-8 rounded-lg bg-emerald-100 dark:bg-emerald-900/30 text-emerald-600 dark:text-emerald-400 flex items-center justify-center">
                         <span className="text-xs font-bold">R</span>

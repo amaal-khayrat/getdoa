@@ -1,10 +1,13 @@
 import sharp from 'sharp'
 import * as fs from 'node:fs/promises'
 import * as path from 'node:path'
-import type { DoaItem, Language } from '@/types/doa.types'
+import { db } from '@/db'
+import { doa } from '@/db/schema'
+import { eq } from 'drizzle-orm'
+import type { Doa, Language } from '@/types/doa.types'
 
 interface GenerateDoaImageConfig {
-  doa: DoaItem
+  doa: Doa
   backgroundId: number
   language: Language
 }
@@ -152,7 +155,6 @@ function createBrandingOverlaySvg(config: {
 }): string {
   const { width, height } = config
   const bottomMargin = 80
-  const logoSize = 60
 
   return `
     <svg width="${width}" height="${height}" xmlns="http://www.w3.org/2000/svg">
@@ -186,7 +188,7 @@ function createBrandingOverlaySvg(config: {
 export async function generateDoaImageWithSharp(
   config: GenerateDoaImageConfig,
 ): Promise<Buffer> {
-  const { doa, backgroundId, language } = config
+  const { doa: doaData, backgroundId, language } = config
 
   // 1. Load background image
   const bgPath = path.join(
@@ -219,13 +221,13 @@ export async function generateDoaImageWithSharp(
   }
 
   // 4. Get translation based on language
-  const translation = language === 'my' ? doa.meaning_my : doa.meaning_en
-  const doaName = language === 'my' ? doa.name_my : doa.name_en
+  const translation = language === 'my' ? doaData.meaningMy : doaData.meaningEn
+  const doaName = language === 'my' ? doaData.nameMy : doaData.nameEn
 
   // 5. Create SVG overlays
   const textOverlaySvg = createTextOverlaySvg({
-    arabicText: doa.content,
-    translation,
+    arabicText: doaData.content,
+    translation: translation || '',
     doaName,
     fontBase64,
     width: BG_WIDTH,
@@ -285,10 +287,10 @@ export async function generateDoaImageWithSharp(
 }
 
 // Helper to load doa data by slug (server-side)
-export async function loadDoaBySlug(slug: string): Promise<DoaItem | null> {
-  const doaPath = path.join(process.cwd(), 'data', 'doa.json')
-  const doaRaw = await fs.readFile(doaPath, 'utf-8')
-  const doaList: DoaItem[] = JSON.parse(doaRaw)
+export async function loadDoaBySlug(slug: string): Promise<Doa | null> {
+  const result = await db.query.doa.findFirst({
+    where: eq(doa.slug, slug),
+  })
 
-  return doaList.find((d) => d.slug === slug) || null
+  return result ?? null
 }

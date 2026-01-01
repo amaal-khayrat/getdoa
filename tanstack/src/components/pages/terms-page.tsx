@@ -5,10 +5,6 @@ import { LANDING_CONTENT } from '@/lib/constants'
 export function TermsPage() {
   const termsContent = LANDING_CONTENT.pages.terms
 
-  const scrollToTop = () => {
-    window.scrollTo({ top: 0, behavior: 'smooth' })
-  }
-
   return (
     <div className="min-h-screen">
       {/* Hero Section */}

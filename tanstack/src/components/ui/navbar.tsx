@@ -80,8 +80,18 @@ export function Navbar({
             />
           }
         >
-          <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+          <svg
+            className="h-4 w-4"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M19 9l-7 7-7-7"
+            />
           </svg>
         </DropdownMenuTrigger>
         <DropdownMenuContent className="w-56" align="end">
@@ -96,8 +106,11 @@ export function Navbar({
             </div>
           </div>
           <DropdownMenuSeparator />
-          <DropdownMenuItem render={<Link to="/profile" />} className="cursor-pointer">
-            Profile
+          <DropdownMenuItem
+            render={<Link to="/dashboard" />}
+            className="cursor-pointer"
+          >
+            Dashboard
           </DropdownMenuItem>
           <DropdownMenuItem onClick={handleSignOut} className="cursor-pointer">
             Sign out

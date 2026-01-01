@@ -35,7 +35,7 @@ export function ResponsiveDoaLayout({
   const [activeTab, setActiveTab] = useState<'selected' | 'browse'>('browse')
 
   return (
-    <div className="min-h-0">
+    <div className="h-full min-h-0">
       {/* Desktop Layout - Side by side */}
       <div className="hidden lg:grid lg:grid-cols-2 lg:gap-6 h-full">
         {/* Left Panel - Selected Prayers */}

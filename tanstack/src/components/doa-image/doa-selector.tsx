@@ -19,7 +19,11 @@ import {
 import { Badge } from '@/components/ui/badge'
 import { ScrollArea } from '@/components/ui/scroll-area'
 import type { DoaItem, Language } from '@/types/doa.types'
-import { searchPrayers, filterByCategory, truncateText } from '@/utils/text-helpers'
+import {
+  searchPrayers,
+  filterByCategory,
+  truncateText,
+} from '@/utils/text-helpers'
 
 interface DoaSelectorProps {
   prayers: DoaItem[]
@@ -63,7 +67,7 @@ export function DoaSelector({
     const startIndex = (currentPage - 1) * ITEMS_PER_PAGE
     const paginatedPrayers = filteredPrayers.slice(
       startIndex,
-      startIndex + ITEMS_PER_PAGE
+      startIndex + ITEMS_PER_PAGE,
     )
 
     return {
@@ -115,7 +119,7 @@ export function DoaSelector({
         </div>
 
         {/* Category Filter */}
-        <Select value={selectedCategory} onValueChange={handleCategoryChange}>
+        <Select value={selectedCategory} onValueChange={(value) => handleCategoryChange(value || '')}>
           <SelectTrigger>
             <SelectValue />
           </SelectTrigger>
@@ -156,18 +160,18 @@ export function DoaSelector({
                   <div className="flex items-start gap-3">
                     <div className="flex-1 min-w-0">
                       {/* Category Badge */}
-                      {prayer.category_names?.[0] && (
+                      {prayer.categoryNames?.[0] && (
                         <Badge
-                          variant={getCategoryVariant(prayer.category_names[0])}
+                          variant={getCategoryVariant(prayer.categoryNames[0])}
                           className="text-xs mb-2"
                         >
-                          {prayer.category_names[0]}
+                          {prayer.categoryNames[0]}
                         </Badge>
                       )}
 
                       {/* Prayer Title */}
                       <h4 className="font-medium text-sm mb-1.5 leading-tight">
-                        {language === 'my' ? prayer.name_my : prayer.name_en}
+                        {language === 'my' ? prayer.nameMy : prayer.nameEn}
                       </h4>
 
                       {/* Arabic Text Preview */}
@@ -237,14 +241,14 @@ export function DoaSelector({
                       </PaginationLink>
                     </PaginationItem>
                   )
-                }
+                },
               )}
 
               <PaginationItem>
                 <PaginationNext
                   onClick={() =>
                     setCurrentPage((p) =>
-                      Math.min(paginatedData.totalPages, p + 1)
+                      Math.min(paginatedData.totalPages, p + 1),
                     )
                   }
                   className={

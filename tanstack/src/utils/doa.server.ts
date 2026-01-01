@@ -1,41 +1,25 @@
-import type { DoaItem } from '@/types/doa.types'
-
-// Static import - bundled by Vite into the server build
-import doaDataRaw from '../../data/doa.json'
-
-// Type assertion for the imported JSON
-const doaData = doaDataRaw as DoaItem[]
-
-// In-memory cache for DOA data
-let cachedDoaData: DoaItem[] | null = null
+import { db } from '@/db'
+import { doa } from '@/db/schema'
+import { eq, ilike, or, sql } from 'drizzle-orm'
+import type { Doa } from '@/types/doa.types'
 
 /**
- * Load DOA data from bundled JSON (cached)
+ * Load all DOA data from database
  */
-export async function loadDoaData(): Promise<DoaItem[]> {
-  if (cachedDoaData !== null) {
-    return cachedDoaData
-  }
-
-  if (!Array.isArray(doaData)) {
-    throw new Error('DOA data is not an array')
-  }
-
-  cachedDoaData = doaData
-  console.log('[DoaAPI] Loaded', cachedDoaData.length, 'doa items')
-  return cachedDoaData
+export async function loadDoaData(): Promise<Doa[]> {
+  return db.select().from(doa)
 }
 
 /**
  * Get all unique categories from DOA data
  */
 export async function getDoaCategories(): Promise<string[]> {
-  const data = await loadDoaData()
+  const results = await db.selectDistinct({ categoryNames: doa.categoryNames }).from(doa)
   const categories = new Set<string>()
 
-  for (const item of data) {
-    if (item.category_names) {
-      for (const category of item.category_names) {
+  for (const item of results) {
+    if (item.categoryNames) {
+      for (const category of item.categoryNames) {
         categories.add(category)
       }
     }
@@ -60,7 +44,7 @@ export interface PaginationMeta {
  * Paginated DOA response
  */
 export interface PaginatedDoaResponse {
-  data: DoaItem[]
+  data: Doa[]
   pagination: PaginationMeta
 }
 
@@ -71,18 +55,17 @@ export async function getPaginatedDoa(
   page: number,
   limit: number,
 ): Promise<PaginatedDoaResponse> {
-  const allDoa = await loadDoaData()
-
   // Validate parameters
   const validPage = Math.max(1, page)
   const validLimit = Math.max(1, Math.min(100, limit)) // Cap at 100
 
-  const total = allDoa.length
+  const [countResult] = await db.select({ count: sql<number>`count(*)::int` }).from(doa)
+  const total = countResult?.count || 0
   const totalPages = Math.ceil(total / validLimit)
   const validPageNumber = Math.min(validPage, totalPages || 1)
 
   const offset = (validPageNumber - 1) * validLimit
-  const data = allDoa.slice(offset, offset + validLimit)
+  const data = await db.select().from(doa).limit(validLimit).offset(offset)
 
   return {
     data,
@@ -100,28 +83,19 @@ export async function getPaginatedDoa(
 /**
  * Get a random DOA item, optionally filtered by category
  */
-export async function getRandomDoa(category?: string): Promise<DoaItem | null> {
-  const allDoa = await loadDoaData()
+export async function getRandomDoa(category?: string): Promise<Doa | null> {
+  const whereClause = category
+    ? sql`${doa.categoryNames} @> ${JSON.stringify([category])}::jsonb`
+    : undefined
 
-  // If no category specified, return random from all
-  if (!category) {
-    const randomIndex = Math.floor(Math.random() * allDoa.length)
-    return allDoa[randomIndex] || null
-  }
+  const [result] = await db
+    .select()
+    .from(doa)
+    .where(whereClause)
+    .orderBy(sql`RANDOM()`)
+    .limit(1)
 
-  // Filter by category (case-insensitive)
-  const filteredDoa = allDoa.filter((item) =>
-    item.category_names?.some(
-      (cat) => cat.toLowerCase() === category.toLowerCase(),
-    ),
-  )
-
-  if (filteredDoa.length === 0) {
-    return null
-  }
-
-  const randomIndex = Math.floor(Math.random() * filteredDoa.length)
-  return filteredDoa[randomIndex]
+  return result ?? null
 }
 
 /**
@@ -130,55 +104,51 @@ export async function getRandomDoa(category?: string): Promise<DoaItem | null> {
 export async function getRandomDoaBatch(
   count: number,
   category?: string,
-): Promise<DoaItem[]> {
-  const allDoa = await loadDoaData()
+): Promise<Doa[]> {
+  const whereClause = category
+    ? sql`${doa.categoryNames} @> ${JSON.stringify([category])}::jsonb`
+    : undefined
 
-  let pool = allDoa
-
-  // Filter by category if specified
-  if (category) {
-    pool = allDoa.filter((item) =>
-      item.category_names?.some(
-        (cat) => cat.toLowerCase() === category.toLowerCase(),
-      ),
-    )
-  }
-
-  if (pool.length === 0) {
-    return []
-  }
-
-  // Shuffle and pick random items
-  const shuffled = pool.sort(() => Math.random() - 0.5)
-  return shuffled.slice(0, Math.min(count, pool.length))
+  return db
+    .select()
+    .from(doa)
+    .where(whereClause)
+    .orderBy(sql`RANDOM()`)
+    .limit(count)
 }
 
 /**
  * Get DOA item by slug
  */
-export async function getDoaBySlug(slug: string): Promise<DoaItem | null> {
-  const allDoa = await loadDoaData()
-  return allDoa.find((item) => item.slug === slug) || null
+export async function getDoaBySlug(slug: string): Promise<Doa | null> {
+  const result = await db.query.doa.findFirst({
+    where: eq(doa.slug, slug),
+  })
+  return result ?? null
 }
 
 /**
  * Search DOA items by query (searches name and content)
  */
-export async function searchDoa(query: string): Promise<DoaItem[]> {
-  const allDoa = await loadDoaData()
+export async function searchDoa(query: string): Promise<Doa[]> {
   const lowerQuery = query.toLowerCase().trim()
 
   if (!lowerQuery) {
     return []
   }
 
-  return allDoa.filter((item) => {
-    return (
-      item.name_my?.toLowerCase().includes(lowerQuery) ||
-      item.name_en?.toLowerCase().includes(lowerQuery) ||
-      item.content?.includes(query) ||
-      item.meaning_my?.toLowerCase().includes(lowerQuery) ||
-      item.meaning_en?.toLowerCase().includes(lowerQuery)
+  const searchTerm = `%${lowerQuery}%`
+
+  return db
+    .select()
+    .from(doa)
+    .where(
+      or(
+        ilike(doa.nameMy, searchTerm),
+        ilike(doa.nameEn, searchTerm),
+        ilike(doa.content, searchTerm),
+        ilike(doa.meaningMy, searchTerm),
+        ilike(doa.meaningEn, searchTerm),
+      ),
     )
-  })
 }

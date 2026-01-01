@@ -57,7 +57,9 @@ export function PreviewPanel({
           <div className="text-center space-y-3 p-6">
             <ImageIcon className="w-16 h-16 mx-auto text-muted-foreground/50" />
             <div>
-              <p className="font-medium text-muted-foreground">No doa selected</p>
+              <p className="font-medium text-muted-foreground">
+                No doa selected
+              </p>
               <p className="text-sm text-muted-foreground/70">
                 Select a doa to see a preview
               </p>
@@ -69,8 +71,8 @@ export function PreviewPanel({
   }
 
   // Preview with selected doa and background
-  const doaName = language === 'my' ? doa.name_my : doa.name_en
-  const translation = language === 'my' ? doa.meaning_my : doa.meaning_en
+  const doaName = language === 'my' ? doa.nameMy : doa.nameEn
+  const translation = language === 'my' ? doa.meaningMy : doa.meaningEn
 
   return (
     <div className="space-y-3">
@@ -107,19 +109,22 @@ export function PreviewPanel({
 
             {/* Translation */}
             <p className="text-sm text-center text-white/90 leading-relaxed max-w-[90%] drop-shadow">
-              {truncateText(translation, 200)}
+              {truncateText(translation || '', 200)}
             </p>
           </div>
 
           {/* Bottom: Branding */}
           <div className="text-center pb-2">
-            <p className="font-serif font-semibold text-lg drop-shadow-lg">GetDoa</p>
+            <p className="font-serif font-semibold text-lg drop-shadow-lg">
+              GetDoa
+            </p>
             <p className="text-sm text-white/80 drop-shadow">getdoa.com</p>
           </div>
         </div>
       </div>
       <p className="text-xs text-muted-foreground text-center">
-        This is a simplified preview. The final image will have full text and better formatting.
+        This is a simplified preview. The final image will have full text and
+        better formatting.
       </p>
     </div>
   )

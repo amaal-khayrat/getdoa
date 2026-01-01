@@ -1,63 +1,82 @@
-import * as React from 'react'
 import { useState, useTransition } from 'react'
 import { useNavigate } from '@tanstack/react-router'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import { TemplateCard } from './template-card'
-import { SPACE_TEMPLATES, getTemplateById } from '@/lib/space-templates'
-import { useSpaceStore } from '@/stores/space-store'
+import { ListTemplateCard } from './list-template-card'
+import { LIST_TEMPLATES, getTemplateById } from '@/lib/list-templates'
 import { Loader2 } from 'lucide-react'
-import { createSpace } from '@/routes/dashboard/functions'
+import { createDoaList } from '@/routes/dashboard/functions'
+import type { PrayerReference } from '@/types/doa-list.types'
+import { toast } from 'sonner'
 
-interface CreateSpaceFormProps {
+interface CreateDoaListFormProps {
   userId: string
   language?: 'en' | 'my'
   onSuccess?: () => void
 }
 
-export function CreateSpaceForm({
+export function CreateDoaListForm({
   userId,
   language = 'en',
   onSuccess,
-}: CreateSpaceFormProps) {
+}: CreateDoaListFormProps) {
   const navigate = useNavigate()
-  const [selectedTemplateId, setSelectedTemplateId] = useState<string>('morning-azkar')
-  const [spaceName, setSpaceName] = useState('')
+  const [selectedTemplateId, setSelectedTemplateId] =
+    useState<string>('morning-azkar')
+  const [listName, setListName] = useState('')
   const [isPending, startTransition] = useTransition()
-  const addSpace = useSpaceStore((state) => state.addSpace)
 
   const selectedTemplate = getTemplateById(selectedTemplateId)
 
-  // Update space name when template changes
+  // Update list name when template changes
   const handleTemplateSelect = (templateId: string) => {
     setSelectedTemplateId(templateId)
     const template = getTemplateById(templateId)
-    if (template && !spaceName) {
-      setSpaceName(language === 'my' ? template.nameMs : template.name)
+    if (template && !listName) {
+      setListName(language === 'my' ? template.nameMs : template.name)
     }
   }
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
 
-    if (!spaceName.trim()) return
+    if (!listName.trim()) return
 
     startTransition(async () => {
       try {
-        const newSpace = await createSpace({
+        // Convert template slugs to prayer references with order
+        const prayers: PrayerReference[] =
+          selectedTemplate?.doaSlugs.map((slug, index) => ({
+            slug,
+            order: index,
+          })) || []
+
+        const result = await createDoaList({
           data: {
             userId,
             input: {
-              name: spaceName.trim(),
-              icon: selectedTemplate?.icon || 'BookOpen',
-              doaSlugs: selectedTemplate?.doaSlugs || [],
+              name: listName.trim(),
+              prayers,
+              language,
             },
           },
         })
 
-        // Add to store
-        addSpace(newSpace)
+        // Handle result
+        if (!result.success) {
+          if (result.error.code === 'LIST_LIMIT_REACHED') {
+            toast.error(result.error.message, {
+              action: {
+                label: 'Invite Friends',
+                onClick: () => navigate({ to: '/dashboard/referrals' }),
+              },
+            })
+          } else {
+            toast.error(result.error.message)
+          }
+          return
+        }
 
         // Call success callback or navigate
         if (onSuccess) {
@@ -66,7 +85,8 @@ export function CreateSpaceForm({
           navigate({ to: '/dashboard' })
         }
       } catch (error) {
-        console.error('Failed to create space:', error)
+        console.error('Failed to create list:', error)
+        toast.error('Failed to create list. Please try again.')
       }
     })
   }
@@ -87,8 +107,8 @@ export function CreateSpaceForm({
         </div>
 
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          {SPACE_TEMPLATES.map((template) => (
-            <TemplateCard
+          {LIST_TEMPLATES.map((template) => (
+            <ListTemplateCard
               key={template.id}
               template={template}
               isSelected={selectedTemplateId === template.id}
@@ -99,20 +119,20 @@ export function CreateSpaceForm({
         </div>
       </div>
 
-      {/* Space Name */}
+      {/* List Name */}
       <div className="space-y-2">
-        <Label htmlFor="space-name">
-          {language === 'my' ? 'Nama Ruang' : 'Space Name'}
+        <Label htmlFor="list-name">
+          {language === 'my' ? 'Nama Senarai' : 'List Name'}
         </Label>
         <Input
-          id="space-name"
+          id="list-name"
           placeholder={
             language === 'my'
               ? 'Contoh: Zikir Harian Saya'
               : 'e.g., My Daily Prayers'
           }
-          value={spaceName}
-          onChange={(e) => setSpaceName(e.target.value)}
+          value={listName}
+          onChange={(e) => setListName(e.target.value)}
           className="max-w-md"
           required
         />
@@ -124,9 +144,9 @@ export function CreateSpaceForm({
       </div>
 
       {/* Submit */}
-      <Button type="submit" disabled={isPending || !spaceName.trim()} size="lg">
+      <Button type="submit" disabled={isPending || !listName.trim()} size="lg">
         {isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-        {language === 'my' ? 'Cipta Ruang' : 'Create Space'}
+        {language === 'my' ? 'Cipta Senarai' : 'Create List'}
       </Button>
     </form>
   )

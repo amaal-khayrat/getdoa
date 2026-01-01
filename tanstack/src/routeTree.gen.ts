@@ -15,15 +15,20 @@ import { Route as PrivacyRouteImport } from './routes/privacy'
 import { Route as PricingRouteImport } from './routes/pricing'
 import { Route as OnboardingRouteImport } from './routes/onboarding'
 import { Route as LoginRouteImport } from './routes/login'
-import { Route as CreateDoaListRouteImport } from './routes/create-doa-list'
+import { Route as LeaderboardRouteImport } from './routes/leaderboard'
 import { Route as ContactRouteImport } from './routes/contact'
+import { Route as AdminRouteImport } from './routes/admin'
 import { Route as AboutRouteImport } from './routes/about'
 import { Route as DoaRouteRouteImport } from './routes/doa.route'
 import { Route as DashboardRouteRouteImport } from './routes/dashboard.route'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as DoaIndexRouteImport } from './routes/doa.index'
 import { Route as DashboardIndexRouteImport } from './routes/dashboard.index'
+import { Route as ListListIdRouteImport } from './routes/list.$listId'
 import { Route as DoaSlugRouteImport } from './routes/doa.$slug'
+import { Route as DashboardSavedListsRouteImport } from './routes/dashboard.saved-lists'
+import { Route as DashboardSavedDuasRouteImport } from './routes/dashboard.saved-duas'
+import { Route as DashboardReferralsRouteImport } from './routes/dashboard.referrals'
 import { Route as DashboardDoaImageRouteImport } from './routes/dashboard.doa-image'
 import { Route as DashboardCreateDoaListRouteImport } from './routes/dashboard.create-doa-list'
 import { Route as ApiShopeeReferralsRouteImport } from './routes/api/shopee-referrals'
@@ -62,14 +67,19 @@ const LoginRoute = LoginRouteImport.update({
   path: '/login',
   getParentRoute: () => rootRouteImport,
 } as any)
-const CreateDoaListRoute = CreateDoaListRouteImport.update({
-  id: '/create-doa-list',
-  path: '/create-doa-list',
+const LeaderboardRoute = LeaderboardRouteImport.update({
+  id: '/leaderboard',
+  path: '/leaderboard',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ContactRoute = ContactRouteImport.update({
   id: '/contact',
   path: '/contact',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminRoute = AdminRouteImport.update({
+  id: '/admin',
+  path: '/admin',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AboutRoute = AboutRouteImport.update({
@@ -102,10 +112,30 @@ const DashboardIndexRoute = DashboardIndexRouteImport.update({
   path: '/',
   getParentRoute: () => DashboardRouteRoute,
 } as any)
+const ListListIdRoute = ListListIdRouteImport.update({
+  id: '/list/$listId',
+  path: '/list/$listId',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const DoaSlugRoute = DoaSlugRouteImport.update({
   id: '/$slug',
   path: '/$slug',
   getParentRoute: () => DoaRouteRoute,
+} as any)
+const DashboardSavedListsRoute = DashboardSavedListsRouteImport.update({
+  id: '/saved-lists',
+  path: '/saved-lists',
+  getParentRoute: () => DashboardRouteRoute,
+} as any)
+const DashboardSavedDuasRoute = DashboardSavedDuasRouteImport.update({
+  id: '/saved-duas',
+  path: '/saved-duas',
+  getParentRoute: () => DashboardRouteRoute,
+} as any)
+const DashboardReferralsRoute = DashboardReferralsRouteImport.update({
+  id: '/referrals',
+  path: '/referrals',
+  getParentRoute: () => DashboardRouteRoute,
 } as any)
 const DashboardDoaImageRoute = DashboardDoaImageRouteImport.update({
   id: '/doa-image',
@@ -148,8 +178,9 @@ export interface FileRoutesByFullPath {
   '/dashboard': typeof DashboardRouteRouteWithChildren
   '/doa': typeof DoaRouteRouteWithChildren
   '/about': typeof AboutRoute
+  '/admin': typeof AdminRoute
   '/contact': typeof ContactRoute
-  '/create-doa-list': typeof CreateDoaListRoute
+  '/leaderboard': typeof LeaderboardRoute
   '/login': typeof LoginRoute
   '/onboarding': typeof OnboardingRoute
   '/pricing': typeof PricingRoute
@@ -160,7 +191,11 @@ export interface FileRoutesByFullPath {
   '/api/shopee-referrals': typeof ApiShopeeReferralsRoute
   '/dashboard/create-doa-list': typeof DashboardCreateDoaListRoute
   '/dashboard/doa-image': typeof DashboardDoaImageRoute
+  '/dashboard/referrals': typeof DashboardReferralsRoute
+  '/dashboard/saved-duas': typeof DashboardSavedDuasRoute
+  '/dashboard/saved-lists': typeof DashboardSavedListsRoute
   '/doa/$slug': typeof DoaSlugRoute
+  '/list/$listId': typeof ListListIdRoute
   '/dashboard/': typeof DashboardIndexRoute
   '/doa/': typeof DoaIndexRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
@@ -170,8 +205,9 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
+  '/admin': typeof AdminRoute
   '/contact': typeof ContactRoute
-  '/create-doa-list': typeof CreateDoaListRoute
+  '/leaderboard': typeof LeaderboardRoute
   '/login': typeof LoginRoute
   '/onboarding': typeof OnboardingRoute
   '/pricing': typeof PricingRoute
@@ -182,7 +218,11 @@ export interface FileRoutesByTo {
   '/api/shopee-referrals': typeof ApiShopeeReferralsRoute
   '/dashboard/create-doa-list': typeof DashboardCreateDoaListRoute
   '/dashboard/doa-image': typeof DashboardDoaImageRoute
+  '/dashboard/referrals': typeof DashboardReferralsRoute
+  '/dashboard/saved-duas': typeof DashboardSavedDuasRoute
+  '/dashboard/saved-lists': typeof DashboardSavedListsRoute
   '/doa/$slug': typeof DoaSlugRoute
+  '/list/$listId': typeof ListListIdRoute
   '/dashboard': typeof DashboardIndexRoute
   '/doa': typeof DoaIndexRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
@@ -195,8 +235,9 @@ export interface FileRoutesById {
   '/dashboard': typeof DashboardRouteRouteWithChildren
   '/doa': typeof DoaRouteRouteWithChildren
   '/about': typeof AboutRoute
+  '/admin': typeof AdminRoute
   '/contact': typeof ContactRoute
-  '/create-doa-list': typeof CreateDoaListRoute
+  '/leaderboard': typeof LeaderboardRoute
   '/login': typeof LoginRoute
   '/onboarding': typeof OnboardingRoute
   '/pricing': typeof PricingRoute
@@ -207,7 +248,11 @@ export interface FileRoutesById {
   '/api/shopee-referrals': typeof ApiShopeeReferralsRoute
   '/dashboard/create-doa-list': typeof DashboardCreateDoaListRoute
   '/dashboard/doa-image': typeof DashboardDoaImageRoute
+  '/dashboard/referrals': typeof DashboardReferralsRoute
+  '/dashboard/saved-duas': typeof DashboardSavedDuasRoute
+  '/dashboard/saved-lists': typeof DashboardSavedListsRoute
   '/doa/$slug': typeof DoaSlugRoute
+  '/list/$listId': typeof ListListIdRoute
   '/dashboard/': typeof DashboardIndexRoute
   '/doa/': typeof DoaIndexRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
@@ -221,8 +266,9 @@ export interface FileRouteTypes {
     | '/dashboard'
     | '/doa'
     | '/about'
+    | '/admin'
     | '/contact'
-    | '/create-doa-list'
+    | '/leaderboard'
     | '/login'
     | '/onboarding'
     | '/pricing'
@@ -233,7 +279,11 @@ export interface FileRouteTypes {
     | '/api/shopee-referrals'
     | '/dashboard/create-doa-list'
     | '/dashboard/doa-image'
+    | '/dashboard/referrals'
+    | '/dashboard/saved-duas'
+    | '/dashboard/saved-lists'
     | '/doa/$slug'
+    | '/list/$listId'
     | '/dashboard/'
     | '/doa/'
     | '/api/auth/$'
@@ -243,8 +293,9 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/about'
+    | '/admin'
     | '/contact'
-    | '/create-doa-list'
+    | '/leaderboard'
     | '/login'
     | '/onboarding'
     | '/pricing'
@@ -255,7 +306,11 @@ export interface FileRouteTypes {
     | '/api/shopee-referrals'
     | '/dashboard/create-doa-list'
     | '/dashboard/doa-image'
+    | '/dashboard/referrals'
+    | '/dashboard/saved-duas'
+    | '/dashboard/saved-lists'
     | '/doa/$slug'
+    | '/list/$listId'
     | '/dashboard'
     | '/doa'
     | '/api/auth/$'
@@ -267,8 +322,9 @@ export interface FileRouteTypes {
     | '/dashboard'
     | '/doa'
     | '/about'
+    | '/admin'
     | '/contact'
-    | '/create-doa-list'
+    | '/leaderboard'
     | '/login'
     | '/onboarding'
     | '/pricing'
@@ -279,7 +335,11 @@ export interface FileRouteTypes {
     | '/api/shopee-referrals'
     | '/dashboard/create-doa-list'
     | '/dashboard/doa-image'
+    | '/dashboard/referrals'
+    | '/dashboard/saved-duas'
+    | '/dashboard/saved-lists'
     | '/doa/$slug'
+    | '/list/$listId'
     | '/dashboard/'
     | '/doa/'
     | '/api/auth/$'
@@ -292,8 +352,9 @@ export interface RootRouteChildren {
   DashboardRouteRoute: typeof DashboardRouteRouteWithChildren
   DoaRouteRoute: typeof DoaRouteRouteWithChildren
   AboutRoute: typeof AboutRoute
+  AdminRoute: typeof AdminRoute
   ContactRoute: typeof ContactRoute
-  CreateDoaListRoute: typeof CreateDoaListRoute
+  LeaderboardRoute: typeof LeaderboardRoute
   LoginRoute: typeof LoginRoute
   OnboardingRoute: typeof OnboardingRoute
   PricingRoute: typeof PricingRoute
@@ -302,6 +363,7 @@ export interface RootRouteChildren {
   TermsRoute: typeof TermsRoute
   ApiDoaRoute: typeof ApiDoaRouteWithChildren
   ApiShopeeReferralsRoute: typeof ApiShopeeReferralsRoute
+  ListListIdRoute: typeof ListListIdRoute
   ApiAuthSplatRoute: typeof ApiAuthSplatRoute
   ApiShopeeOgSplatRoute: typeof ApiShopeeOgSplatRoute
 }
@@ -350,11 +412,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof LoginRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/create-doa-list': {
-      id: '/create-doa-list'
-      path: '/create-doa-list'
-      fullPath: '/create-doa-list'
-      preLoaderRoute: typeof CreateDoaListRouteImport
+    '/leaderboard': {
+      id: '/leaderboard'
+      path: '/leaderboard'
+      fullPath: '/leaderboard'
+      preLoaderRoute: typeof LeaderboardRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/contact': {
@@ -362,6 +424,13 @@ declare module '@tanstack/react-router' {
       path: '/contact'
       fullPath: '/contact'
       preLoaderRoute: typeof ContactRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin': {
+      id: '/admin'
+      path: '/admin'
+      fullPath: '/admin'
+      preLoaderRoute: typeof AdminRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/about': {
@@ -406,12 +475,40 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DashboardIndexRouteImport
       parentRoute: typeof DashboardRouteRoute
     }
+    '/list/$listId': {
+      id: '/list/$listId'
+      path: '/list/$listId'
+      fullPath: '/list/$listId'
+      preLoaderRoute: typeof ListListIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/doa/$slug': {
       id: '/doa/$slug'
       path: '/$slug'
       fullPath: '/doa/$slug'
       preLoaderRoute: typeof DoaSlugRouteImport
       parentRoute: typeof DoaRouteRoute
+    }
+    '/dashboard/saved-lists': {
+      id: '/dashboard/saved-lists'
+      path: '/saved-lists'
+      fullPath: '/dashboard/saved-lists'
+      preLoaderRoute: typeof DashboardSavedListsRouteImport
+      parentRoute: typeof DashboardRouteRoute
+    }
+    '/dashboard/saved-duas': {
+      id: '/dashboard/saved-duas'
+      path: '/saved-duas'
+      fullPath: '/dashboard/saved-duas'
+      preLoaderRoute: typeof DashboardSavedDuasRouteImport
+      parentRoute: typeof DashboardRouteRoute
+    }
+    '/dashboard/referrals': {
+      id: '/dashboard/referrals'
+      path: '/referrals'
+      fullPath: '/dashboard/referrals'
+      preLoaderRoute: typeof DashboardReferralsRouteImport
+      parentRoute: typeof DashboardRouteRoute
     }
     '/dashboard/doa-image': {
       id: '/dashboard/doa-image'
@@ -468,12 +565,18 @@ declare module '@tanstack/react-router' {
 interface DashboardRouteRouteChildren {
   DashboardCreateDoaListRoute: typeof DashboardCreateDoaListRoute
   DashboardDoaImageRoute: typeof DashboardDoaImageRoute
+  DashboardReferralsRoute: typeof DashboardReferralsRoute
+  DashboardSavedDuasRoute: typeof DashboardSavedDuasRoute
+  DashboardSavedListsRoute: typeof DashboardSavedListsRoute
   DashboardIndexRoute: typeof DashboardIndexRoute
 }
 
 const DashboardRouteRouteChildren: DashboardRouteRouteChildren = {
   DashboardCreateDoaListRoute: DashboardCreateDoaListRoute,
   DashboardDoaImageRoute: DashboardDoaImageRoute,
+  DashboardReferralsRoute: DashboardReferralsRoute,
+  DashboardSavedDuasRoute: DashboardSavedDuasRoute,
+  DashboardSavedListsRoute: DashboardSavedListsRoute,
   DashboardIndexRoute: DashboardIndexRoute,
 }
 
@@ -511,8 +614,9 @@ const rootRouteChildren: RootRouteChildren = {
   DashboardRouteRoute: DashboardRouteRouteWithChildren,
   DoaRouteRoute: DoaRouteRouteWithChildren,
   AboutRoute: AboutRoute,
+  AdminRoute: AdminRoute,
   ContactRoute: ContactRoute,
-  CreateDoaListRoute: CreateDoaListRoute,
+  LeaderboardRoute: LeaderboardRoute,
   LoginRoute: LoginRoute,
   OnboardingRoute: OnboardingRoute,
   PricingRoute: PricingRoute,
@@ -521,6 +625,7 @@ const rootRouteChildren: RootRouteChildren = {
   TermsRoute: TermsRoute,
   ApiDoaRoute: ApiDoaRouteWithChildren,
   ApiShopeeReferralsRoute: ApiShopeeReferralsRoute,
+  ListListIdRoute: ListListIdRoute,
   ApiAuthSplatRoute: ApiAuthSplatRoute,
   ApiShopeeOgSplatRoute: ApiShopeeOgSplatRoute,
 }

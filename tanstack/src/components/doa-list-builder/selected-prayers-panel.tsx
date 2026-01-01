@@ -17,7 +17,6 @@ import { GripVertical, Plus, X } from 'lucide-react'
 import { useDoaListActions, useDoaListState } from './doa-list-builder'
 import type { DragEndEvent } from '@dnd-kit/core'
 import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
 import { isPrayerSelected, truncateText } from '@/utils/text-helpers'
 
 // Sortable item component
@@ -68,7 +67,7 @@ function SortablePrayerItem({ prayer, index }: { prayer: any; index: number }) {
         {/* Prayer Content */}
         <div className="flex-1 min-w-0">
           <h4 className="font-medium text-sm mb-1">
-            {language === 'my' ? prayer.name_my : prayer.name_en}
+            {language === 'my' ? prayer.nameMy : prayer.nameEn}
           </h4>
           <p
             className="font-arabic text-sm text-muted-foreground mb-1 line-clamp-2"
@@ -77,7 +76,7 @@ function SortablePrayerItem({ prayer, index }: { prayer: any; index: number }) {
             {truncateText(prayer.content, 100)}
           </p>
           <p className="text-xs text-muted-foreground line-clamp-1">
-            {language === 'my' ? prayer.meaning_my : prayer.meaning_en}
+            {language === 'my' ? prayer.meaningMy : prayer.meaningEn}
           </p>
         </div>
 
@@ -122,9 +121,9 @@ export function SelectedPrayersPanel({
 }: {
   filteredPrayers: Array<any>
 }) {
-  const { selectedPrayers, title, description, language } = useDoaListState()
+  const { selectedPrayers, language } = useDoaListState()
 
-  const { updateState, addPrayer, reorderPrayers } = useDoaListActions()
+  const { updateState, addPrayer } = useDoaListActions()
 
   const sensors = useSensors(
     useSensor(PointerSensor),
@@ -154,25 +153,9 @@ export function SelectedPrayersPanel({
 
   return (
     <div className="bg-card rounded-lg border h-full flex flex-col overflow-hidden">
-      {/* Header */}
+      {/* Header with Bismillah */}
       <div className="p-4 border-b">
-        <div className="space-y-3">
-          <Input
-            placeholder="Enter list title..."
-            value={title}
-            onChange={(e) => updateState({ title: e.target.value })}
-            className="text-lg font-semibold"
-          />
-          <Input
-            placeholder="Add a description (optional)..."
-            value={description}
-            onChange={(e) => updateState({ description: e.target.value })}
-            className="text-sm"
-          />
-        </div>
-
-        {/* Bismillah */}
-        <div className="mt-4 text-center">
+        <div className="text-center">
           <p className="font-arabic text-xl text-foreground" dir="rtl">
             بِسْمِ اللهِ الرَّحْمٰنِ الرَّحِيْمِ
           </p>
@@ -233,7 +216,7 @@ export function SelectedPrayersPanel({
                   >
                     <div className="flex-1 min-w-0">
                       <p className="text-sm font-medium truncate">
-                        {language === 'my' ? prayer.name_my : prayer.name_en}
+                        {language === 'my' ? prayer.nameMy : prayer.nameEn}
                       </p>
                       <p
                         className="font-arabic text-xs text-muted-foreground truncate"

@@ -30,7 +30,7 @@ const ContentInfo = ({
         sum +
         (prayer.content?.length || 0) +
         (showTranslations
-          ? (prayer.meaning_en?.length || 0) + (prayer.meaning_my?.length || 0)
+          ? (prayer.meaningEn?.length || 0) + (prayer.meaningMy?.length || 0)
           : 0)
       )
     }, 0)
@@ -83,7 +83,7 @@ const PrayerItem = React.memo(
       return (
         <div className="border-l-4 border-primary pl-4">
           <div className="text-sm font-medium text-muted-foreground mb-1">
-            {index + 1}. {language === 'my' ? prayer.name_my : prayer.name_en}
+            {index + 1}. {language === 'my' ? prayer.nameMy : prayer.nameEn}
           </div>
           <p className="font-arabic text-lg text-right" dir="rtl">
             {prayer.content}
@@ -95,14 +95,14 @@ const PrayerItem = React.memo(
     return (
       <div className="border-l-4 border-primary pl-4">
         <div className="text-sm font-medium text-muted-foreground mb-1">
-          {index + 1}. {language === 'my' ? prayer.name_my : prayer.name_en}
+          {index + 1}. {language === 'my' ? prayer.nameMy : prayer.nameEn}
         </div>
         <p className="font-arabic text-lg text-right" dir="rtl">
           {prayer.content}
         </p>
         {showTranslations && (
           <p className="text-sm text-muted-foreground mt-2 italic">
-            {language === 'my' ? prayer.meaning_my : prayer.meaning_en}
+            {language === 'my' ? prayer.meaningMy : prayer.meaningEn}
           </p>
         )}
       </div>
@@ -123,8 +123,7 @@ export function PreviewModal({
 }) {
   const {
     selectedPrayers,
-    title,
-    description,
+    listName,
     language,
     user,
     previewSettings,
@@ -151,7 +150,9 @@ export function PreviewModal({
         showCloseButton={true}
       >
         <DialogHeader className="p-3 sm:p-4 border-b shrink-0">
-          <DialogTitle className="text-base sm:text-lg font-semibold">Preview Your Prayer List</DialogTitle>
+          <DialogTitle className="text-base sm:text-lg font-semibold">
+            Preview Your Prayer List
+          </DialogTitle>
           <DialogDescription className="sr-only">
             Preview and customize your prayer list before exporting as an image
           </DialogDescription>
@@ -160,7 +161,10 @@ export function PreviewModal({
         <div className="flex flex-col lg:flex-row flex-1 min-h-0 overflow-hidden">
           {/* Preview Panel - Left on Desktop, Top on Mobile */}
           <div className="flex-1 p-3 lg:p-4 overflow-y-auto min-w-0 order-2 lg:order-1">
-            <Card className="p-4 lg:p-6 shadow-green" style={{ minHeight: '200px' }}>
+            <Card
+              className="p-4 lg:p-6 shadow-green"
+              style={{ minHeight: '200px' }}
+            >
               {/* Preview Header */}
               <div className="text-center mb-4 sm:mb-6">
                 <h3
@@ -169,15 +173,10 @@ export function PreviewModal({
                 >
                   بِسْمِ اللهِ الرَّحْمٰنِ الرَّحِيْمِ
                 </h3>
-                {title && (
+                {listName && (
                   <h4 className="text-base sm:text-lg font-semibold text-foreground">
-                    {title}
+                    {listName}
                   </h4>
-                )}
-                {description && (
-                  <p className="text-xs sm:text-sm text-muted-foreground mt-1">
-                    {description}
-                  </p>
                 )}
               </div>
 
@@ -209,8 +208,8 @@ export function PreviewModal({
                           <p className="text-sm text-muted-foreground">
                             {index + 1}.{' '}
                             {language === 'my'
-                              ? prayer.meaning_my
-                              : prayer.meaning_en}
+                              ? prayer.meaningMy
+                              : prayer.meaningEn}
                           </p>
                         </div>
                       ))}
@@ -224,9 +223,10 @@ export function PreviewModal({
                   أٰمِيْنَ
                 </p>
                 <div className="text-xs text-muted-foreground">
-                  {user.username && previewSettings.attribution.showUsername && (
-                    <div>List Created By: {user.username}</div>
-                  )}
+                  {user.username &&
+                    previewSettings.attribution.showUsername && (
+                      <div>List Created By: {user.username}</div>
+                    )}
                   {previewSettings.attribution.showBranding && (
                     <div>List Created on GetDoa.com, go create yours now</div>
                   )}

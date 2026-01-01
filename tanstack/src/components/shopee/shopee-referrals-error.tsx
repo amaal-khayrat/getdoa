@@ -8,14 +8,18 @@ interface ShopeeReferralsErrorProps {
   onRetry?: () => void
 }
 
-export function ShopeeReferralsError({ error, onRetry }: ShopeeReferralsErrorProps) {
+export function ShopeeReferralsError({
+  error,
+  onRetry,
+}: ShopeeReferralsErrorProps) {
   const { language } = useLanguage()
 
   const translations = {
     en: {
       title: 'Shop & Support Us',
       errorTitle: 'Unable to load products',
-      errorMessage: error?.message || 'Something went wrong while loading the products.',
+      errorMessage:
+        error?.message || 'Something went wrong while loading the products.',
       retryButton: 'Try again',
       productUnavailable: 'Product unavailable',
       viewOnShopee: 'View on Shopee',
@@ -23,7 +27,8 @@ export function ShopeeReferralsError({ error, onRetry }: ShopeeReferralsErrorPro
     my: {
       title: 'Belian & Sokong Kami',
       errorTitle: 'Produk tidak dapat dimuatkan',
-      errorMessage: error?.message || 'Sesuatu tidak kena semasa memuatkan produk.',
+      errorMessage:
+        error?.message || 'Sesuatu tidak kena semasa memuatkan produk.',
       retryButton: 'Cuba lagi',
       productUnavailable: 'Produk tidak tersedia',
       viewOnShopee: 'Lihat di Shopee',

@@ -1,17 +1,8 @@
-import { Quote, Star } from 'lucide-react'
+import { Quote } from 'lucide-react'
 import { Card, CardContent } from '@/components/ui/card'
 import { LANDING_CONTENT } from '@/lib/constants'
 
 export function TestimonialsSection() {
-  // Generate star rating
-  const renderStars = () => (
-    <div className="flex text-yellow-400 mb-4 text-sm">
-      {[...Array(5)].map((_, index) => (
-        <Star key={index} className="w-4 h-4 fill-current" />
-      ))}
-    </div>
-  )
-
   return (
     <section id="testimonials" className="py-24">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
