@@ -96,7 +96,28 @@ export const Route = createFileRoute('/list/$listId')({
 
     const { list, prayers } = loaderData
     const prayerCount = prayers.length
-    const title = `${list.name} by ${list.user.name} - GetDoa`
+
+    // Compute author display name for meta tags
+    const getInitials = (name: string) =>
+      name
+        .split(' ')
+        .map((n) => n[0])
+        .join('')
+        .toUpperCase()
+        .slice(0, 2)
+
+    const authorPrivacy = list.authorPrivacy ?? {
+      showAvatar: true,
+      showFullName: true,
+      displayName: null,
+    }
+    const authorDisplayName =
+      authorPrivacy.displayName ??
+      (authorPrivacy.showFullName
+        ? list.user.name
+        : getInitials(list.user.name))
+
+    const title = `${list.name} by ${authorDisplayName} - GetDoa`
     const description =
       list.description || `A prayer list with ${prayerCount} duas`
 
@@ -299,7 +320,7 @@ function PublicListView({
         language: list.language as 'en' | 'my',
         showTranslations: useSettings.showTranslations,
         translationLayout: useSettings.translationLayout,
-        createdBy: list.user.name,
+        createdBy: authorDisplayName,
         createdAt: new Date(list.createdAt),
       }
 
@@ -338,6 +359,19 @@ function PublicListView({
       .slice(0, 2)
   }
 
+  // Compute author display name based on privacy settings
+  const authorPrivacy = list.authorPrivacy ?? {
+    showAvatar: true,
+    showFullName: true,
+    displayName: null,
+  }
+  const authorDisplayName =
+    authorPrivacy.displayName ??
+    (authorPrivacy.showFullName
+      ? list.user.name
+      : getInitials(list.user.name))
+  const showAuthorAvatar = authorPrivacy.showAvatar && list.user.image
+
   return (
     <div className="container mx-auto px-4 py-8 max-w-4xl">
       {/* Breadcrumb */}
@@ -374,12 +408,17 @@ function PublicListView({
           className="flex items-center gap-3 mb-4 hover:opacity-80 transition-opacity w-fit"
         >
           <Avatar className="h-10 w-10">
-            <AvatarImage src={list.user.image || ''} alt={list.user.name} />
-            <AvatarFallback>{getInitials(list.user.name)}</AvatarFallback>
+            {showAuthorAvatar ? (
+              <AvatarImage
+                src={list.user.image || ''}
+                alt={authorDisplayName}
+              />
+            ) : null}
+            <AvatarFallback>{getInitials(authorDisplayName)}</AvatarFallback>
           </Avatar>
           <div>
             <p className="font-medium text-foreground hover:text-primary transition-colors">
-              {list.user.name}
+              {authorDisplayName}
             </p>
             <p className="text-sm text-muted-foreground">
               {prayers.length} duas

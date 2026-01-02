@@ -225,6 +225,15 @@ export const getDoaList = createServerFn({ method: 'GET' })
       with: {
         user: {
           columns: { id: true, name: true, image: true },
+          with: {
+            profile: {
+              columns: {
+                showAvatar: true,
+                showFullName: true,
+                displayName: true,
+              },
+            },
+          },
         },
         items: {
           with: {
@@ -254,7 +263,29 @@ export const getDoaList = createServerFn({ method: 'GET' })
         })
     }
 
-    return list as DoaListWithUserAndItems
+    // Build the result with author privacy settings
+    const authorPrivacy = list.user.profile
+      ? {
+          showAvatar: list.user.profile.showAvatar,
+          showFullName: list.user.profile.showFullName,
+          displayName: list.user.profile.displayName,
+        }
+      : {
+          // Default privacy settings when profile doesn't exist
+          showAvatar: true,
+          showFullName: true,
+          displayName: null,
+        }
+
+    return {
+      ...list,
+      user: {
+        id: list.user.id,
+        name: list.user.name,
+        image: list.user.image,
+      },
+      authorPrivacy,
+    } as DoaListWithUserAndItems
   })
 
 // Update list
@@ -561,6 +592,12 @@ export const logExport = createServerFn({ method: 'POST' })
 export interface PublicListItem extends DoaListWithUser {
   itemCount: number
   isFavorited: boolean
+  // Author privacy settings are always included in public lists
+  authorPrivacy: {
+    showAvatar: boolean
+    showFullName: boolean
+    displayName: string | null
+  }
 }
 
 export interface PublicListsResult {
@@ -636,7 +673,7 @@ export const getPublicLists = createServerFn({ method: 'GET' })
             ? [desc(doaList.favoriteCount)]
             : [desc(sql`COALESCE(${doaList.publishedAt}, ${doaList.createdAt})`)]
 
-      // Get paginated results with user info
+      // Get paginated results with user info and privacy settings
       const lists = await db.query.doaList.findMany({
         where: whereClause,
         orderBy: orderByClause,
@@ -645,6 +682,15 @@ export const getPublicLists = createServerFn({ method: 'GET' })
         with: {
           user: {
             columns: { id: true, name: true, image: true },
+            with: {
+              profile: {
+                columns: {
+                  showAvatar: true,
+                  showFullName: true,
+                  displayName: true,
+                },
+              },
+            },
           },
           items: {
             columns: { id: true },
@@ -666,7 +712,25 @@ export const getPublicLists = createServerFn({ method: 'GET' })
 
       return {
         lists: lists.map((list) => ({
-          ...(list as DoaListWithUser),
+          ...list,
+          user: {
+            id: list.user.id,
+            name: list.user.name,
+            image: list.user.image,
+          },
+          // Include author's privacy settings
+          authorPrivacy: list.user.profile
+            ? {
+                showAvatar: list.user.profile.showAvatar,
+                showFullName: list.user.profile.showFullName,
+                displayName: list.user.profile.displayName,
+              }
+            : {
+                // Default privacy settings when profile doesn't exist
+                showAvatar: true,
+                showFullName: true,
+                displayName: null,
+              },
           itemCount: list.items.length,
           isFavorited: favoritedListIds.has(list.id),
         })),

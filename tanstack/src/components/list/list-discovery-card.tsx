@@ -49,6 +49,17 @@ export function ListDiscoveryCard({
   // Is this the user's own list?
   const isOwnList = userId === list.userId
 
+  // Compute author display name based on privacy settings
+  const authorDisplayName =
+    list.authorPrivacy.displayName ??
+    (list.authorPrivacy.showFullName
+      ? list.user.name
+      : getInitials(list.user.name))
+
+  // Determine if avatar should be shown
+  const showAuthorAvatar =
+    list.authorPrivacy.showAvatar && list.user.image
+
   const handleToggleFavorite = (e: React.MouseEvent) => {
     e.preventDefault() // Prevent card link navigation
     e.stopPropagation()
@@ -147,13 +158,18 @@ export function ListDiscoveryCard({
             className="flex items-center gap-2 mb-3 hover:opacity-80 transition-opacity"
           >
             <Avatar className="h-6 w-6">
-              <AvatarImage src={list.user.image || ''} alt={list.user.name} />
+              {showAuthorAvatar ? (
+                <AvatarImage
+                  src={list.user.image || ''}
+                  alt={authorDisplayName}
+                />
+              ) : null}
               <AvatarFallback className="text-xs">
-                {getInitials(list.user.name)}
+                {getInitials(authorDisplayName)}
               </AvatarFallback>
             </Avatar>
             <span className="text-sm text-muted-foreground truncate hover:text-foreground transition-colors">
-              by {list.user.name}
+              by {authorDisplayName}
             </span>
           </Link>
 

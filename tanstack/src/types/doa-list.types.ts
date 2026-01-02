@@ -30,6 +30,13 @@ export interface DoaListItemWithDoa extends DoaListItemRecord {
   doa: Doa
 }
 
+// Author privacy settings (from userProfile table)
+export interface AuthorPrivacySettings {
+  showAvatar: boolean
+  showFullName: boolean
+  displayName: string | null
+}
+
 // Extended list with user info (for public lists)
 export interface DoaListWithUser extends DoaListRecord {
   user: {
@@ -37,6 +44,8 @@ export interface DoaListWithUser extends DoaListRecord {
     name: string
     image: string | null
   }
+  // Author's privacy settings - included when fetching for public display
+  authorPrivacy?: AuthorPrivacySettings
 }
 
 // List with items (prayers) included
