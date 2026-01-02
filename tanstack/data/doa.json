@@ -1832,5 +1832,71 @@
     "description_en": "",
     "context_my": "Ungkapan ini adalah untuk ikut hadis, di mana Rasulullah ﷺ mengarahkan untuk memulakan doa dengan memuji Allah dan berselawat ke atas Nabi ﷺ, seperti yang diriwayatkan dalam Sunan at-Tirmidhi (3477).",
     "context_en": "This phrase exemplifies the hadith's instruction to begin supplication by expressing gratitude and praising Allah, followed by sending blessings upon the Prophet ﷺ, as narrated in Sunan at-Tirmidhi (3477)."
+  },
+  {
+    "name_my": "Penutup Doa",
+    "name_en": "Closing Supplication",
+    "content": "وَصَلَّى اللَّهُ عَلَىٰ خَيْرِ خَلْقِهِ سَيِّدِنَا مُحَمَّدٍ وَعَلَىٰ آلِهِ وَصَحْبِهِ وَسَلَّمَ، سُبْحَانَ رَبِّكَ رَبِّ الْعِزَّةِ عَمَّا يَصِفُونَ، وَسَلَامٌ عَلَى الْمُرْسَلِينَ، وَالْحَمْدُ لِلَّهِ رَبِّ الْعَالَمِينَ",
+    "reference_my": "",
+    "reference_en": "",
+    "meaning_my": "Selawat Allah ke atas sebaik-baik ciptaan-Nya, junjungan kami Muhammad, serta ke atas keluarga dan sahabatnya serta salam sejahtera. Maha Suci Tuhanmu, Tuhan yang memiliki kemuliaan, dari apa yang mereka sifatkan. Dan salam sejahtera ke atas para rasul. Segala puji bagi Allah, Tuhan sekalian alam.",
+    "meaning_en": "May Allah send blessings upon the best of His creation, our master Muhammad, and upon his family and companions, and grant peace. Glorified is your Lord, the Lord of might, above what they attribute to Him. And peace upon the messengers. And all praise is due to Allah, Lord of the worlds.",
+    "category_names": [
+      "Doa",
+      "Prayer",
+      "Zikir",
+      "Remembrance",
+      "Salawat",
+      "Blessings on Prophet"
+    ],
+    "slug": "penutup-doa",
+    "description_my": "",
+    "description_en": "",
+    "context_my": "Ungkapan ini adalah contoh amalan sunat untuk menutup doa dengan berselawat ke atas Nabi ﷺ dan memuji Allah, seperti yang disarankan oleh ulama seperti Imam an-Nawawi dalam al-Adhkar, berdasarkan hadis-hadis umum tentang memulakan dan menutup doa dengan puji-pujian dan selawat.",
+    "context_en": "This phrase is an example of the recommended practice to conclude supplication with blessings upon the Prophet ﷺ and praise to Allah, as advised by scholars like Imam an-Nawawi in al-Adhkar, based on general hadiths about beginning and ending dua in this manner."
+  },
+  {
+    "name_my": "Penutup Doa (2)",
+    "name_en": "Closing Supplication (2)",
+    "content": "وَصَلَّى اللَّهُ عَلَىٰ سَيِّدِنَا مُحَمَّدٍ وَعَلَىٰ آلِهِ وَصَحْبِهِ وَسَلَّمَ، سُبْحَانَ رَبِّكَ رَبِّ الْعِزَّةِ عَمَّا يَصِفُونَ، وَسَلَامٌ عَلَى الْمُرْسَلِينَ، وَالْحَمْدُ لِلَّهِ رَبِّ الْعَالَمِينَ",
+    "reference_my": "",
+    "reference_en": "",
+    "meaning_my": "Selawat Allah ke atas junjungan kami Muhammad, serta ke atas keluarga dan sahabatnya serta salam sejahtera. Maha Suci Tuhanmu, Tuhan yang memiliki kemuliaan, dari apa yang mereka sifatkan. Dan salam sejahtera ke atas para rasul. Segala puji bagi Allah, Tuhan sekalian alam.",
+    "meaning_en": "May Allah send blessings upon our master Muhammad, and upon his family and companions, and grant peace. Glorified is your Lord, the Lord of might, above what they attribute to Him. And peace upon the messengers. And all praise is due to Allah, Lord of the worlds.",
+    "category_names": [
+      "Doa",
+      "Prayer",
+      "Zikir",
+      "Remembrance",
+      "Salawat",
+      "Blessings on Prophet"
+    ],
+    "slug": "penutup-doa-2",
+    "description_my": "",
+    "description_en": "",
+    "context_my": "Ungkapan ini adalah contoh amalan sunat untuk menutup doa dengan berselawat ke atas Nabi ﷺ dan memuji Allah, seperti yang disarankan oleh ulama seperti Imam an-Nawawi dalam al-Adhkar, berdasarkan hadis-hadis umum tentang memulakan dan menutup doa dengan puji-pujian dan selawat.",
+    "context_en": "This phrase is an example of the recommended practice to conclude supplication with blessings upon the Prophet ﷺ and praise to Allah, as advised by scholars like Imam an-Nawawi in al-Adhkar, based on general hadiths about beginning and ending dua in this manner."
+  },
+  {
+    "name_my": "Penutup Doa (3)",
+    "name_en": "Closing Supplication (3)",
+    "content": "وَصَلَّى اللَّهُ عَلَىٰ سَيِّدِنَا مُحَمَّدٍ، وَعَلَىٰ آلِهِ وَصَحْبِهِ وَسَلَّمَ، وَالْحَمْدُ لِلَّهِ رَبِّ الْعَالَمِينَ",
+    "reference_my": "",
+    "reference_en": "",
+    "meaning_my": "Selawat Allah ke atas junjungan kami Muhammad, serta ke atas keluarga dan sahabatnya serta salam sejahtera. Segala puji bagi Allah, Tuhan sekalian alam.",
+    "meaning_en": "May Allah send blessings upon our master Muhammad, and upon his family and companions, and grant peace. And all praise is due to Allah, Lord of the worlds.",
+    "category_names": [
+      "Doa",
+      "Prayer",
+      "Zikir",
+      "Remembrance",
+      "Salawat",
+      "Blessings on Prophet"
+    ],
+    "slug": "penutup-doa-3",
+    "description_my": "",
+    "description_en": "",
+    "context_my": "Ungkapan ini adalah contoh amalan sunat untuk menutup doa dengan berselawat ke atas Nabi ﷺ dan memuji Allah, seperti yang disarankan oleh ulama seperti Imam an-Nawawi dalam al-Adhkar, berdasarkan hadis-hadis umum tentang memulakan dan menutup doa dengan puji-pujian dan selawat.",
+    "context_en": "This phrase is an example of the recommended practice to conclude supplication with blessings upon the Prophet ﷺ and praise to Allah, as advised by scholars like Imam an-Nawawi in al-Adhkar, based on general hadiths about beginning and ending dua in this manner."
   }
 ]
