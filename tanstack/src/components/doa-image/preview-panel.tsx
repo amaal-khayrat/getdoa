@@ -80,7 +80,7 @@ export function PreviewPanel({
       <div className="relative aspect-[3/4] rounded-lg overflow-hidden border">
         {/* Background image */}
         <img
-          src={`/src/assets/ai/${backgroundId}.jpeg`}
+          src={`/assets/ai/${backgroundId}.jpeg`}
           alt="Background"
           className="absolute inset-0 w-full h-full object-cover"
         />

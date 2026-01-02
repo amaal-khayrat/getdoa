@@ -33,7 +33,7 @@ export function BackgroundPicker({
             )}
           >
             <img
-              src={`/src/assets/ai/${id}.jpeg`}
+              src={`/assets/ai/${id}.jpeg`}
               alt={`Background ${id}`}
               className="w-full h-full object-cover"
               loading="lazy"

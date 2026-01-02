@@ -68,6 +68,9 @@ COPY --from=builder --chown=appuser:nodejs /app/drizzle ./server/drizzle
 # Copy doa data file for seeding
 COPY --from=builder --chown=appuser:nodejs /app/data ./server/data
 
+# Copy public folder for server-side image generation (fonts, backgrounds)
+COPY --from=builder --chown=appuser:nodejs /app/.output/public ./server/public
+
 # Set working directory for the user
 WORKDIR /app/server
 

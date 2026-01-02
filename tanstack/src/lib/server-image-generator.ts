@@ -193,7 +193,7 @@ export async function generateDoaImageWithSharp(
   // 1. Load background image
   const bgPath = path.join(
     process.cwd(),
-    'src',
+    'public',
     'assets',
     'ai',
     `${backgroundId}.jpeg`,
