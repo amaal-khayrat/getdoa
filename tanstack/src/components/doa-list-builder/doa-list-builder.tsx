@@ -53,7 +53,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog'
-import { createDoaList, updateDoaList } from '@/routes/dashboard/functions'
+import { createDoaList, updateDoaList, getSavedDoas } from '@/routes/dashboard/functions'
 import type { BuilderInitialState } from '@/routes/dashboard.create-doa-list'
 import type { ListLimitInfo } from '@/lib/list-limit'
 // Components will be imported where needed to avoid circular dependencies
@@ -195,6 +195,8 @@ type DoaListState = {
   selectedPrayers: Array<DoaItem>
   searchQuery: string
   selectedCategory: string
+  showFavoritesOnly: boolean
+  savedDoaSlugs: Set<string>
   language: 'en' | 'my'
   isGeneratingImage: boolean
   showPreview: boolean
@@ -350,6 +352,8 @@ const DoaListStateContext = React.createContext<DoaListState>({
   availablePrayers: [],
   searchQuery: '',
   selectedCategory: 'All Categories',
+  showFavoritesOnly: false,
+  savedDoaSlugs: new Set(),
   language: 'en',
   isGeneratingImage: false,
   showPreview: false,
@@ -431,6 +435,8 @@ function DoaListProviderWithNotifications({
     // Local state
     searchQuery: '',
     selectedCategory: 'All Categories',
+    showFavoritesOnly: false,
+    savedDoaSlugs: new Set<string>(),
     language: language as 'en' | 'my',
     isGeneratingImage: false,
     showPreview: false,
@@ -691,6 +697,26 @@ function DoaListProviderWithNotifications({
     state.previewSettings,
   ])
 
+  // Fetch user's saved doas for favorites filter
+  useEffect(() => {
+    const fetchSavedDoas = async () => {
+      if (!session?.user?.id) {
+        dispatch({ type: 'UPDATE_STATE', payload: { savedDoaSlugs: new Set() } })
+        return
+      }
+
+      try {
+        const savedDoas = await getSavedDoas({ data: { userId: session.user.id } })
+        const slugs = new Set(savedDoas.map((s) => s.doaSlug))
+        dispatch({ type: 'UPDATE_STATE', payload: { savedDoaSlugs: slugs } })
+      } catch (error) {
+        console.error('Failed to fetch saved doas:', error)
+      }
+    }
+
+    fetchSavedDoas()
+  }, [session?.user?.id])
+
   return (
     <DoaListStateContext.Provider value={state}>
       <DoaListActionsContext.Provider
@@ -759,6 +785,8 @@ function DoaListBuilderContent({ listLimitInfo }: { listLimitInfo?: ListLimitInf
   const {
     searchQuery,
     selectedCategory,
+    showFavoritesOnly,
+    savedDoaSlugs,
     availablePrayers,
     isGeneratingImage,
     showPreview,
@@ -771,6 +799,7 @@ function DoaListBuilderContent({ listLimitInfo }: { listLimitInfo?: ListLimitInf
     saveStatus,
     listId,
     language,
+    user,
   } = useDoaListState()
 
   // Check if user can save: edit mode always allowed, create mode only if within limit
@@ -815,9 +844,14 @@ function DoaListBuilderContent({ listLimitInfo }: { listLimitInfo?: ListLimitInf
     }
   }, [searchQuery])
 
-  // Filter prayers based on debounced search and category
+  // Filter prayers based on debounced search, category, and favorites
   const filteredPrayers = useMemo(() => {
     let filtered = availablePrayers
+
+    // Apply favorites filter first (if enabled and user has favorites)
+    if (showFavoritesOnly && savedDoaSlugs.size > 0) {
+      filtered = filtered.filter((prayer) => savedDoaSlugs.has(prayer.slug))
+    }
 
     if (debouncedSearchQuery) {
       filtered = searchPrayers(filtered, debouncedSearchQuery)
@@ -828,7 +862,7 @@ function DoaListBuilderContent({ listLimitInfo }: { listLimitInfo?: ListLimitInf
     }
 
     return filtered
-  }, [availablePrayers, debouncedSearchQuery, selectedCategory])
+  }, [availablePrayers, debouncedSearchQuery, selectedCategory, showFavoritesOnly, savedDoaSlugs])
 
   // Pagination logic
   const paginatedData = useMemo(() => {
@@ -1129,6 +1163,13 @@ function DoaListBuilderContent({ listLimitInfo }: { listLimitInfo?: ListLimitInf
               updateState({ selectedCategory: category })
               resetToFirstPage()
             }}
+            showFavoritesOnly={showFavoritesOnly}
+            onFavoritesFilterChange={(value) => {
+              updateState({ showFavoritesOnly: value })
+              resetToFirstPage()
+            }}
+            hasFavorites={savedDoaSlugs.size > 0}
+            isAuthenticated={user.isAuthenticated}
             selectedPrayersCount={selectedPrayers.length}
             paginationData={{
               currentPage,

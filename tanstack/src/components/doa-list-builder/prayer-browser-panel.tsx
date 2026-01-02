@@ -1,4 +1,4 @@
-import { Plus, Search } from 'lucide-react'
+import { Heart, Plus, Search } from 'lucide-react'
 import { useDoaListActions, useDoaListState } from './doa-list-builder'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
@@ -27,6 +27,10 @@ export function PrayerBrowserPanel({
   onCategoryChange,
   searchQuery,
   selectedCategory,
+  showFavoritesOnly,
+  onFavoritesFilterChange,
+  hasFavorites,
+  isAuthenticated,
   paginationData,
   onPageChange,
 }: {
@@ -36,6 +40,10 @@ export function PrayerBrowserPanel({
   onCategoryChange: (value: string) => void
   searchQuery: string
   selectedCategory: string
+  showFavoritesOnly: boolean
+  onFavoritesFilterChange: (value: boolean) => void
+  hasFavorites: boolean
+  isAuthenticated: boolean
   paginationData: {
     currentPage: number
     totalPages: number
@@ -85,33 +93,74 @@ export function PrayerBrowserPanel({
           />
         </div>
 
-        {/* Category Filter */}
-        <Select
-          value={selectedCategory}
-          onValueChange={(value) => onCategoryChange(value || '')}
-        >
-          <SelectTrigger className="h-11 text-base sm:h-10 sm:text-sm">
-            <SelectValue />
-          </SelectTrigger>
-          <SelectContent>
-            {categories.map((category) => (
-              <SelectItem key={category} value={category}>
-                {category}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
+        {/* Filters Row */}
+        <div className="flex items-center gap-2">
+          {/* Category Filter */}
+          <Select
+            value={selectedCategory}
+            onValueChange={(value) => onCategoryChange(value || '')}
+          >
+            <SelectTrigger className="h-11 text-sm sm:h-10 sm:text-sm flex-1">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              {categories.map((category) => (
+                <SelectItem key={category} value={category}>
+                  {category}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+
+          {/* Favorites Filter Toggle */}
+          {isAuthenticated && (
+            <Button
+              variant={showFavoritesOnly ? 'default' : 'outline'}
+              size="sm"
+              onClick={() => onFavoritesFilterChange(!showFavoritesOnly)}
+              disabled={!hasFavorites && !showFavoritesOnly}
+              className="h-11 sm:h-10 px-3 shrink-0"
+              title={
+                !hasFavorites
+                  ? 'No saved duas yet'
+                  : showFavoritesOnly
+                    ? 'Show all prayers'
+                    : 'Show saved only'
+              }
+            >
+              <Heart
+                className={`w-4 h-4 ${showFavoritesOnly ? 'fill-current' : ''}`}
+              />
+            </Button>
+          )}
+        </div>
       </div>
 
       {/* Prayers List */}
       <div className="min-h-[300px] max-h-[calc(100vh-24rem)] overflow-y-auto p-3 sm:p-4 lg:min-h-[350px] lg:max-h-[calc(100vh-20rem)]">
         {filteredPrayers.length === 0 ? (
           <div className="h-full flex flex-col items-center justify-center text-center p-4">
-            <Search className="w-12 h-12 text-muted-foreground mb-4" />
-            <h3 className="text-lg font-medium mb-2">No prayers found</h3>
-            <p className="text-sm text-muted-foreground">
-              Try adjusting your search or filter criteria
-            </p>
+            {showFavoritesOnly ? (
+              <>
+                <Heart className="w-12 h-12 text-muted-foreground mb-4" />
+                <h3 className="text-lg font-medium mb-2">
+                  No saved duas found
+                </h3>
+                <p className="text-sm text-muted-foreground">
+                  {searchQuery || selectedCategory !== 'All Categories'
+                    ? 'Try adjusting your search or category filter'
+                    : 'Save duas from the library to see them here'}
+                </p>
+              </>
+            ) : (
+              <>
+                <Search className="w-12 h-12 text-muted-foreground mb-4" />
+                <h3 className="text-lg font-medium mb-2">No prayers found</h3>
+                <p className="text-sm text-muted-foreground">
+                  Try adjusting your search or filter criteria
+                </p>
+              </>
+            )}
           </div>
         ) : (
           <div className="space-y-3 sm:space-y-4">
@@ -189,9 +238,8 @@ export function PrayerBrowserPanel({
                         <span className="text-xs sm:text-xs">Added</span>
                       ) : (
                         <>
-                          <Plus className="w-4 h-4 mr-1" />
+                          <Plus className="w-4 h-4 sm:mr-1" />
                           <span className="hidden sm:inline">Add</span>
-                          <span className="sm:hidden">+</span>
                         </>
                       )}
                     </Button>

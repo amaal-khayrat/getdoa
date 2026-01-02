@@ -10,6 +10,10 @@ interface ResponsiveDoaLayoutProps {
   selectedCategory: string
   onSearchChange: (value: string) => void
   onCategoryChange: (category: string) => void
+  showFavoritesOnly: boolean
+  onFavoritesFilterChange: (value: boolean) => void
+  hasFavorites: boolean
+  isAuthenticated: boolean
   selectedPrayersCount: number
   paginationData: {
     currentPage: number
@@ -28,6 +32,10 @@ export function ResponsiveDoaLayout({
   selectedCategory,
   onSearchChange,
   onCategoryChange,
+  showFavoritesOnly,
+  onFavoritesFilterChange,
+  hasFavorites,
+  isAuthenticated,
   selectedPrayersCount,
   paginationData,
   onPageChange,
@@ -52,6 +60,10 @@ export function ResponsiveDoaLayout({
             onCategoryChange={onCategoryChange}
             searchQuery={searchQuery}
             selectedCategory={selectedCategory}
+            showFavoritesOnly={showFavoritesOnly}
+            onFavoritesFilterChange={onFavoritesFilterChange}
+            hasFavorites={hasFavorites}
+            isAuthenticated={isAuthenticated}
             paginationData={paginationData}
             onPageChange={onPageChange}
           />
@@ -91,6 +103,10 @@ export function ResponsiveDoaLayout({
               onCategoryChange={onCategoryChange}
               searchQuery={searchQuery}
               selectedCategory={selectedCategory}
+              showFavoritesOnly={showFavoritesOnly}
+              onFavoritesFilterChange={onFavoritesFilterChange}
+              hasFavorites={hasFavorites}
+              isAuthenticated={isAuthenticated}
               paginationData={paginationData}
               onPageChange={onPageChange}
             />

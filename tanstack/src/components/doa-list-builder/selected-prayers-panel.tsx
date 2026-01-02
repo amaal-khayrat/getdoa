@@ -80,12 +80,12 @@ function SortablePrayerItem({ prayer, index }: { prayer: any; index: number }) {
           </p>
         </div>
 
-        {/* Remove Button */}
+        {/* Remove Button - always visible on mobile, hover-reveal on desktop */}
         <Button
           variant="ghost"
           size="icon"
           onClick={() => removePrayer(prayer.slug)}
-          className="opacity-0 group-hover:opacity-100 transition-opacity lg:block"
+          className="lg:opacity-0 lg:group-hover:opacity-100 transition-opacity"
         >
           <X className="w-4 h-4" />
         </Button>
