@@ -19,12 +19,7 @@ export const Route = createFileRoute('/doa')({
 function DoaLayout() {
   return (
     <LanguageProvider>
-      <LandingLayout
-        navbarVariant="doa"
-        navbarProps={{
-          onBackClick: () => window.history.back(),
-        }}
-      >
+      <LandingLayout navbarVariant="doa">
         <Outlet />
       </LandingLayout>
     </LanguageProvider>

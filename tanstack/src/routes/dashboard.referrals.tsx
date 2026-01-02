@@ -16,6 +16,19 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card'
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from '@/components/ui/accordion'
+import {
+  Empty,
+  EmptyHeader,
+  EmptyMedia,
+  EmptyTitle,
+  EmptyDescription,
+} from '@/components/ui/empty'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -38,7 +51,6 @@ import {
   CheckCircle2,
   MessageCircle,
   Mail,
-  ArrowRight,
   Loader2,
   ChevronDown,
   Trophy,
@@ -239,53 +251,52 @@ function ReferralsPage() {
       </div>
 
       {/* How It Works - Simple Steps */}
-      <Card className="bg-primary/5 border-primary/20">
+      <Card className="bg-linear-to-br from-primary/5 to-accent/5 border-primary/20">
         <CardHeader>
           <CardTitle className="text-lg">How It Works</CardTitle>
-          <CardDescription>It's simple - just 3 steps!</CardDescription>
+          <CardDescription>Share, invite, and grow together</CardDescription>
         </CardHeader>
         <CardContent>
-          <div className="grid gap-4 sm:grid-cols-3">
+          <div className="grid gap-6 sm:grid-cols-3">
             {/* Step 1 */}
-            <div className="flex flex-col items-center text-center p-4 rounded-lg bg-background">
-              <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center mb-3">
-                <Share2 className="h-5 w-5 text-primary" />
+            <div className="relative flex flex-col items-center text-center p-4 rounded-xl bg-background shadow-sm">
+              <div className="absolute -top-3 left-4 h-6 w-6 rounded-full bg-primary text-primary-foreground text-xs font-bold flex items-center justify-center">
+                1
               </div>
-              <p className="font-medium">1. Share Your Link</p>
+              <div className="h-12 w-12 rounded-full bg-primary/10 flex items-center justify-center mb-3 mt-2">
+                <Share2 className="h-6 w-6 text-primary" />
+              </div>
+              <p className="font-medium">Share Your Link</p>
               <p className="text-sm text-muted-foreground mt-1">
-                Copy your personal link below and send it to friends
+                Copy and send to friends via WhatsApp or email
               </p>
-            </div>
-
-            {/* Arrow (hidden on mobile) */}
-            <div className="hidden sm:flex items-center justify-center">
-              <ArrowRight className="h-5 w-5 text-muted-foreground" />
             </div>
 
             {/* Step 2 */}
-            <div className="flex flex-col items-center text-center p-4 rounded-lg bg-background sm:col-start-2">
-              <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center mb-3">
-                <Users className="h-5 w-5 text-primary" />
+            <div className="relative flex flex-col items-center text-center p-4 rounded-xl bg-background shadow-sm">
+              <div className="absolute -top-3 left-4 h-6 w-6 rounded-full bg-primary text-primary-foreground text-xs font-bold flex items-center justify-center">
+                2
               </div>
-              <p className="font-medium">2. Friends Sign Up</p>
+              <div className="h-12 w-12 rounded-full bg-primary/10 flex items-center justify-center mb-3 mt-2">
+                <Users className="h-6 w-6 text-primary" />
+              </div>
+              <p className="font-medium">Friends Sign Up</p>
               <p className="text-sm text-muted-foreground mt-1">
-                When they click your link and create an account
+                They click your link and create an account
               </p>
             </div>
 
-            {/* Arrow (hidden on mobile) */}
-            <div className="hidden sm:flex items-center justify-center">
-              <ArrowRight className="h-5 w-5 text-muted-foreground" />
-            </div>
-
             {/* Step 3 */}
-            <div className="flex flex-col items-center text-center p-4 rounded-lg bg-background sm:col-start-3">
-              <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center mb-3">
-                <CheckCircle2 className="h-5 w-5 text-primary" />
+            <div className="relative flex flex-col items-center text-center p-4 rounded-xl bg-background shadow-sm">
+              <div className="absolute -top-3 left-4 h-6 w-6 rounded-full bg-primary text-primary-foreground text-xs font-bold flex items-center justify-center">
+                3
               </div>
-              <p className="font-medium">3. You're Connected!</p>
+              <div className="h-12 w-12 rounded-full bg-primary/10 flex items-center justify-center mb-3 mt-2">
+                <CheckCircle2 className="h-6 w-6 text-primary" />
+              </div>
+              <p className="font-medium">You're Connected!</p>
               <p className="text-sm text-muted-foreground mt-1">
-                They appear in your list below. That's it!
+                They appear in your list below
               </p>
             </div>
           </div>
@@ -303,28 +314,30 @@ function ReferralsPage() {
             Anyone who signs up using this link will be connected to you
           </CardDescription>
         </CardHeader>
-        <CardContent className="space-y-4">
-          {/* Link Input */}
-          <div className="flex gap-2">
+        <CardContent className="space-y-5">
+          {/* Link Input with integrated copy */}
+          <div className="relative">
             <Input
               value={referralUrl}
               readOnly
-              className="font-mono text-sm bg-muted"
+              className="font-mono text-sm pr-24 bg-muted/50 h-12"
               onClick={(e) => (e.target as HTMLInputElement).select()}
             />
             <Button
               onClick={handleCopy}
-              variant={copied ? 'default' : 'outline'}
+              variant={copied ? 'default' : 'secondary'}
+              size="sm"
               disabled={!code}
+              className="absolute right-1.5 top-1/2 -translate-y-1/2"
             >
               {copied ? (
                 <>
-                  <CheckCircle2 className="h-4 w-4 mr-2" />
-                  Copied!
+                  <CheckCircle2 className="h-4 w-4 mr-1.5" />
+                  Copied
                 </>
               ) : (
                 <>
-                  <Copy className="h-4 w-4 mr-2" />
+                  <Copy className="h-4 w-4 mr-1.5" />
                   Copy
                 </>
               )}
@@ -332,45 +345,43 @@ function ReferralsPage() {
           </div>
 
           {/* Quick Share Buttons */}
-          <div className="flex flex-wrap gap-2">
+          <div className="flex flex-col sm:flex-row gap-2">
             {/* Native Share on mobile */}
             {typeof navigator !== 'undefined' && 'share' in navigator && (
               <Button
                 variant="default"
-                size="sm"
                 onClick={handleNativeShare}
                 className="sm:hidden"
               >
                 <Share2 className="h-4 w-4 mr-2" />
-                Share
+                Share Link
               </Button>
             )}
             <Button
               variant="outline"
-              size="sm"
               onClick={handleShareWhatsApp}
-              className="text-green-600 border-green-200 hover:bg-green-50 dark:hover:bg-green-950"
+              className="flex-1 text-green-600 border-green-200 hover:bg-green-50 dark:border-green-800 dark:hover:bg-green-950"
             >
               <MessageCircle className="h-4 w-4 mr-2" />
-              Share on WhatsApp
+              WhatsApp
             </Button>
             <Button
               variant="outline"
-              size="sm"
               onClick={handleShareEmail}
+              className="flex-1"
             >
               <Mail className="h-4 w-4 mr-2" />
-              Share via Email
+              Email
             </Button>
           </div>
 
-          {/* Code Display */}
-          <p className="text-sm text-muted-foreground">
-            Your unique code:{' '}
-            <Badge variant="secondary" className="font-mono ml-1">
+          {/* Code Display - More subtle */}
+          <div className="flex items-center justify-between pt-2 border-t">
+            <span className="text-sm text-muted-foreground">Your referral code</span>
+            <Badge variant="outline" className="font-mono">
               {code ?? 'Loading...'}
             </Badge>
-          </p>
+          </div>
         </CardContent>
       </Card>
 
@@ -386,12 +397,14 @@ function ReferralsPage() {
           </CardDescription>
         </CardHeader>
         <CardContent>
-          {/* Total Count */}
-          <div className="flex items-baseline gap-2 mb-6">
-            <span className="text-5xl font-bold">{stats.totalReferrals}</span>
-            <span className="text-muted-foreground text-lg">
-              {stats.totalReferrals === 1 ? 'friend' : 'friends'} joined
-            </span>
+          {/* Total Count - Highlighted */}
+          <div className="flex items-center justify-center p-6 rounded-xl bg-linear-to-br from-primary/10 to-accent/10 mb-6">
+            <div className="text-center">
+              <span className="text-5xl font-bold text-primary">{stats.totalReferrals}</span>
+              <p className="text-muted-foreground mt-1">
+                {stats.totalReferrals === 1 ? 'friend' : 'friends'} joined
+              </p>
+            </div>
           </div>
 
           {/* Referrals List or Empty State */}
@@ -400,15 +413,15 @@ function ReferralsPage() {
               <h4 className="text-sm font-medium mb-4 text-muted-foreground uppercase tracking-wide">
                 {stats.totalReferrals <= 10 ? 'All Referrals' : 'Recent Joins'}
               </h4>
-              <div className="space-y-3">
+              <div className="space-y-2">
                 {stats.referrals.map((r) => (
                   <div
                     key={r.id}
-                    className="flex items-center gap-3 p-3 rounded-lg bg-muted/50"
+                    className="flex items-center gap-3 p-3 rounded-lg border bg-card hover:bg-muted/50 transition-colors"
                   >
-                    <Avatar className="h-10 w-10">
+                    <Avatar className="h-10 w-10 ring-2 ring-primary/20">
                       <AvatarImage src={r.referredUserImage || ''} />
-                      <AvatarFallback className="bg-primary/10 text-primary">
+                      <AvatarFallback className="bg-primary/10 text-primary font-medium">
                         {r.referredUserName?.charAt(0) || 'U'}
                       </AvatarFallback>
                     </Avatar>
@@ -424,7 +437,10 @@ function ReferralsPage() {
                         })}
                       </p>
                     </div>
-                    <CheckCircle2 className="h-5 w-5 text-green-500 shrink-0" />
+                    <Badge variant="secondary" className="gap-1 text-green-600">
+                      <CheckCircle2 className="h-3 w-3" />
+                      Joined
+                    </Badge>
                   </div>
                 ))}
               </div>
@@ -452,25 +468,23 @@ function ReferralsPage() {
               )}
             </div>
           ) : (
-            /* Empty State - Encouraging */
-            <div className="text-center py-8 px-4 rounded-lg bg-muted/30">
-              <div className="h-16 w-16 rounded-full bg-primary/10 flex items-center justify-center mx-auto mb-4">
-                <Users className="h-8 w-8 text-primary/60" />
-              </div>
-              <h3 className="font-medium text-lg mb-2">No friends yet</h3>
-              <p className="text-muted-foreground max-w-md mx-auto">
-                Share your link above with friends and family. When they sign up
-                for GetDoa, they'll appear here!
-              </p>
-              <Button
-                onClick={handleCopy}
-                className="mt-4"
-                variant="outline"
-              >
+            /* Empty State */
+            <Empty className="border-dashed">
+              <EmptyHeader>
+                <EmptyMedia variant="icon">
+                  <Users className="size-6" />
+                </EmptyMedia>
+                <EmptyTitle>No friends yet</EmptyTitle>
+                <EmptyDescription>
+                  Share your link above with friends and family. When they sign up
+                  for GetDoa, they'll appear here!
+                </EmptyDescription>
+              </EmptyHeader>
+              <Button onClick={handleCopy} variant="outline">
                 <Copy className="h-4 w-4 mr-2" />
                 Copy Your Link
               </Button>
-            </div>
+            </Empty>
           )}
         </CardContent>
       </Card>
@@ -486,35 +500,45 @@ function ReferralsPage() {
         <CardHeader>
           <CardTitle className="text-lg">Common Questions</CardTitle>
         </CardHeader>
-        <CardContent className="space-y-4">
-          <div>
-            <p className="font-medium">How do I share my link?</p>
-            <p className="text-sm text-muted-foreground mt-1">
-              Copy the link above and send it via WhatsApp, email, or any messaging app.
-              You can also share it on social media!
-            </p>
-          </div>
-          <div>
-            <p className="font-medium">When does someone count as my referral?</p>
-            <p className="text-sm text-muted-foreground mt-1">
-              When someone clicks your link and signs up for a GetDoa account, they'll
-              automatically be counted as your referral.
-            </p>
-          </div>
-          <div>
-            <p className="font-medium">Is there a limit to how many people I can invite?</p>
-            <p className="text-sm text-muted-foreground mt-1">
-              No limit! Invite as many friends as you'd like. The more people using
-              GetDoa, the better for our community.
-            </p>
-          </div>
-          <div>
-            <p className="font-medium">My friend signed up but they're not showing here?</p>
-            <p className="text-sm text-muted-foreground mt-1">
-              Make sure they used your specific link when signing up. If they went
-              directly to the website without your link, we won't be able to connect you.
-            </p>
-          </div>
+        <CardContent>
+          <Accordion>
+            <AccordionItem value="share">
+              <AccordionTrigger>How do I share my link?</AccordionTrigger>
+              <AccordionContent>
+                <p className="text-muted-foreground">
+                  Copy the link above and send it via WhatsApp, email, or any messaging app.
+                  You can also share it on social media!
+                </p>
+              </AccordionContent>
+            </AccordionItem>
+            <AccordionItem value="count">
+              <AccordionTrigger>When does someone count as my referral?</AccordionTrigger>
+              <AccordionContent>
+                <p className="text-muted-foreground">
+                  When someone clicks your link and signs up for a GetDoa account, they'll
+                  automatically be counted as your referral.
+                </p>
+              </AccordionContent>
+            </AccordionItem>
+            <AccordionItem value="limit">
+              <AccordionTrigger>Is there a limit to how many people I can invite?</AccordionTrigger>
+              <AccordionContent>
+                <p className="text-muted-foreground">
+                  No limit! Invite as many friends as you'd like. The more people using
+                  GetDoa, the better for our community.
+                </p>
+              </AccordionContent>
+            </AccordionItem>
+            <AccordionItem value="missing">
+              <AccordionTrigger>My friend signed up but they're not showing here?</AccordionTrigger>
+              <AccordionContent>
+                <p className="text-muted-foreground">
+                  Make sure they used your specific link when signing up. If they went
+                  directly to the website without your link, we won't be able to connect you.
+                </p>
+              </AccordionContent>
+            </AccordionItem>
+          </Accordion>
         </CardContent>
       </Card>
     </div>

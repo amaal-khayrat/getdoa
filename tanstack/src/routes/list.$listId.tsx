@@ -1,28 +1,62 @@
-import { createFileRoute, notFound, Link } from '@tanstack/react-router'
+import { createFileRoute, notFound, Link, useNavigate } from '@tanstack/react-router'
+import { useState, useTransition } from 'react'
 import { BookOpen, Heart, Share2, Copy, Eye, Download } from 'lucide-react'
-import { getDoaList } from '@/routes/dashboard/functions'
+import { toast } from 'sonner'
+import {
+  getDoaList,
+  getSessionFromServer,
+  isListFavorited,
+  addFavoriteList,
+  removeFavoriteList,
+  logExport,
+} from '@/routes/dashboard/functions'
+import { generateDoaImage, downloadImage } from '@/utils/image-generator'
+import type { DoaList, TranslationLayout } from '@/types/doa.types'
 import { LandingLayout } from '@/components/landing/layout/landing-layout'
 import { LanguageProvider, useLanguage } from '@/contexts/language-context'
 import { Button, buttonVariants } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
+import {
+  ListExportPreviewModal,
+  type ExportSettings,
+} from '@/components/list/list-export-preview-modal'
 import type { DoaListWithUserAndItems } from '@/types/doa-list.types'
 import type { Doa } from '@/types/doa.types'
 
 export const Route = createFileRoute('/list/$listId')({
   // Data loading - runs on server
   loader: async ({ params }) => {
-    const list = await getDoaList({ data: { listId: params.listId } })
+    // Run in parallel for performance
+    const [list, session] = await Promise.all([
+      getDoaList({ data: { listId: params.listId } }),
+      getSessionFromServer(),
+    ])
 
     if (!list) {
       throw notFound()
     }
 
+    // Check favorite status if authenticated (needs list first to check ownership)
+    let isFavorited = false
+    if (session?.user && list.userId !== session.user.id) {
+      const { isFavorited: favorited } = await isListFavorited({
+        data: { userId: session.user.id, listId: params.listId },
+      })
+      isFavorited = favorited
+    }
+
     // Extract prayers from items (already ordered and resolved with doa)
     const prayers = list.items.map((item) => item.doa)
 
-    return { list, prayers }
+    return {
+      list,
+      prayers,
+      isAuthenticated: !!session?.user,
+      userId: session?.user?.id,
+      isFavorited,
+    }
   },
   component: PublicListPage,
   head: ({ loaderData }) => {
@@ -80,23 +114,100 @@ export const Route = createFileRoute('/list/$listId')({
 })
 
 function PublicListPage() {
-  const loaderData = Route.useLoaderData() as { list: DoaListWithUserAndItems; prayers: Doa[] }
-  const { list, prayers } = loaderData
+  const {
+    list,
+    prayers,
+    isAuthenticated,
+    userId,
+    isFavorited: initialFavorited,
+  } = Route.useLoaderData()
 
   return (
     <LanguageProvider>
-      <LandingLayout
-        navbarVariant="doa"
-        navbarProps={{ onBackClick: () => window.history.back() }}
-      >
-        <PublicListView list={list} prayers={prayers} />
+      <LandingLayout navbarVariant="doa">
+        <PublicListView
+          list={list}
+          prayers={prayers}
+          isAuthenticated={isAuthenticated}
+          userId={userId}
+          initialFavorited={initialFavorited}
+        />
       </LandingLayout>
     </LanguageProvider>
   )
 }
 
-function PublicListView({ list, prayers }: { list: DoaListWithUserAndItems; prayers: Doa[] }) {
+interface PublicListViewProps {
+  list: DoaListWithUserAndItems
+  prayers: Doa[]
+  isAuthenticated: boolean
+  userId?: string
+  initialFavorited: boolean
+}
+
+function PublicListView({
+  list,
+  prayers,
+  isAuthenticated,
+  userId,
+  initialFavorited,
+}: PublicListViewProps) {
   const { language } = useLanguage()
+  const navigate = useNavigate()
+  const [isPending, startTransition] = useTransition()
+
+  // Optimistic state for favorite
+  const [isFavorited, setIsFavorited] = useState(initialFavorited)
+  const [favoriteCount, setFavoriteCount] = useState(list.favoriteCount)
+
+  // Image export state
+  const [isExporting, setIsExporting] = useState(false)
+
+  // Preview modal state
+  const [showPreview, setShowPreview] = useState(false)
+  const [exportSettings, setExportSettings] = useState<ExportSettings>({
+    showTranslations: list.showTranslations,
+    translationLayout: list.translationLayout as TranslationLayout,
+  })
+
+  // Is this the user's own list?
+  const isOwnList = userId === list.userId
+
+  const handleToggleFavorite = () => {
+    if (!isAuthenticated || !userId) {
+      toast.info('Please sign in to save lists')
+      navigate({ to: '/login' })
+      return
+    }
+
+    if (isOwnList) {
+      toast.error("You can't favorite your own list")
+      return
+    }
+
+    const wasFavorited = isFavorited
+
+    // Optimistic update
+    setIsFavorited(!wasFavorited)
+    setFavoriteCount((prev) => (wasFavorited ? prev - 1 : prev + 1))
+
+    startTransition(async () => {
+      try {
+        if (wasFavorited) {
+          await removeFavoriteList({ data: { userId, listId: list.id } })
+          toast.success('Removed from saved lists')
+        } else {
+          await addFavoriteList({ data: { userId, listId: list.id } })
+          toast.success('Added to saved lists')
+        }
+      } catch {
+        // Rollback
+        setIsFavorited(wasFavorited)
+        setFavoriteCount((prev) => (wasFavorited ? prev + 1 : prev - 1))
+        toast.error('Failed to update. Please try again.')
+      }
+    })
+  }
 
   const handleShare = async () => {
     const shareUrl = window.location.href
@@ -114,6 +225,7 @@ function PublicListView({ list, prayers }: { list: DoaListWithUserAndItems; pray
       }
     } else {
       navigator.clipboard.writeText(`${shareText}\n${shareUrl}`)
+      toast.success('Link copied to clipboard')
     }
   }
 
@@ -126,6 +238,69 @@ function PublicListView({ list, prayers }: { list: DoaListWithUserAndItems; pray
       })
       .join('\n\n---\n\n')
     navigator.clipboard.writeText(text)
+    toast.success('Prayers copied to clipboard')
+  }
+
+  const handleExportImage = async (settings?: ExportSettings) => {
+    if (prayers.length === 0) {
+      toast.error('This list has no prayers to export')
+      return
+    }
+
+    // Use provided settings or fall back to current exportSettings
+    const useSettings = settings || exportSettings
+
+    setIsExporting(true)
+
+    try {
+      // Build DoaList object for image generator
+      const doaList: DoaList = {
+        title: list.name,
+        description: list.description || '',
+        prayers: prayers.map((p) => ({
+          ...p,
+          // DoaItem requires these fields
+          slug: p.slug,
+          content: p.content,
+          nameEn: p.nameEn,
+          nameMy: p.nameMy,
+          meaningEn: p.meaningEn,
+          meaningMy: p.meaningMy,
+          referenceEn: p.referenceEn,
+          referenceMy: p.referenceMy,
+          categoryNames: p.categoryNames,
+        })),
+        language: list.language as 'en' | 'my',
+        showTranslations: useSettings.showTranslations,
+        translationLayout: useSettings.translationLayout,
+        createdBy: list.user.name,
+        createdAt: new Date(list.createdAt),
+      }
+
+      // Generate the image
+      const blob = await generateDoaImage({
+        doaList,
+        backgroundColor: '#ffffff',
+        textColor: '#1a1a1a',
+        minImageWidth: 1080,
+        maxImageWidth: 3000,
+      })
+
+      // Download the image
+      const filename = `${list.name.replace(/[^a-z0-9]/gi, '_')}_getdoa.png`
+      downloadImage(blob, filename)
+
+      // Log the export for tracking
+      await logExport({ data: { listId: list.id, userId } })
+
+      toast.success('Image downloaded successfully!')
+      setShowPreview(false) // Close preview after successful export
+    } catch (error) {
+      console.error('Export failed:', error)
+      toast.error('Failed to export image. Please try again.')
+    } finally {
+      setIsExporting(false)
+    }
   }
 
   const getInitials = (name: string) => {
@@ -145,7 +320,11 @@ function PublicListView({ list, prayers }: { list: DoaListWithUserAndItems; pray
           Home
         </Link>
         <span>/</span>
-        <span className="text-foreground truncate max-w-[200px]">
+        <Link to="/lists" className="hover:text-foreground transition-colors">
+          Lists
+        </Link>
+        <span>/</span>
+        <span className="text-foreground truncate max-w-50">
           {list.name}
         </span>
       </nav>
@@ -162,19 +341,25 @@ function PublicListView({ list, prayers }: { list: DoaListWithUserAndItems; pray
           </p>
         )}
 
-        {/* Author info */}
-        <div className="flex items-center gap-3 mb-4">
+        {/* Author info - Links to profile */}
+        <Link
+          to="/user/$userId"
+          params={{ userId: list.userId }}
+          className="flex items-center gap-3 mb-4 hover:opacity-80 transition-opacity w-fit"
+        >
           <Avatar className="h-10 w-10">
             <AvatarImage src={list.user.image || ''} alt={list.user.name} />
             <AvatarFallback>{getInitials(list.user.name)}</AvatarFallback>
           </Avatar>
           <div>
-            <p className="font-medium text-foreground">{list.user.name}</p>
+            <p className="font-medium text-foreground hover:text-primary transition-colors">
+              {list.user.name}
+            </p>
             <p className="text-sm text-muted-foreground">
               {prayers.length} duas
             </p>
           </div>
-        </div>
+        </Link>
 
         {/* Stats */}
         <div className="flex items-center gap-4 text-sm text-muted-foreground mb-6">
@@ -185,7 +370,7 @@ function PublicListView({ list, prayers }: { list: DoaListWithUserAndItems; pray
             <Download className="h-4 w-4" /> {list.exportCount} exports
           </span>
           <span className="flex items-center gap-1">
-            <Heart className="h-4 w-4" /> {list.favoriteCount} favorites
+            <Heart className="h-4 w-4" /> {favoriteCount} favorites
           </span>
         </div>
 
@@ -206,9 +391,30 @@ function PublicListView({ list, prayers }: { list: DoaListWithUserAndItems; pray
 
       {/* Action Buttons */}
       <div className="flex flex-wrap gap-3 mb-8">
+        {!isOwnList && (
+          <Button
+            variant={isFavorited ? 'default' : 'outline'}
+            onClick={handleToggleFavorite}
+            disabled={isPending}
+            className={isFavorited ? 'bg-red-500 hover:bg-red-600' : ''}
+          >
+            <Heart
+              className={`h-4 w-4 mr-2 ${isFavorited ? 'fill-current' : ''}`}
+            />
+            {isFavorited ? 'Saved' : 'Save'} ({favoriteCount})
+          </Button>
+        )}
         <Button variant="outline" onClick={handleShare}>
           <Share2 className="h-4 w-4 mr-2" />
           Share
+        </Button>
+        <Button
+          variant="outline"
+          onClick={() => setShowPreview(true)}
+          disabled={prayers.length === 0}
+        >
+          <Eye className="h-4 w-4 mr-2" />
+          Preview & Export
         </Button>
         <Button variant="outline" onClick={copyPrayers}>
           <Copy className="h-4 w-4 mr-2" />
@@ -238,26 +444,41 @@ function PublicListView({ list, prayers }: { list: DoaListWithUserAndItems; pray
         )}
       </div>
 
-      {/* Footer CTA */}
-      <div className="mt-12 text-center">
-        <Card className="p-8 bg-primary/5 border-primary/20">
-          <h3 className="text-xl font-semibold mb-2">
-            Create Your Own Prayer List
-          </h3>
-          <p className="text-muted-foreground mb-4">
-            Sign up for free and start building your personalized doa
-            collection.
-          </p>
-          <div className="flex justify-center gap-4">
-            <Link to="/login" className={buttonVariants()}>
-              Get Started
-            </Link>
-            <Link to="/doa" className={buttonVariants({ variant: 'outline' })}>
-              Browse Duas
-            </Link>
-          </div>
-        </Card>
-      </div>
+      {/* Footer CTA - Only for unauthenticated users */}
+      {!isAuthenticated && (
+        <div className="mt-12 text-center">
+          <Card className="p-8 bg-primary/5 border-primary/20">
+            <h3 className="text-xl font-semibold mb-2">
+              Create Your Own Prayer List
+            </h3>
+            <p className="text-muted-foreground mb-4">
+              Sign up for free and start building your personalized doa
+              collection.
+            </p>
+            <div className="flex justify-center gap-4">
+              <Link to="/login" className={buttonVariants()}>
+                Get Started
+              </Link>
+              <Link to="/doa" className={buttonVariants({ variant: 'outline' })}>
+                Browse Duas
+              </Link>
+            </div>
+          </Card>
+        </div>
+      )}
+
+      {/* Export Preview Modal */}
+      <ListExportPreviewModal
+        open={showPreview}
+        onOpenChange={setShowPreview}
+        listName={list.name}
+        prayers={prayers}
+        language={language}
+        settings={exportSettings}
+        onSettingsChange={setExportSettings}
+        onExport={() => handleExportImage(exportSettings)}
+        isExporting={isExporting}
+      />
     </div>
   )
 }

@@ -1,6 +1,6 @@
 import * as React from 'react'
 import { Link } from '@tanstack/react-router'
-import { BookOpen, Home, Plus, Heart, ImageIcon, Gift, Shield } from 'lucide-react'
+import { BookOpen, Home, Plus, Heart, ImageIcon, Gift, Shield, User, Compass } from 'lucide-react'
 
 import { NavMain } from '@/components/sidebar/nav-main'
 import { NavUser } from '@/components/sidebar/nav-user'
@@ -41,6 +41,11 @@ const navItems = [
     icon: BookOpen,
   },
   {
+    title: 'Discover Lists',
+    url: '/lists',
+    icon: Compass,
+  },
+  {
     title: 'Favorites',
     url: '#',
     icon: Heart,
@@ -54,6 +59,11 @@ const navItems = [
         url: '/dashboard/saved-duas',
       },
     ],
+  },
+  {
+    title: 'Profile Settings',
+    url: '/dashboard/profile',
+    icon: User,
   },
   {
     title: 'Invite Friends',

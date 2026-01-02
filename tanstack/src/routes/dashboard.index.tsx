@@ -279,7 +279,7 @@ function ListCard({
       <CardHeader className="pb-2">
         <div className="flex items-start justify-between">
           <div className="space-y-1 min-w-0 flex-1">
-            <Link to="/dashboard/create-doa-list" search={{ listId: list.id }}>
+            <Link to="/list/$listId" params={{ listId: list.id }}>
               <CardTitle className="text-lg hover:text-primary transition-colors truncate">
                 {list.name}
               </CardTitle>
@@ -318,6 +318,12 @@ function ListCard({
               <MoreHorizontal className="h-4 w-4" />
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
+              <DropdownMenuItem
+                render={<Link to="/list/$listId" params={{ listId: list.id }} />}
+              >
+                <Eye className="h-4 w-4 mr-2" />
+                View
+              </DropdownMenuItem>
               <DropdownMenuItem
                 render={
                   <Link

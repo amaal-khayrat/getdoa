@@ -1,37 +1,144 @@
 import { useState } from 'react'
 import { Link } from '@tanstack/react-router'
-import { ArrowLeft, Menu, X } from 'lucide-react'
+import { Home, LayoutDashboard, Menu, X } from 'lucide-react'
 import type { ComponentProps } from 'react'
 import { Button } from '@/components/ui/button'
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select'
+import { ButtonGroup } from '@/components/ui/button-group'
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
-  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from '@/components/ui/tooltip'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { LANDING_CONTENT } from '@/lib/constants'
-import { useLanguage } from '@/contexts/language-context'
+import { useLanguage, type Language } from '@/contexts/language-context'
 import { signOut, useSession } from '@/lib/auth-client'
+import { cn } from '@/lib/utils'
+
+// Language toggle component - beautiful segmented control following the green theme
+function LanguageToggle({
+  language,
+  onLanguageChange,
+  className,
+}: {
+  language: Language
+  onLanguageChange: (lang: Language) => void
+  className?: string
+}) {
+  return (
+    <div
+      className={cn(
+        'relative flex items-center rounded-full bg-secondary/80 p-0.5 shadow-green-sm',
+        className
+      )}
+      role="radiogroup"
+      aria-label="Language selection"
+    >
+      {/* Sliding indicator */}
+      <div
+        className={cn(
+          'absolute h-[calc(100%-4px)] w-[calc(50%-2px)] rounded-full bg-primary shadow-green transition-transform duration-200 ease-out',
+          language === 'my' ? 'translate-x-[calc(100%+2px)]' : 'translate-x-0'
+        )}
+        aria-hidden="true"
+      />
+      <button
+        type="button"
+        role="radio"
+        aria-checked={language === 'en'}
+        onClick={() => onLanguageChange('en')}
+        className={cn(
+          'relative z-10 flex items-center justify-center px-3 py-1.5 text-sm font-medium transition-colors duration-200',
+          language === 'en'
+            ? 'text-primary-foreground'
+            : 'text-muted-foreground hover:text-foreground'
+        )}
+      >
+        EN
+      </button>
+      <button
+        type="button"
+        role="radio"
+        aria-checked={language === 'my'}
+        onClick={() => onLanguageChange('my')}
+        className={cn(
+          'relative z-10 flex items-center justify-center px-3 py-1.5 text-sm font-medium transition-colors duration-200',
+          language === 'my'
+            ? 'text-primary-foreground'
+            : 'text-muted-foreground hover:text-foreground'
+        )}
+      >
+        MY
+      </button>
+    </div>
+  )
+}
+
+// Compact language toggle for mobile header
+function CompactLanguageToggle({
+  language,
+  onLanguageChange,
+}: {
+  language: Language
+  onLanguageChange: (lang: Language) => void
+}) {
+  return (
+    <div
+      className="relative flex items-center rounded-full bg-secondary/80 p-0.5 shadow-green-sm"
+      role="radiogroup"
+      aria-label="Language selection"
+    >
+      {/* Sliding indicator */}
+      <div
+        className={cn(
+          'absolute h-[calc(100%-4px)] w-[calc(50%-2px)] rounded-full bg-primary shadow-green transition-transform duration-200 ease-out',
+          language === 'my' ? 'translate-x-[calc(100%+2px)]' : 'translate-x-0'
+        )}
+        aria-hidden="true"
+      />
+      <button
+        type="button"
+        role="radio"
+        aria-checked={language === 'en'}
+        onClick={() => onLanguageChange('en')}
+        className={cn(
+          'relative z-10 flex items-center justify-center px-2.5 py-1 text-xs font-medium transition-colors duration-200',
+          language === 'en'
+            ? 'text-primary-foreground'
+            : 'text-muted-foreground hover:text-foreground'
+        )}
+      >
+        EN
+      </button>
+      <button
+        type="button"
+        role="radio"
+        aria-checked={language === 'my'}
+        onClick={() => onLanguageChange('my')}
+        className={cn(
+          'relative z-10 flex items-center justify-center px-2.5 py-1 text-xs font-medium transition-colors duration-200',
+          language === 'my'
+            ? 'text-primary-foreground'
+            : 'text-muted-foreground hover:text-foreground'
+        )}
+      >
+        MY
+      </button>
+    </div>
+  )
+}
 
 interface NavbarProps extends Omit<ComponentProps<'nav'>, 'className'> {
-  onBackClick?: () => void
   variant?: 'landing' | 'doa'
 }
 
-export function Navbar({
-  onBackClick,
-  variant = 'landing',
-  ...props
-}: NavbarProps) {
+export function Navbar({ variant = 'landing', ...props }: NavbarProps) {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
 
   // Only use language context in doa variant (since landing page doesn't wrap with LanguageProvider)
@@ -105,14 +212,10 @@ export function Navbar({
               )}
             </div>
           </div>
-          <DropdownMenuSeparator />
           <DropdownMenuItem
-            render={<Link to="/dashboard" />}
-            className="cursor-pointer"
+            onClick={handleSignOut}
+            className="cursor-pointer text-destructive hover:text-destructive focus:text-destructive"
           >
-            Dashboard
-          </DropdownMenuItem>
-          <DropdownMenuItem onClick={handleSignOut} className="cursor-pointer">
             Sign out
           </DropdownMenuItem>
         </DropdownMenuContent>
@@ -145,11 +248,33 @@ export function Navbar({
           </span>
         </a>
 
+        {/* Mobile Language Toggle - positioned between logo and burger for doa variant */}
+        {variant === 'doa' && setLanguage && (
+          <div className="md:hidden">
+            <CompactLanguageToggle
+              language={language as Language}
+              onLanguageChange={setLanguage}
+            />
+          </div>
+        )}
+
         {/* Desktop Actions */}
-        <div className="hidden md:flex items-center gap-4">
+        <div className="hidden md:flex items-center gap-3">
           {variant === 'landing' ? (
             isAuthenticated ? (
-              <UserProfile />
+              <div className="flex items-center gap-3">
+                <Button
+                  variant="secondary"
+                  size="sm"
+                  className="flex items-center gap-2"
+                  render={<Link to="/dashboard" />}
+                >
+                  <LayoutDashboard className="w-4 h-4" />
+                  Go to Dashboard
+                </Button>
+                <div className="h-5 w-px bg-border" />
+                <UserProfile />
+              </div>
             ) : (
               <Button
                 variant="primary-gradient"
@@ -162,43 +287,52 @@ export function Navbar({
             )
           ) : (
             <>
-              {/* Language Picker */}
-              <div className="relative hidden sm:flex items-center">
-                <Select
-                  value={language}
-                  onValueChange={(value) => setLanguage?.(value as 'en' | 'my')}
-                >
-                  <SelectTrigger size="sm" className="w-32">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="en">
-                      <span className="flex items-center gap-2">
-                        <span>🌐</span>
-                        English
-                      </span>
-                    </SelectItem>
-                    <SelectItem value="my">
-                      <span className="flex items-center gap-2">
-                        <span>🌐</span>
-                        Bahasa Melayu
-                      </span>
-                    </SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-              <div className="h-5 w-px bg-border"></div>
-              {/* Back to GetDoa */}
-              <Button
-                variant="outline"
-                size="sm"
-                className="group flex items-center gap-2"
-                onClick={onBackClick}
-              >
-                <ArrowLeft className="w-4 h-4 group-hover:-translate-x-0.5 transition-transform" />
-                {t ? t('backToGetDoa') : 'Back to GetDoa'}
-              </Button>
-              <div className="h-5 w-px bg-border"></div>
+              {/* Language Toggle */}
+              {setLanguage && (
+                <LanguageToggle
+                  language={language as Language}
+                  onLanguageChange={setLanguage}
+                />
+              )}
+              <div className="h-5 w-px bg-border" />
+              {/* Navigation ButtonGroup - Home and Dashboard icons */}
+              <ButtonGroup>
+                <Tooltip>
+                  <TooltipTrigger
+                    render={
+                      <Button
+                        variant="outline"
+                        size="icon-sm"
+                        render={<Link to="/" />}
+                        aria-label={t ? t('backToGetDoa') : 'Back to GetDoa'}
+                      />
+                    }
+                  >
+                    <Home className="w-4 h-4" />
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    {t ? t('backToGetDoa') : 'Back to GetDoa'}
+                  </TooltipContent>
+                </Tooltip>
+                {isAuthenticated && (
+                  <Tooltip>
+                    <TooltipTrigger
+                      render={
+                        <Button
+                          variant="outline"
+                          size="icon-sm"
+                          render={<Link to="/dashboard" />}
+                          aria-label="Go to Dashboard"
+                        />
+                      }
+                    >
+                      <LayoutDashboard className="w-4 h-4" />
+                    </TooltipTrigger>
+                    <TooltipContent>Go to Dashboard</TooltipContent>
+                  </Tooltip>
+                )}
+              </ButtonGroup>
+              <div className="h-5 w-px bg-border" />
               {/* User Profile or Login */}
               {isAuthenticated ? (
                 <UserProfile />
@@ -245,32 +379,44 @@ export function Navbar({
             <div className="space-y-3">
               {variant === 'landing' ? (
                 isAuthenticated ? (
-                  <div className="flex items-center justify-between py-2 px-3 bg-secondary/50 rounded-lg">
-                    <div className="flex items-center gap-3">
-                      <Avatar size="sm">
-                        <AvatarImage src={userImage} alt={userName} />
-                        <AvatarFallback>
-                          {userName?.charAt(0).toUpperCase() || 'U'}
-                        </AvatarFallback>
-                      </Avatar>
-                      <div className="flex flex-col">
-                        <p className="font-medium text-sm">{userName}</p>
-                        {session?.user?.email && (
-                          <p className="text-xs text-muted-foreground truncate max-w-45">
-                            {session.user.email}
-                          </p>
-                        )}
-                      </div>
-                    </div>
+                  <>
+                    {/* Dashboard button for authenticated users on landing */}
                     <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={handleSignOut}
-                      className="text-destructive hover:text-destructive hover:bg-destructive/10"
+                      variant="secondary"
+                      className="w-full flex items-center justify-center gap-2"
+                      render={<Link to="/dashboard" onClick={handleLinkClick} />}
                     >
-                      Sign out
+                      <LayoutDashboard className="w-4 h-4" />
+                      Go to Dashboard
                     </Button>
-                  </div>
+                    {/* User profile card */}
+                    <div className="flex items-center justify-between py-2 px-3 bg-secondary/50 rounded-lg">
+                      <div className="flex items-center gap-3">
+                        <Avatar size="sm">
+                          <AvatarImage src={userImage} alt={userName} />
+                          <AvatarFallback>
+                            {userName?.charAt(0).toUpperCase() || 'U'}
+                          </AvatarFallback>
+                        </Avatar>
+                        <div className="flex flex-col">
+                          <p className="font-medium text-sm">{userName}</p>
+                          {session?.user?.email && (
+                            <p className="text-xs text-muted-foreground truncate max-w-45">
+                              {session.user.email}
+                            </p>
+                          )}
+                        </div>
+                      </div>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={handleSignOut}
+                        className="text-destructive hover:text-destructive hover:bg-destructive/10"
+                      >
+                        Sign out
+                      </Button>
+                    </div>
+                  </>
                 ) : (
                   <Button
                     variant="primary-gradient"
@@ -282,33 +428,28 @@ export function Navbar({
                 )
               ) : (
                 <>
-                  <div className="relative flex items-center">
-                    <Select
-                      value={language}
-                      onValueChange={(value) =>
-                        setLanguage?.(value as 'en' | 'my')
-                      }
+                  {/* Navigation buttons */}
+                  <div className="flex gap-2">
+                    <Button
+                      variant="outline"
+                      className="flex-1 flex items-center justify-center gap-2"
+                      render={<Link to="/" onClick={handleLinkClick} />}
                     >
-                      <SelectTrigger size="sm" className="w-full">
-                        <div className="flex items-center gap-2">
-                          <span>🌐</span>
-                          <SelectValue />
-                        </div>
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="en">English</SelectItem>
-                        <SelectItem value="my">Bahasa Melayu</SelectItem>
-                      </SelectContent>
-                    </Select>
+                      <Home className="w-4 h-4" />
+                      {t ? t('backToGetDoa') : 'Home'}
+                    </Button>
+                    {isAuthenticated && (
+                      <Button
+                        variant="secondary"
+                        className="flex-1 flex items-center justify-center gap-2"
+                        render={<Link to="/dashboard" onClick={handleLinkClick} />}
+                      >
+                        <LayoutDashboard className="w-4 h-4" />
+                        Dashboard
+                      </Button>
+                    )}
                   </div>
-                  <Button
-                    variant="outline"
-                    className="w-full flex items-center justify-center gap-2"
-                    onClick={onBackClick}
-                  >
-                    <ArrowLeft className="w-4 h-4" />
-                    {t ? t('backToGetDoa') : 'Back to GetDoa'}
-                  </Button>
+                  {/* User profile or Login */}
                   {isAuthenticated ? (
                     <div className="flex items-center justify-between py-2 px-3 bg-secondary/50 rounded-lg">
                       <div className="flex items-center gap-3">

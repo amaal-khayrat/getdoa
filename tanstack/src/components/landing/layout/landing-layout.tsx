@@ -6,20 +6,16 @@ import { LanguageProvider } from '@/contexts/language-context'
 interface LandingLayoutProps {
   children: ReactNode
   navbarVariant?: 'landing' | 'doa'
-  navbarProps?: {
-    onBackClick?: () => void
-  }
 }
 
 export function LandingLayout({
   children,
   navbarVariant = 'landing',
-  navbarProps,
 }: LandingLayoutProps) {
   return (
     <LanguageProvider>
       <div className="min-h-screen bg-background text-foreground flex flex-col">
-        <Navbar variant={navbarVariant} {...navbarProps} />
+        <Navbar variant={navbarVariant} />
         <main className="flex-1 pt-16 pb-16">{children}</main>
         <FooterSection />
       </div>

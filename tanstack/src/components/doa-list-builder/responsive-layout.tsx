@@ -69,7 +69,7 @@ export function ResponsiveDoaLayout({
         >
           <TabsList className="grid w-full grid-cols-2 mb-4">
             <TabsTrigger value="selected" className="flex items-center gap-2">
-              My Prayer
+              My DOA
               {selectedPrayersCount > 0 && (
                 <span className="bg-primary text-primary-foreground text-xs px-1.5 py-0.5 rounded-full">
                   {selectedPrayersCount}

@@ -1,4 +1,7 @@
 import { createServerFn } from '@tanstack/react-start'
+
+// Re-export profile functions
+export * from './profile'
 import { getRequest } from '@tanstack/react-start/server'
 import { db } from '@/db'
 import {
@@ -10,7 +13,7 @@ import {
   userListBonus,
   referral,
 } from '@/db/schema'
-import { eq, and, desc, sql, asc } from 'drizzle-orm'
+import { eq, and, desc, sql, asc, or, ilike } from 'drizzle-orm'
 import { auth } from '@/lib/auth'
 import {
   getListLimitInfo,
@@ -548,4 +551,131 @@ export const logExport = createServerFn({ method: 'POST' })
       .where(eq(doaList.id, data.listId))
 
     return { success: true }
+  })
+
+// ============================================
+// PUBLIC LIST DISCOVERY
+// ============================================
+
+// Types for public lists
+export interface PublicListItem extends DoaListWithUser {
+  itemCount: number
+  isFavorited: boolean
+}
+
+export interface PublicListsResult {
+  lists: PublicListItem[]
+  total: number
+  page: number
+  totalPages: number
+}
+
+// Get all public published lists for discovery
+// NOTE: No auth required - this is a public endpoint
+export const getPublicLists = createServerFn({ method: 'GET' })
+  .inputValidator(
+    (data: {
+      page?: number
+      limit?: number
+      sortBy?: 'newest' | 'popular' | 'favorites'
+      search?: string
+      userId?: string // Optional: for checking favorites status
+    }) => data,
+  )
+  .handler(async ({ data }): Promise<PublicListsResult> => {
+    // Clamp and validate inputs
+    const page = Math.max(1, data.page ?? 1)
+    const limit = Math.min(50, Math.max(1, data.limit ?? 12)) // Clamp between 1-50
+    const offset = (page - 1) * limit
+    const sortBy = data.sortBy ?? 'newest'
+
+    // Sanitize search input - trim and limit length
+    const searchTerm = data.search?.trim().slice(0, 100) || ''
+
+    try {
+      // Build base conditions
+      const baseConditions = and(
+        eq(doaList.status, 'published'),
+        eq(doaList.visibility, 'public'),
+      )
+
+      // Build where clause with optional search
+      const whereClause = searchTerm
+        ? and(
+            baseConditions,
+            or(
+              ilike(doaList.name, `%${searchTerm}%`),
+              ilike(doaList.description, `%${searchTerm}%`),
+            ),
+          )
+        : baseConditions
+
+      // Get total count
+      const [countResult] = await db
+        .select({ count: sql<number>`count(*)::int` })
+        .from(doaList)
+        .where(whereClause)
+
+      const total = countResult?.count ?? 0
+
+      // Early return if no results
+      if (total === 0) {
+        return {
+          lists: [],
+          total: 0,
+          page: 1,
+          totalPages: 0,
+        }
+      }
+
+      // Determine sort order (COALESCE handles null publishedAt edge case)
+      const orderByClause =
+        sortBy === 'popular'
+          ? [desc(doaList.viewCount)]
+          : sortBy === 'favorites'
+            ? [desc(doaList.favoriteCount)]
+            : [desc(sql`COALESCE(${doaList.publishedAt}, ${doaList.createdAt})`)]
+
+      // Get paginated results with user info
+      const lists = await db.query.doaList.findMany({
+        where: whereClause,
+        orderBy: orderByClause,
+        limit,
+        offset,
+        with: {
+          user: {
+            columns: { id: true, name: true, image: true },
+          },
+          items: {
+            columns: { id: true },
+          },
+        },
+      })
+
+      // If user is authenticated, fetch their favorites in one query
+      let favoritedListIds = new Set<string>()
+      if (data.userId) {
+        const userFavorites = await db.query.favoriteList.findMany({
+          where: eq(favoriteList.userId, data.userId),
+          columns: { listId: true },
+        })
+        favoritedListIds = new Set(userFavorites.map((f) => f.listId))
+      }
+
+      const totalPages = Math.ceil(total / limit)
+
+      return {
+        lists: lists.map((list) => ({
+          ...(list as DoaListWithUser),
+          itemCount: list.items.length,
+          isFavorited: favoritedListIds.has(list.id),
+        })),
+        total,
+        page: Math.min(page, totalPages), // Clamp page to valid range
+        totalPages,
+      }
+    } catch (error) {
+      console.error('Failed to fetch public lists:', error)
+      throw new Error('Failed to fetch public lists')
+    }
   })

@@ -119,7 +119,9 @@ function PrayerCard({
                 e.preventDefault()
                 navigator.clipboard.writeText(doa.content)
                 toast.success(
-                  language === 'my' ? 'Disalin ke papan klip' : 'Copied to clipboard',
+                  language === 'my'
+                    ? 'Disalin ke papan klip'
+                    : 'Copied to clipboard',
                 )
               }}
             >
@@ -150,9 +152,7 @@ function PrayerCard({
               }}
               disabled={isSaving}
             >
-              <Heart
-                className={`w-5 h-5 ${isSaved ? 'fill-current' : ''}`}
-              />
+              <Heart className={`w-5 h-5 ${isSaved ? 'fill-current' : ''}`} />
             </button>
             <button
               className="p-2 rounded-full text-muted-foreground hover:text-primary hover:bg-secondary transition-colors"
@@ -350,7 +350,7 @@ function FilterBar({
   t: (key: string) => string
 }) {
   return (
-    <div className="bg-card rounded-2xl p-4 shadow-green border border-border mb-10 sticky top-20 z-30 transition-all duration-300">
+    <div className="bg-card rounded-2xl p-4 shadow-green border border-border mb-10 sticky top-24 z-30 transition-all duration-300">
       <div className="relative group">
         <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
           <Search className="w-4 h-4 text-muted-foreground group-focus-within:text-primary transition-colors" />
@@ -456,9 +456,7 @@ export function DoaLibraryContent() {
           )
         } else {
           await saveDoa({ data: { userId: user.id, doaSlug: slug } })
-          toast.success(
-            language === 'my' ? 'Doa disimpan!' : 'Prayer saved!',
-          )
+          toast.success(language === 'my' ? 'Doa disimpan!' : 'Prayer saved!')
         }
       } catch (error) {
         // Rollback on error
