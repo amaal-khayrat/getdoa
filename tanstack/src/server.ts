@@ -27,7 +27,7 @@ if (
 // Always seed doa data (idempotent - safe to run on every startup)
 try {
   console.log('🌱 Checking doa data...')
-  const result = await seedDoa({ deleteOrphans: false, dryRun: false })
+  const result = await seedDoa({ deleteOrphans: true, dryRun: false })
 
   if (result.errors.length > 0) {
     console.error('⚠️ Seed completed with errors:', result.errors)

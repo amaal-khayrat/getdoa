@@ -41,7 +41,7 @@ export async function seedDoa(options?: {
   dryRun?: boolean
 }): Promise<SeedResult> {
   const startTime = Date.now()
-  const { deleteOrphans = false, dryRun = false } = options ?? {}
+  const { deleteOrphans = true, dryRun = false } = options ?? {}
 
   const result: SeedResult = {
     inserted: 0,
