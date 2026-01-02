@@ -1,13 +1,13 @@
 import { createServerFn } from '@tanstack/react-start'
 import { getRequest } from '@tanstack/react-start/server'
 import { db } from '@/db'
-import { user, session, doaList, exportLog, referral, savedDoa } from '@/db/schema'
+import { user, session, doaList, exportLog, referral, savedDoa, doaImageGeneration } from '@/db/schema'
 import { sql, desc, eq, gte, and } from 'drizzle-orm'
 import { auth } from '@/lib/auth'
 import { requireAdmin } from '@/lib/admin'
 
 // ============================================
-// Auth + Admin Check Helper
+// Auth + Admin Check Helper (internal)
 // ============================================
 async function requireAdminAuth() {
   const request = getRequest()
@@ -21,6 +21,39 @@ async function requireAdminAuth() {
 
   return sessionData
 }
+
+// ============================================
+// Admin Auth Check Server Function (for route beforeLoad)
+// Returns user if admin, null if not authenticated, throws redirect info if not admin
+// ============================================
+export const checkAdminAuth = createServerFn({ method: 'GET' }).handler(
+  async (): Promise<{
+    authenticated: boolean
+    isAdmin: boolean
+    user: { id: string; name: string; email: string; image: string | null } | null
+  }> => {
+    const request = getRequest()
+    const sessionData = await auth.api.getSession({ headers: request.headers })
+
+    if (!sessionData?.user) {
+      return { authenticated: false, isAdmin: false, user: null }
+    }
+
+    const { isAdminEmail } = await import('@/lib/admin')
+    const isAdmin = isAdminEmail(sessionData.user.email)
+
+    return {
+      authenticated: true,
+      isAdmin,
+      user: {
+        id: sessionData.user.id,
+        name: sessionData.user.name,
+        email: sessionData.user.email,
+        image: sessionData.user.image ?? null,
+      },
+    }
+  },
+)
 
 // ============================================
 // Types
@@ -44,6 +77,9 @@ export interface ContentStats {
   totalExports: number
   exportsToday: number
   totalSavedDoas: number
+  totalImageGenerations: number
+  imageGenerationsToday: number
+  uniqueImageGenerators: number
 }
 
 export interface ReferralStats {
@@ -109,6 +145,9 @@ export const getAdminDashboardOverview = createServerFn({ method: 'GET' }).handl
       totalReferralsResult,
       referralsThisMonthResult,
       topReferrersResult,
+      totalImageGenerationsResult,
+      imageGenerationsTodayResult,
+      uniqueImageGeneratorsResult,
     ] = await Promise.all([
       // Active users (using session.updatedAt)
       db
@@ -181,6 +220,20 @@ export const getAdminDashboardOverview = createServerFn({ method: 'GET' }).handl
         .groupBy(user.id, user.name, user.email)
         .orderBy(desc(sql`count`))
         .limit(10),
+
+      // Image generation stats
+      db
+        .select({ count: sql<number>`COALESCE(SUM(${doaImageGeneration.totalGenerations}), 0)::int` })
+        .from(doaImageGeneration),
+
+      db
+        .select({ count: sql<number>`COALESCE(SUM(${doaImageGeneration.generationsToday}), 0)::int` })
+        .from(doaImageGeneration)
+        .where(gte(doaImageGeneration.lastGeneratedAt, oneDayAgo)),
+
+      db
+        .select({ count: sql<number>`COUNT(*)::int` })
+        .from(doaImageGeneration),
     ])
 
     return {
@@ -201,6 +254,9 @@ export const getAdminDashboardOverview = createServerFn({ method: 'GET' }).handl
         totalExports: totalExportsResult[0]?.count ?? 0,
         exportsToday: exportsTodayResult[0]?.count ?? 0,
         totalSavedDoas: totalSavedDoasResult[0]?.count ?? 0,
+        totalImageGenerations: totalImageGenerationsResult[0]?.count ?? 0,
+        imageGenerationsToday: imageGenerationsTodayResult[0]?.count ?? 0,
+        uniqueImageGenerators: uniqueImageGeneratorsResult[0]?.count ?? 0,
       },
       referrals: {
         totalReferrals: totalReferralsResult[0]?.count ?? 0,

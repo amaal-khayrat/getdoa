@@ -1,7 +1,6 @@
 import { createFileRoute, redirect, Link, useRouter } from '@tanstack/react-router'
-import { getSessionFromServer } from './dashboard/functions'
-import { isAdminEmail } from '@/lib/admin'
 import {
+  checkAdminAuth,
   getAdminDashboardOverview,
   getActivityTimeline,
   type TimelineDataPoint,
@@ -35,36 +34,38 @@ import {
   RefreshCw,
   ArrowLeft,
   AlertCircle,
+  ImageIcon,
 } from 'lucide-react'
 import { useCallback, useTransition } from 'react'
 import { AreaChart, Area, BarChart, Bar, XAxis, YAxis, CartesianGrid } from 'recharts'
 
 export const Route = createFileRoute('/admin')({
-  loader: async () => {
-    // Check auth first
-    const session = await getSessionFromServer()
+  // Auth + admin check via server function (runs on server where process.env is available)
+  beforeLoad: async () => {
+    const authResult = await checkAdminAuth()
 
-    if (!session?.user) {
+    if (!authResult.authenticated) {
       throw redirect({ to: '/login' })
     }
 
-    // Check if user is admin
-    if (!isAdminEmail(session.user.email)) {
-      // Redirect to dashboard with no error message (security)
+    if (!authResult.isAdmin) {
       throw redirect({ to: '/dashboard' })
     }
 
-    // Load dashboard data
+    return { user: authResult.user! }
+  },
+  // Loader fetches data - receives user from beforeLoad context
+  loader: async ({ context }) => {
+    const { user } = context as {
+      user: { id: string; name: string; email: string; image: string | null }
+    }
+
     const [overview, timeline] = await Promise.all([
       getAdminDashboardOverview(),
       getActivityTimeline({ data: { days: 30 } }),
     ])
 
-    return {
-      user: session.user,
-      overview,
-      timeline,
-    }
+    return { user, overview, timeline }
   },
   component: AdminDashboard,
   pendingComponent: AdminDashboardSkeleton,
@@ -430,7 +431,7 @@ function AdminDashboard() {
             <FileImage className="text-primary h-5 w-5" />
             Content Statistics
           </h2>
-          <div className="grid gap-4 md:grid-cols-5">
+          <div className="grid gap-4 md:grid-cols-4">
             <StatCard
               title="Total Doa Lists"
               value={overview.content.totalLists}
@@ -448,14 +449,46 @@ function AdminDashboard() {
               icon={<Download className="h-4 w-4" />}
             />
             <StatCard
-              title="Exports Today"
-              value={overview.content.exportsToday}
-              icon={<Download className="h-4 w-4" />}
-            />
-            <StatCard
               title="Saved Duas"
               value={overview.content.totalSavedDoas}
               icon={<Heart className="h-4 w-4" />}
+            />
+          </div>
+        </section>
+
+        {/* Image Generation Stats Section */}
+        <section>
+          <h2 className="mb-4 flex items-center gap-2 text-xl font-semibold">
+            <ImageIcon className="text-primary h-5 w-5" />
+            Doa Image Generator
+          </h2>
+          <div className="grid gap-4 md:grid-cols-4">
+            <StatCard
+              title="Total Images Generated"
+              value={overview.content.totalImageGenerations}
+              icon={<ImageIcon className="h-4 w-4" />}
+            />
+            <StatCard
+              title="Generated Today"
+              value={overview.content.imageGenerationsToday}
+              icon={<ImageIcon className="h-4 w-4" />}
+              trend={{
+                value: overview.content.imageGenerationsToday,
+                label: 'today',
+                isPositive: overview.content.imageGenerationsToday > 0,
+              }}
+            />
+            <StatCard
+              title="Unique Users"
+              value={overview.content.uniqueImageGenerators}
+              description="Users who generated at least 1 image"
+              icon={<Users className="h-4 w-4" />}
+            />
+            <StatCard
+              title="Exports Today"
+              value={overview.content.exportsToday}
+              description="List exports (not images)"
+              icon={<Download className="h-4 w-4" />}
             />
           </div>
         </section>
