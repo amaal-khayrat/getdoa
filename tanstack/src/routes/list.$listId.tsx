@@ -20,6 +20,7 @@ import { Button, buttonVariants } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
+import { cn } from '@/lib/utils'
 import {
   ListExportPreviewModal,
   type ExportSettings,
@@ -216,6 +217,12 @@ function PublicListView({
     showTranslations: list.showTranslations,
     translationLayout: list.translationLayout as TranslationLayout,
   })
+
+  // Display settings for reading experience
+  const [viewMode, setViewMode] = useState<'detailed' | 'reading'>('detailed')
+  const [layoutMode, setLayoutMode] = useState<'interleaved' | 'grouped'>(
+    list.translationLayout as 'interleaved' | 'grouped'
+  )
 
   // Is this the user's own list?
   const isOwnList = userId === list.userId
@@ -439,17 +446,96 @@ function PublicListView({
           </span>
         </div>
 
-        {/* Settings badges */}
-        <div className="flex flex-wrap gap-2 mb-6">
-          <Badge variant="outline">
-            {list.language === 'my' ? 'Bahasa Malaysia' : 'English'}
-          </Badge>
+        {/* Display Controls */}
+        <div className="flex flex-wrap items-center gap-4 mb-6">
+          {/* View Mode Toggle */}
+          <div
+            className="relative flex items-center rounded-full bg-secondary/80 p-0.5 shadow-sm"
+            role="radiogroup"
+            aria-label="View mode selection"
+          >
+            {/* Sliding indicator */}
+            <div
+              className={cn(
+                'absolute h-[calc(100%-4px)] w-[calc(50%-2px)] rounded-full bg-primary shadow-sm transition-transform duration-200 ease-out',
+                viewMode === 'reading' ? 'translate-x-[calc(100%+2px)]' : 'translate-x-0'
+              )}
+              aria-hidden="true"
+            />
+            <button
+              type="button"
+              role="radio"
+              aria-checked={viewMode === 'detailed'}
+              onClick={() => setViewMode('detailed')}
+              className={cn(
+                'relative z-10 flex items-center justify-center px-3 py-1.5 text-sm font-medium transition-colors duration-200',
+                viewMode === 'detailed'
+                  ? 'text-primary-foreground'
+                  : 'text-muted-foreground hover:text-foreground'
+              )}
+            >
+              Detailed
+            </button>
+            <button
+              type="button"
+              role="radio"
+              aria-checked={viewMode === 'reading'}
+              onClick={() => setViewMode('reading')}
+              className={cn(
+                'relative z-10 flex items-center justify-center px-3 py-1.5 text-sm font-medium transition-colors duration-200',
+                viewMode === 'reading'
+                  ? 'text-primary-foreground'
+                  : 'text-muted-foreground hover:text-foreground'
+              )}
+            >
+              Reading
+            </button>
+          </div>
+
+          {/* Layout Mode Toggle - only show if translations are enabled */}
           {list.showTranslations && (
-            <Badge variant="outline">
-              {list.translationLayout === 'grouped'
-                ? 'Grouped translations'
-                : 'Interleaved translations'}
-            </Badge>
+            <div
+              className="relative flex items-center rounded-full bg-secondary/80 p-0.5 shadow-sm"
+              role="radiogroup"
+              aria-label="Layout mode selection"
+            >
+              {/* Sliding indicator */}
+              <div
+                className={cn(
+                  'absolute h-[calc(100%-4px)] w-[calc(50%-2px)] rounded-full bg-primary shadow-sm transition-transform duration-200 ease-out',
+                  layoutMode === 'grouped' ? 'translate-x-[calc(100%+2px)]' : 'translate-x-0'
+                )}
+                aria-hidden="true"
+              />
+              <button
+                type="button"
+                role="radio"
+                aria-checked={layoutMode === 'interleaved'}
+                onClick={() => setLayoutMode('interleaved')}
+                className={cn(
+                  'relative z-10 flex items-center justify-center px-3 py-1.5 text-sm font-medium transition-colors duration-200',
+                  layoutMode === 'interleaved'
+                    ? 'text-primary-foreground'
+                    : 'text-muted-foreground hover:text-foreground'
+                )}
+              >
+                Interleaved
+              </button>
+              <button
+                type="button"
+                role="radio"
+                aria-checked={layoutMode === 'grouped'}
+                onClick={() => setLayoutMode('grouped')}
+                className={cn(
+                  'relative z-10 flex items-center justify-center px-3 py-1.5 text-sm font-medium transition-colors duration-200',
+                  layoutMode === 'grouped'
+                    ? 'text-primary-foreground'
+                    : 'text-muted-foreground hover:text-foreground'
+                )}
+              >
+                Grouped
+              </button>
+            </div>
           )}
         </div>
       </div>
@@ -488,7 +574,7 @@ function PublicListView({
       </div>
 
       {/* Prayers List */}
-      <div className="space-y-6">
+      <div className={viewMode === 'reading' ? 'space-y-0' : 'space-y-6'}>
         {prayers.length === 0 ? (
           <Card className="p-8 text-center">
             <BookOpen className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
@@ -496,7 +582,55 @@ function PublicListView({
               This list doesn't have any prayers yet.
             </p>
           </Card>
+        ) : layoutMode === 'grouped' && list.showTranslations ? (
+          // Grouped layout: All Arabic content first, then all translations
+          <>
+            {/* Arabic Section */}
+            <Card className={viewMode === 'reading' ? 'p-4 sm:p-6' : 'p-6'}>
+              {viewMode === 'detailed' && (
+                <h3 className="text-lg font-semibold text-foreground mb-4 pb-2 border-b">
+                  Duas
+                </h3>
+              )}
+              <div className={viewMode === 'reading' ? 'space-y-0' : 'space-y-6'}>
+                {prayers.map((prayer, index) => (
+                  <PrayerCard
+                    key={prayer.slug}
+                    prayer={prayer}
+                    index={index + 1}
+                    language={language}
+                    showTranslations={false}
+                    viewMode={viewMode}
+                  />
+                ))}
+              </div>
+            </Card>
+
+            {/* Translations Section */}
+            <Card className={`${viewMode === 'reading' ? 'p-4 sm:p-6' : 'p-6'} mt-6`}>
+              <h3 className="text-lg font-semibold text-foreground mb-4 pb-2 border-b">
+                {language === 'my' ? 'Terjemahan' : 'Translations'}
+              </h3>
+              <div className="space-y-4">
+                {prayers.map((prayer, index) => {
+                  const meaning = language === 'my' ? prayer.meaningMy : prayer.meaningEn
+                  const name = language === 'my' ? prayer.nameMy : prayer.nameEn
+                  return (
+                    <div key={`translation-${prayer.slug}`} className="py-2 border-b border-border/50 last:border-b-0">
+                      <p className="text-sm text-muted-foreground mb-1">
+                        {index + 1}. {viewMode === 'detailed' && <span className="font-medium">{name}</span>}
+                      </p>
+                      <p className="text-foreground leading-relaxed">
+                        {meaning}
+                      </p>
+                    </div>
+                  )
+                })}
+              </div>
+            </Card>
+          </>
         ) : (
+          // Interleaved layout: Arabic + translation together for each doa
           prayers.map((prayer, index) => (
             <PrayerCard
               key={prayer.slug}
@@ -504,6 +638,7 @@ function PublicListView({
               index={index + 1}
               language={language}
               showTranslations={list.showTranslations}
+              viewMode={viewMode}
             />
           ))
         )}
@@ -556,6 +691,9 @@ interface PrayerCardProps {
   index: number
   language: 'en' | 'my'
   showTranslations: boolean
+  viewMode: 'detailed' | 'reading'
+  /** Only show Arabic content (for grouped layout) */
+  arabicOnly?: boolean
 }
 
 function PrayerCard({
@@ -563,6 +701,8 @@ function PrayerCard({
   index,
   language,
   showTranslations,
+  viewMode,
+  arabicOnly = false,
 }: PrayerCardProps) {
   const name = language === 'my' ? prayer.nameMy : prayer.nameEn
   const meaning = language === 'my' ? prayer.meaningMy : prayer.meaningEn
@@ -572,8 +712,47 @@ function PrayerCard({
   const copyToClipboard = () => {
     const text = `${name}\n${prayer.content}\n${meaning}`
     navigator.clipboard.writeText(text)
+    toast.success('Copied to clipboard')
   }
 
+  const isReading = viewMode === 'reading'
+
+  // Reading mode: minimal, clean design for focused reading
+  if (isReading) {
+    return (
+      <div className="py-4 border-b border-border/50 last:border-b-0">
+        {/* Minimal header */}
+        <div className="flex items-baseline gap-2 mb-3">
+          <span className="text-sm text-muted-foreground font-medium">
+            {index}.
+          </span>
+          <span className="text-sm text-muted-foreground">
+            {name}
+          </span>
+        </div>
+
+        {/* Arabic text */}
+        <div className="text-right mb-3">
+          <p
+            dir="rtl"
+            lang="ar"
+            className="font-arabic text-2xl leading-loose text-foreground"
+          >
+            {prayer.content}
+          </p>
+        </div>
+
+        {/* Translation - only if showTranslations and not arabicOnly */}
+        {showTranslations && !arabicOnly && (
+          <p className="text-muted-foreground leading-relaxed text-sm">
+            {meaning}
+          </p>
+        )}
+      </div>
+    )
+  }
+
+  // Detailed mode: full information with links, categories, copy button
   return (
     <Card className="p-6 hover:shadow-md transition-shadow">
       <div className="flex items-start justify-between mb-4">
@@ -608,8 +787,8 @@ function PrayerCard({
         </p>
       </div>
 
-      {/* Translation */}
-      {showTranslations && (
+      {/* Translation - only if showTranslations and not arabicOnly */}
+      {showTranslations && !arabicOnly && (
         <p className="text-muted-foreground leading-relaxed">{meaning}</p>
       )}
 
