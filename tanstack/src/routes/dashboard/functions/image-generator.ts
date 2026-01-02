@@ -23,6 +23,11 @@ interface GenerateImageInput {
   language: Language
 }
 
+// Input for recording image generation (limit tracking only)
+interface RecordImageGenerationInput {
+  doaSlug: string
+}
+
 // Structured result type (following createDoaList pattern)
 type GenerateImageResult =
   | {
@@ -255,6 +260,152 @@ export const generateDoaImage = createServerFn({
       imageBase64,
       filename,
       mimeType: 'image/png',
+      limitInfo,
+    }
+  })
+
+// ============================================
+// RECORD IMAGE GENERATION (browser-side generation)
+// Tracks usage limits without server-side image generation
+// ============================================
+
+// Result type for recording image generation
+type RecordImageGenerationResult =
+  | {
+      success: true
+      limitInfo: ImageLimitInfo
+    }
+  | {
+      success: false
+      error: {
+        code: 'DAILY_LIMIT_REACHED' | 'UNAUTHORIZED'
+        message: string
+        limitInfo?: ImageLimitInfo
+      }
+    }
+
+export const recordImageGeneration = createServerFn({
+  method: 'POST',
+})
+  .inputValidator((data: RecordImageGenerationInput) => {
+    if (!data.doaSlug || typeof data.doaSlug !== 'string') {
+      throw new Error('Invalid doa slug')
+    }
+    return data
+  })
+  .handler(async ({ data: _data }): Promise<RecordImageGenerationResult> => {
+    const session = await requireAuth()
+    const userId = session.user.id
+
+    // Step 1: Check limit FIRST (outside transaction - read only)
+    const existingRecord = await db.query.doaImageGeneration.findFirst({
+      where: eq(doaImageGeneration.userId, userId),
+    })
+
+    const currentUsed =
+      existingRecord && isToday(existingRecord.lastGeneratedAt)
+        ? existingRecord.generationsToday
+        : 0
+
+    if (currentUsed >= IMAGE_LIMIT_CONFIG.DAILY_LIMIT) {
+      const limitInfo = calculateImageLimitInfo(
+        currentUsed,
+        existingRecord?.lastGeneratedAt ?? null,
+        existingRecord?.totalGenerations ?? 0,
+      )
+
+      return {
+        success: false,
+        error: {
+          code: 'DAILY_LIMIT_REACHED',
+          message:
+            'Daily limit reached. You can generate 1 image per day. Please try again tomorrow.',
+          limitInfo,
+        },
+      }
+    }
+
+    // Step 2: Update count in a transaction
+    const now = new Date()
+    const result = await db.transaction(async (tx) => {
+      // Re-check limit inside transaction to prevent race conditions
+      const record = await tx.query.doaImageGeneration.findFirst({
+        where: eq(doaImageGeneration.userId, userId),
+      })
+
+      const usedToday =
+        record && isToday(record.lastGeneratedAt)
+          ? record.generationsToday
+          : 0
+
+      // Double-check limit (race condition protection)
+      if (usedToday >= IMAGE_LIMIT_CONFIG.DAILY_LIMIT) {
+        return {
+          blocked: true as const,
+          usedToday,
+          totalGenerations: record?.totalGenerations ?? 0,
+        }
+      }
+
+      if (record) {
+        // Reset count if new day, otherwise increment
+        const newCount = isToday(record.lastGeneratedAt)
+          ? record.generationsToday + 1
+          : 1
+
+        await tx
+          .update(doaImageGeneration)
+          .set({
+            generationsToday: newCount,
+            lastGeneratedAt: now,
+            totalGenerations: record.totalGenerations + 1,
+          })
+          .where(eq(doaImageGeneration.userId, userId))
+
+        return {
+          blocked: false as const,
+          usedToday: newCount,
+          totalGenerations: record.totalGenerations + 1,
+        }
+      } else {
+        // First generation ever
+        await tx.insert(doaImageGeneration).values({
+          userId,
+          generationsToday: 1,
+          lastGeneratedAt: now,
+          totalGenerations: 1,
+        })
+
+        return { blocked: false as const, usedToday: 1, totalGenerations: 1 }
+      }
+    })
+
+    // Handle race condition
+    if (result.blocked) {
+      const limitInfo = calculateImageLimitInfo(
+        result.usedToday,
+        existingRecord?.lastGeneratedAt ?? null,
+        result.totalGenerations,
+      )
+      return {
+        success: false,
+        error: {
+          code: 'DAILY_LIMIT_REACHED',
+          message: 'Daily limit reached. Please try again tomorrow.',
+          limitInfo,
+        },
+      }
+    }
+
+    // Return success with updated limit info
+    const limitInfo = calculateImageLimitInfo(
+      result.usedToday,
+      now,
+      result.totalGenerations,
+    )
+
+    return {
+      success: true,
       limitInfo,
     }
   })

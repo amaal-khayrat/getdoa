@@ -15,7 +15,11 @@ import {
   CollapsibleTrigger,
 } from '@/components/ui/collapsible'
 import { useLanguage } from '@/contexts/language-context'
-import { generateDoaImage } from '@/routes/dashboard/functions/image-generator'
+import { recordImageGeneration } from '@/routes/dashboard/functions/image-generator'
+import {
+  generateSingleDoaImage,
+  downloadDoaImage,
+} from '@/utils/doa-single-image-generator'
 import type { DoaItem, Language } from '@/types/doa.types'
 import type { ImageLimitInfo } from '@/lib/image-limit'
 import { cn } from '@/lib/utils'
@@ -138,15 +142,21 @@ export function DoaImageGenerator({
     setError(null)
 
     try {
-      const result = await generateDoaImage({
+      // Generate image on the browser using Canvas API
+      const blob = await generateSingleDoaImage({
+        doa: selectedDoa,
+        backgroundId: selectedBackground,
+        language,
+      })
+
+      // Record the generation on the server (limit tracking)
+      const result = await recordImageGeneration({
         data: {
           doaSlug: selectedDoa.slug,
-          backgroundId: selectedBackground,
-          language,
         },
       })
 
-      // Handle structured error response
+      // Handle limit error from server
       if (!result.success) {
         setError(result.error.message)
         if (result.error.limitInfo) {
@@ -161,30 +171,20 @@ export function DoaImageGenerator({
       }
 
       // Create blob URL for preview
-      const byteCharacters = atob(result.imageBase64)
-      const byteNumbers = new Array(byteCharacters.length)
-      for (let i = 0; i < byteCharacters.length; i++) {
-        byteNumbers[i] = byteCharacters.charCodeAt(i)
-      }
-      const byteArray = new Uint8Array(byteNumbers)
-      const blob = new Blob([byteArray], { type: result.mimeType })
       const url = URL.createObjectURL(blob)
 
       // Track for cleanup
       blobUrlRef.current = url
 
+      const filename = `getdoa-${selectedDoa.slug}-${Date.now()}.png`
+
       setGeneratedImageUrl(url)
-      setGeneratedFilename(result.filename)
+      setGeneratedFilename(filename)
       setLimitInfo(result.limitInfo)
       setShowSuccessModal(true)
 
       // Auto-download
-      const link = document.createElement('a')
-      link.href = url
-      link.download = result.filename
-      document.body.appendChild(link)
-      link.click()
-      document.body.removeChild(link)
+      downloadDoaImage(blob, filename)
     } catch (err) {
       console.error('Failed to generate image:', err)
       setError(

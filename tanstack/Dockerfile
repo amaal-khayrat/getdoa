@@ -43,8 +43,8 @@ ENV PORT=3230
 ENV NITRO_HOST=0.0.0.0
 ENV NITRO_PORT=3230
 
-# Install necessary runtime packages
-RUN apk add --no-cache curl tzdata && \
+# Install necessary runtime packages + fontconfig and fonts for Sharp SVG text rendering
+RUN apk add --no-cache curl tzdata fontconfig ttf-dejavu font-noto font-noto-arabic && \
     corepack enable && \
     corepack prepare pnpm@latest --activate
 
@@ -70,6 +70,11 @@ COPY --from=builder --chown=appuser:nodejs /app/data ./server/data
 
 # Copy public folder for server-side image generation (fonts, backgrounds)
 COPY --from=builder --chown=appuser:nodejs /app/.output/public ./server/public
+
+# Copy custom fonts to system fonts directory and update font cache
+RUN mkdir -p /usr/share/fonts/custom
+COPY --from=builder /app/public/fonts/*.ttf /usr/share/fonts/custom/
+RUN fc-cache -f -v
 
 # Set working directory for the user
 WORKDIR /app/server

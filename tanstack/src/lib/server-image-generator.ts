@@ -110,7 +110,7 @@ function createTextOverlaySvg(config: {
             src: url(data:font/ttf;base64,${fontBase64}) format('truetype');
           }
           .arabic-text {
-            font-family: 'Simpo', 'Traditional Arabic', 'Scheherazade New', serif;
+            font-family: 'Simpo', 'Noto Sans Arabic', 'Noto Naskh Arabic', 'DejaVu Sans', serif;
             font-size: 99px;
             fill: white;
             text-anchor: middle;
@@ -118,7 +118,7 @@ function createTextOverlaySvg(config: {
             text-shadow: 2px 2px 8px rgba(0,0,0,0.5);
           }
           .doa-name {
-            font-family: 'Playfair Display', Georgia, serif;
+            font-family: 'Noto Serif', 'DejaVu Serif', serif;
             font-size: 48px;
             fill: white;
             text-anchor: middle;
@@ -126,7 +126,7 @@ function createTextOverlaySvg(config: {
             text-shadow: 2px 2px 6px rgba(0,0,0,0.5);
           }
           .translation {
-            font-family: 'Roboto', 'Segoe UI', Arial, sans-serif;
+            font-family: 'Noto Sans', 'DejaVu Sans', sans-serif;
             font-size: 45px;
             fill: rgba(255, 255, 255, 0.95);
             text-anchor: middle;
@@ -161,7 +161,7 @@ function createBrandingOverlaySvg(config: {
       <defs>
         <style>
           .branding-text {
-            font-family: 'Playfair Display', Georgia, serif;
+            font-family: 'Noto Serif', 'DejaVu Serif', serif;
             font-size: 36px;
             fill: white;
             text-anchor: middle;
@@ -169,7 +169,7 @@ function createBrandingOverlaySvg(config: {
             text-shadow: 2px 2px 6px rgba(0,0,0,0.5);
           }
           .branding-subtext {
-            font-family: 'Roboto', 'Segoe UI', Arial, sans-serif;
+            font-family: 'Noto Sans', 'DejaVu Sans', sans-serif;
             font-size: 24px;
             fill: rgba(255, 255, 255, 0.8);
             text-anchor: middle;
