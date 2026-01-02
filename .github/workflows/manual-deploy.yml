@@ -111,6 +111,7 @@ jobs:
             echo "POSTGRES_USER=${{ secrets.POSTGRES_USER }}" >> /home/ubuntu/getdoa/.env
             echo "POSTGRES_PASSWORD=${{ secrets.POSTGRES_PASSWORD }}" >> /home/ubuntu/getdoa/.env
             echo "POSTGRES_DB=${{ secrets.POSTGRES_DB }}" >> /home/ubuntu/getdoa/.env
+            echo "ADMIN_EMAILS=${{ secrets.ADMIN_EMAILS }}" >> /home/ubuntu/getdoa/.env
 
             # Clean up any Docker resources to prevent image corruption issues
             sudo docker system prune -f --volumes
