@@ -32,7 +32,7 @@ export function ShopeeReferralsSection({
       partialSuccess: '{successful} of {total} products loaded',
     },
     my: {
-      title: 'Belian & Sokong Kami',
+      title: 'Beli & Sokong Kami',
       loading: 'Memuatkan produk...',
       partialSuccess: '{successful} daripada {total} produk dimuatkan',
     },

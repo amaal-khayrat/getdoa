@@ -4,6 +4,7 @@ import {
   getPublicLists,
   getSessionFromServer,
 } from './dashboard/functions'
+import { fetchShopeeReferrals } from '@/utils/shopee-fetch.server'
 import { LandingLayout } from '@/components/landing/layout/landing-layout'
 import { LanguageProvider } from '@/contexts/language-context'
 import { ListDiscoveryCard } from '@/components/list/list-discovery-card'
@@ -11,6 +12,7 @@ import { ListDiscoverySkeleton } from '@/components/list/list-discovery-skeleton
 import { ListFilterBar } from '@/components/list/list-filter-bar'
 import { ListsEmptyState } from '@/components/list/lists-empty-state'
 import { ListsPagination } from '@/components/list/lists-pagination'
+import { ShopeeReferralsSection } from '@/components/shopee/shopee-referrals-section'
 import { buttonVariants } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
 
@@ -31,19 +33,39 @@ export const Route = createFileRoute('/lists')({
   loaderDeps: ({ search }) => ({ search }),
   loader: async ({ deps: { search } }) => {
     const session = await getSessionFromServer()
-    const result = await getPublicLists({
-      data: {
-        page: search.page,
-        limit: 12,
-        sortBy: search.sort,
-        search: search.q,
-        userId: session?.user?.id, // For favorites status
-      },
-    })
+
+    // Fetch lists and shopee referrals in parallel
+    // Use Promise.allSettled so shopee failure doesn't break the page
+    const [listsResult, shopeeResult] = await Promise.allSettled([
+      getPublicLists({
+        data: {
+          page: search.page,
+          limit: 12,
+          sortBy: search.sort,
+          search: search.q,
+          userId: session?.user?.id,
+        },
+      }),
+      fetchShopeeReferrals({ count: 8 }),
+    ])
+
+    // Lists are required - throw if failed
+    if (listsResult.status === 'rejected') {
+      throw listsResult.reason
+    }
+
+    // Shopee referrals are optional - use empty array on failure
+    // Map to only include url and ogData (component doesn't need error field)
+    const shopeeReferrals =
+      shopeeResult.status === 'fulfilled'
+        ? shopeeResult.value.map(({ url, ogData }) => ({ url, ogData }))
+        : []
+
     return {
-      ...result,
+      ...listsResult.value,
       isAuthenticated: !!session?.user,
       userId: session?.user?.id,
+      shopeeReferrals,
     }
   },
 
@@ -82,7 +104,7 @@ function ListsPageSkeleton() {
 }
 
 function ListsPage() {
-  const { lists, total, page, totalPages, isAuthenticated, userId } =
+  const { lists, total, page, totalPages, isAuthenticated, userId, shopeeReferrals } =
     Route.useLoaderData()
   const search = Route.useSearch()
   const navigate = useNavigate()
@@ -183,6 +205,9 @@ function ListsPage() {
               </Card>
             </div>
           )}
+
+          {/* Shopee Referrals - loaded from server */}
+          <ShopeeReferralsSection referrals={shopeeReferrals} />
         </div>
       </LandingLayout>
     </LanguageProvider>

@@ -25,7 +25,7 @@ export function ShopeeReferralsError({
       viewOnShopee: 'View on Shopee',
     },
     my: {
-      title: 'Belian & Sokong Kami',
+      title: 'Beli & Sokong Kami',
       errorTitle: 'Produk tidak dapat dimuatkan',
       errorMessage:
         error?.message || 'Sesuatu tidak kena semasa memuatkan produk.',

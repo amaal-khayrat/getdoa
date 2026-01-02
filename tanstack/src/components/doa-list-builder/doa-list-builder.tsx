@@ -41,6 +41,7 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from '@/components/ui/tooltip'
+import { cn } from '@/lib/utils'
 import { DEFAULT_PREVIEW_SETTINGS } from '@/types/doa.types'
 import {
   AlertDialog,
@@ -665,14 +666,8 @@ function DoaListProviderWithNotifications({
     }
   }, [session?.user, state.user])
 
-  useEffect(() => {
-    if (state.language !== language) {
-      dispatch({
-        type: 'UPDATE_STATE',
-        payload: { language: language as 'en' | 'my' },
-      })
-    }
-  }, [language, state.language])
+  // Note: Language is initialized from context but managed locally via toggle
+  // No sync useEffect needed - local state is independent (same pattern as doa-image-generator)
 
   useEffect(() => {
     const currentUsername = state.user.username
@@ -775,6 +770,7 @@ function DoaListBuilderContent({ listLimitInfo }: { listLimitInfo?: ListLimitInf
     isDirty,
     saveStatus,
     listId,
+    language,
   } = useDoaListState()
 
   // Check if user can save: edit mode always allowed, create mode only if within limit
@@ -897,6 +893,48 @@ function DoaListBuilderContent({ listLimitInfo }: { listLimitInfo?: ListLimitInf
               </div>
             </div>
             <div className="flex items-center gap-2">
+              {/* Language Toggle - Mobile */}
+              <div
+                className="relative flex items-center rounded-full bg-secondary/80 p-0.5 shadow-sm shrink-0"
+                role="radiogroup"
+                aria-label="Language selection"
+              >
+                <div
+                  className={cn(
+                    'absolute h-[calc(100%-4px)] w-[calc(50%-2px)] rounded-full bg-primary shadow-sm transition-transform duration-200 ease-out',
+                    language === 'my' ? 'translate-x-[calc(100%+2px)]' : 'translate-x-0'
+                  )}
+                  aria-hidden="true"
+                />
+                <button
+                  type="button"
+                  role="radio"
+                  aria-checked={language === 'en'}
+                  onClick={() => updateState({ language: 'en' })}
+                  className={cn(
+                    'relative z-10 flex items-center justify-center px-2 py-1 text-xs font-medium transition-colors duration-200',
+                    language === 'en'
+                      ? 'text-primary-foreground'
+                      : 'text-muted-foreground hover:text-foreground'
+                  )}
+                >
+                  EN
+                </button>
+                <button
+                  type="button"
+                  role="radio"
+                  aria-checked={language === 'my'}
+                  onClick={() => updateState({ language: 'my' })}
+                  className={cn(
+                    'relative z-10 flex items-center justify-center px-2 py-1 text-xs font-medium transition-colors duration-200',
+                    language === 'my'
+                      ? 'text-primary-foreground'
+                      : 'text-muted-foreground hover:text-foreground'
+                  )}
+                >
+                  MY
+                </button>
+              </div>
               <Button
                 variant="outline"
                 size="sm"
@@ -980,6 +1018,48 @@ function DoaListBuilderContent({ listLimitInfo }: { listLimitInfo?: ListLimitInf
             </div>
 
             <div className="flex items-center gap-3 shrink-0">
+              {/* Language Toggle - Desktop */}
+              <div
+                className="relative flex items-center rounded-full bg-secondary/80 p-0.5 shadow-sm"
+                role="radiogroup"
+                aria-label="Language selection"
+              >
+                <div
+                  className={cn(
+                    'absolute h-[calc(100%-4px)] w-[calc(50%-2px)] rounded-full bg-primary shadow-sm transition-transform duration-200 ease-out',
+                    language === 'my' ? 'translate-x-[calc(100%+2px)]' : 'translate-x-0'
+                  )}
+                  aria-hidden="true"
+                />
+                <button
+                  type="button"
+                  role="radio"
+                  aria-checked={language === 'en'}
+                  onClick={() => updateState({ language: 'en' })}
+                  className={cn(
+                    'relative z-10 flex items-center justify-center px-3 py-1.5 text-sm font-medium transition-colors duration-200',
+                    language === 'en'
+                      ? 'text-primary-foreground'
+                      : 'text-muted-foreground hover:text-foreground'
+                  )}
+                >
+                  EN
+                </button>
+                <button
+                  type="button"
+                  role="radio"
+                  aria-checked={language === 'my'}
+                  onClick={() => updateState({ language: 'my' })}
+                  className={cn(
+                    'relative z-10 flex items-center justify-center px-3 py-1.5 text-sm font-medium transition-colors duration-200',
+                    language === 'my'
+                      ? 'text-primary-foreground'
+                      : 'text-muted-foreground hover:text-foreground'
+                  )}
+                >
+                  MY
+                </button>
+              </div>
               <Button
                 variant="outline"
                 onClick={handlePreview}

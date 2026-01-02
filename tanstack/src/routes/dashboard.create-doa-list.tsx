@@ -1,12 +1,15 @@
+import { useEffect, useState } from 'react'
 import { createFileRoute, redirect } from '@tanstack/react-router'
 import { z } from 'zod'
 import { DoaListBuilder } from '@/components/doa-list-builder/doa-list-builder'
+import { ShopeeReferralsSection } from '@/components/shopee/shopee-referrals-section'
 import { getDoaList } from './dashboard/functions'
 import { getDoasBySlugs } from './dashboard/functions/doa'
 import { getTemplateById } from '@/lib/list-templates'
 import type { DoaItem } from '@/types/doa.types'
 import type { ListStatus, ListVisibility } from '@/types/doa-list.types'
 import type { ListLimitInfo } from '@/lib/list-limit'
+import type { ShopeeOgData } from '@/types/shopee.types'
 import { DEFAULT_PREVIEW_SETTINGS } from '@/types/doa.types'
 
 // Search params schema for creating/editing lists
@@ -135,9 +138,68 @@ export const Route = createFileRoute('/dashboard/create-doa-list')({
 function CreateDoaListPage() {
   const { mode, initialState, listLimitInfo } = Route.useLoaderData()
 
+  // Shopee referrals state management
+  const [shopeeReferrals, setShopeeReferrals] = useState<
+    Array<{ url: string; ogData?: ShopeeOgData }>
+  >([])
+  const [shopeeError, setShopeeError] = useState<Error | null>(null)
+  const [isShopeeLoading, setIsShopeeLoading] = useState(true)
+
+  // Fetch shopee referrals when component mounts
+  useEffect(() => {
+    const fetchShopeeReferrals = async () => {
+      setIsShopeeLoading(true)
+      setShopeeError(null)
+
+      try {
+        const response = await fetch('/api/shopee-referrals?count=8')
+        if (!response.ok) {
+          throw new Error('Failed to fetch shopee referrals')
+        }
+        const data = await response.json()
+        setShopeeReferrals(data.items || [])
+      } catch (error) {
+        console.error('Failed to fetch shopee referrals:', error)
+        setShopeeError(
+          error instanceof Error ? error : new Error('Unknown error'),
+        )
+      } finally {
+        setIsShopeeLoading(false)
+      }
+    }
+
+    fetchShopeeReferrals()
+  }, [])
+
+  const handleShopeeRetry = () => {
+    setShopeeReferrals([])
+    setShopeeError(null)
+    setIsShopeeLoading(true)
+    fetch('/api/shopee-referrals?count=8')
+      .then((res) => res.json())
+      .then((data) => {
+        setShopeeReferrals(data.items || [])
+        setIsShopeeLoading(false)
+      })
+      .catch((err) => {
+        setShopeeError(
+          err instanceof Error ? err : new Error('Unknown error'),
+        )
+        setIsShopeeLoading(false)
+      })
+  }
+
   return (
     <div className="p-0">
       <DoaListBuilder mode={mode} initialState={initialState} listLimitInfo={listLimitInfo} />
+      <div className="px-4 md:px-6 pb-6">
+        <ShopeeReferralsSection
+          referrals={shopeeReferrals}
+          isLoading={isShopeeLoading}
+          error={shopeeError || undefined}
+          onRetry={handleShopeeRetry}
+        />
+      </div>
     </div>
   )
 }

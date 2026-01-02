@@ -10,10 +10,12 @@ import {
   removeFavoriteList,
   logExport,
 } from '@/routes/dashboard/functions'
+import { fetchShopeeReferrals } from '@/utils/shopee-fetch.server'
 import { generateDoaImage, downloadImage } from '@/utils/image-generator'
 import type { DoaList, TranslationLayout } from '@/types/doa.types'
 import { LandingLayout } from '@/components/landing/layout/landing-layout'
 import { LanguageProvider, useLanguage } from '@/contexts/language-context'
+import { ShopeeReferralsSection } from '@/components/shopee/shopee-referrals-section'
 import { Button, buttonVariants } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
@@ -24,19 +26,38 @@ import {
 } from '@/components/list/list-export-preview-modal'
 import type { DoaListWithUserAndItems } from '@/types/doa-list.types'
 import type { Doa } from '@/types/doa.types'
+import type { ShopeeOgData } from '@/types/shopee.types'
 
 export const Route = createFileRoute('/list/$listId')({
   // Data loading - runs on server
   loader: async ({ params }) => {
     // Run in parallel for performance
-    const [list, session] = await Promise.all([
+    // Use Promise.allSettled for shopee so failure doesn't break the page
+    const [listResult, sessionResult, shopeeResult] = await Promise.allSettled([
       getDoaList({ data: { listId: params.listId } }),
       getSessionFromServer(),
+      fetchShopeeReferrals({ count: 8 }),
     ])
+
+    // List is required - throw if failed
+    if (listResult.status === 'rejected') {
+      throw listResult.reason
+    }
+    const list = listResult.value
 
     if (!list) {
       throw notFound()
     }
+
+    // Session is optional but shouldn't fail silently
+    const session = sessionResult.status === 'fulfilled' ? sessionResult.value : null
+
+    // Shopee referrals are optional - use empty array on failure
+    // Map to only include url and ogData (component doesn't need error field)
+    const shopeeReferrals =
+      shopeeResult.status === 'fulfilled'
+        ? shopeeResult.value.map(({ url, ogData }) => ({ url, ogData }))
+        : []
 
     // Check favorite status if authenticated (needs list first to check ownership)
     let isFavorited = false
@@ -56,6 +77,7 @@ export const Route = createFileRoute('/list/$listId')({
       isAuthenticated: !!session?.user,
       userId: session?.user?.id,
       isFavorited,
+      shopeeReferrals,
     }
   },
   component: PublicListPage,
@@ -120,6 +142,7 @@ function PublicListPage() {
     isAuthenticated,
     userId,
     isFavorited: initialFavorited,
+    shopeeReferrals,
   } = Route.useLoaderData()
 
   return (
@@ -131,6 +154,7 @@ function PublicListPage() {
           isAuthenticated={isAuthenticated}
           userId={userId}
           initialFavorited={initialFavorited}
+          shopeeReferrals={shopeeReferrals}
         />
       </LandingLayout>
     </LanguageProvider>
@@ -143,6 +167,7 @@ interface PublicListViewProps {
   isAuthenticated: boolean
   userId?: string
   initialFavorited: boolean
+  shopeeReferrals: Array<{ url: string; ogData?: ShopeeOgData }>
 }
 
 function PublicListView({
@@ -151,6 +176,7 @@ function PublicListView({
   isAuthenticated,
   userId,
   initialFavorited,
+  shopeeReferrals,
 }: PublicListViewProps) {
   const { language } = useLanguage()
   const navigate = useNavigate()
@@ -466,6 +492,9 @@ function PublicListView({
           </Card>
         </div>
       )}
+
+      {/* Shopee Referrals - loaded from server */}
+      <ShopeeReferralsSection referrals={shopeeReferrals} />
 
       {/* Export Preview Modal */}
       <ListExportPreviewModal
