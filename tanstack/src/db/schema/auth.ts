@@ -2,13 +2,15 @@ import { relations } from 'drizzle-orm'
 import {
   boolean,
   index,
-  integer,
   pgTable,
   text,
   timestamp,
-  unique,
+  varchar,
 } from 'drizzle-orm/pg-core'
 
+// ============================================
+// USER
+// ============================================
 export const user = pgTable('user', {
   id: text('id').primaryKey(),
   name: text('name').notNull(),
@@ -22,6 +24,9 @@ export const user = pgTable('user', {
     .notNull(),
 })
 
+// ============================================
+// SESSION
+// ============================================
 export const session = pgTable(
   'session',
   {
@@ -41,6 +46,9 @@ export const session = pgTable(
   (table) => [index('session_userId_idx').on(table.userId)],
 )
 
+// ============================================
+// ACCOUNT
+// ============================================
 export const account = pgTable(
   'account',
   {
@@ -65,6 +73,9 @@ export const account = pgTable(
   (table) => [index('account_userId_idx').on(table.userId)],
 )
 
+// ============================================
+// VERIFICATION
+// ============================================
 export const verification = pgTable(
   'verification',
   {
@@ -81,53 +92,9 @@ export const verification = pgTable(
   (table) => [index('verification_identifier_idx').on(table.identifier)],
 )
 
-// Space - a collection of doas belonging to a user
-export const space = pgTable(
-  'space',
-  {
-    id: text('id')
-      .primaryKey()
-      .$defaultFn(() => crypto.randomUUID()),
-    userId: text('user_id')
-      .notNull()
-      .references(() => user.id, { onDelete: 'cascade' }),
-    name: text('name').notNull(),
-    icon: text('icon').default('BookOpen'),
-    createdAt: timestamp('created_at').defaultNow().notNull(),
-    updatedAt: timestamp('updated_at')
-      .defaultNow()
-      .$onUpdate(() => /* @__PURE__ */ new Date())
-      .notNull(),
-  },
-  (table) => [index('space_userId_idx').on(table.userId)],
-)
-
-// SpaceDoa - junction table linking spaces to doa slugs
-export const spaceDoa = pgTable(
-  'space_doa',
-  {
-    id: text('id')
-      .primaryKey()
-      .$defaultFn(() => crypto.randomUUID()),
-    spaceId: text('space_id')
-      .notNull()
-      .references(() => space.id, { onDelete: 'cascade' }),
-    doaSlug: text('doa_slug').notNull(),
-    order: integer('order').default(0).notNull(),
-    addedAt: timestamp('added_at').defaultNow().notNull(),
-  },
-  (table) => [
-    index('spaceDoa_spaceId_idx').on(table.spaceId),
-    unique('spaceDoa_spaceId_doaSlug_unique').on(table.spaceId, table.doaSlug),
-  ],
-)
-
-export const userRelations = relations(user, ({ many }) => ({
-  sessions: many(session),
-  accounts: many(account),
-  spaces: many(space),
-}))
-
+// ============================================
+// AUTH RELATIONS (internal only)
+// ============================================
 export const sessionRelations = relations(session, ({ one }) => ({
   user: one(user, {
     fields: [session.userId],
@@ -142,17 +109,45 @@ export const accountRelations = relations(account, ({ one }) => ({
   }),
 }))
 
-export const spaceRelations = relations(space, ({ one, many }) => ({
-  user: one(user, {
-    fields: [space.userId],
-    references: [user.id],
-  }),
-  doaItems: many(spaceDoa),
-}))
+// ============================================
+// USER PROFILE - Privacy and display settings
+// ============================================
+export const userProfile = pgTable(
+  'user_profile',
+  {
+    // Use same ID as user (1:1 relationship)
+    userId: text('user_id')
+      .primaryKey()
+      .references(() => user.id, { onDelete: 'cascade' }),
 
-export const spaceDoaRelations = relations(spaceDoa, ({ one }) => ({
-  space: one(space, {
-    fields: [spaceDoa.spaceId],
-    references: [space.id],
+    // Display settings
+    displayName: varchar('display_name', { length: 100 }), // Custom name, null = use user.name
+    bio: text('bio'), // Optional short bio
+
+    // Privacy settings
+    profileVisibility: varchar('profile_visibility', { length: 20 })
+      .default('public')
+      .notNull(), // 'public' | 'private'
+    showAvatar: boolean('show_avatar').default(true).notNull(),
+    showFullName: boolean('show_full_name').default(true).notNull(), // false = show initials only
+    showFavorites: boolean('show_favorites').default(false).notNull(), // Show favorited lists on profile
+
+    // Timestamps
+    createdAt: timestamp('created_at').defaultNow().notNull(),
+    updatedAt: timestamp('updated_at')
+      .defaultNow()
+      .$onUpdate(() => new Date())
+      .notNull(),
+  },
+  (table) => [index('user_profile_visibility_idx').on(table.profileVisibility)],
+)
+
+// ============================================
+// USER PROFILE RELATIONS
+// ============================================
+export const userProfileRelations = relations(userProfile, ({ one }) => ({
+  user: one(user, {
+    fields: [userProfile.userId],
+    references: [user.id],
   }),
 }))

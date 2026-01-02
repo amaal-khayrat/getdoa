@@ -4,7 +4,7 @@ import { drizzle } from 'drizzle-orm/node-postgres'
 import { migrate } from 'drizzle-orm/node-postgres/migrator'
 import { Pool } from 'pg'
 
-import * as schema from './schema.ts'
+import * as schema from './schema'
 
 config()
 
@@ -50,9 +50,41 @@ export async function applyMigrations() {
   }
 }
 
+// Seed doa data (runs on every startup, idempotent)
+async function seedDoaData() {
+  // Dynamic import to avoid circular dependencies and allow
+  // the seed module to import from this file
+  const { seedDoa } = await import('./seed')
+
+  try {
+    console.log('Checking doa data...')
+    const result = await seedDoa({ deleteOrphans: false, dryRun: false })
+
+    if (result.errors.length > 0) {
+      // Log errors but don't throw - server should still start
+      console.error('Seed completed with errors:', result.errors)
+    } else if (result.inserted > 0 || result.updated > 0) {
+      console.log(
+        `Doa seed: ${result.inserted} inserted, ${result.updated} updated, ${result.skipped} unchanged (${result.duration}ms)`,
+      )
+    } else {
+      console.log(
+        `Doa data is up to date (${result.skipped} records, ${result.duration}ms)`,
+      )
+    }
+  } catch (error) {
+    // Log but don't throw - server should still start even if seeding fails
+    // This prevents deployment failures due to transient DB issues
+    console.error(
+      'Doa seeding failed (non-fatal):',
+      error instanceof Error ? error.message : error,
+    )
+  }
+}
+
 // Export for server startup
 export async function startServer() {
   await applyMigrations()
-  // Additional server setup can go here
+  await seedDoaData()
   console.log('Server initialized')
 }

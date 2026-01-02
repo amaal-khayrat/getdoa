@@ -8,6 +8,13 @@
       "when": 1766225196756,
       "tag": "0000_dark_mockingbird",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1767345811071,
+      "tag": "0001_puzzling_power_pack",
+      "breakpoints": true
     }
   ]
 }
