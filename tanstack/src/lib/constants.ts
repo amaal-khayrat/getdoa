@@ -288,6 +288,7 @@ export const LANDING_CONTENT = {
           features: [
             'Cloud synchronization',
             'One personalized doa list',
+            'Up to 11 lists with referrals',
             'Access to authentic prayers library',
             'Basic email support',
           ],
@@ -346,12 +347,17 @@ export const LANDING_CONTENT = {
         {
           question: 'Which plan is right for me?',
           answer:
-            'Start with Free - it includes everything you need for basic prayer management! If you need more doa lists, choose Basic (RM3.99/doa). For beautiful designs, get Complete (RM4.99/doa). For maximum customization, go for Unlimited Access (RM9.99/month).',
+            'Start with Free - it includes everything you need for basic prayer management! You can earn up to 11 lists by inviting friends. If you need more lists without referrals, try our add-ons (Basic at RM3.99 or Complete at RM4.99 per list). For maximum customization, go for Unlimited Access (RM9.99/month).',
         },
         {
           question: 'Is the Free plan really free forever?',
           answer:
-            "Yes! The Free plan includes cloud sync and one personalized doa list at no cost. It's perfect for starting your spiritual journey without any commitment.",
+            "Yes! The Free plan includes cloud sync and one personalized doa list at no cost. You can earn up to 10 additional lists by inviting friends through the referral program.",
+        },
+        {
+          question: 'How does the referral program work?',
+          answer:
+            'Share your unique referral link with friends. When they sign up using your link, you earn +1 doa list bonus. You can earn up to 10 bonus lists this way, giving you a total of 11 free lists!',
         },
         {
           question: "What's the difference between Basic and Complete plans?",
