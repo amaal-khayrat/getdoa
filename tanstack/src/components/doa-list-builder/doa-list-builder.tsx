@@ -55,7 +55,7 @@ import {
 } from '@/components/ui/alert-dialog'
 import { createDoaList, updateDoaList, getSavedDoas } from '@/routes/dashboard/functions'
 import type { BuilderInitialState } from '@/routes/dashboard.create-doa-list'
-import type { ListLimitInfo } from '@/lib/list-limit'
+import { getMaxPrayersPerList, type ListLimitInfo } from '@/lib/list-limit'
 // Components will be imported where needed to avoid circular dependencies
 
 // Simple notification system for better error handling
@@ -212,6 +212,8 @@ type DoaListState = {
   itemsPerPage: number
   // Mode from props
   mode: 'create' | 'edit'
+  // Premium feature: max prayers per list
+  maxPrayers: number
 }
 
 type DoaListAction =
@@ -240,7 +242,7 @@ function doaListReducer(
       return { ...state, ...action.payload }
 
     case 'ADD_PRAYER':
-      if (state.selectedPrayers.length >= 15) {
+      if (state.selectedPrayers.length >= state.maxPrayers) {
         // Return state unchanged, will handle alert in component
         return state
       }
@@ -363,6 +365,7 @@ const DoaListStateContext = React.createContext<DoaListState>({
   currentPage: 1,
   itemsPerPage: 10,
   mode: 'create',
+  maxPrayers: 15, // Default for free users
 })
 
 const DoaListActionsContext = React.createContext<{
@@ -394,6 +397,7 @@ interface DoaListBuilderProps {
   mode: 'create' | 'edit'
   initialState: BuilderInitialState
   listLimitInfo?: ListLimitInfo
+  isPremium?: boolean
 }
 
 // Inner provider with access to notifications
@@ -401,10 +405,12 @@ function DoaListProviderWithNotifications({
   children,
   mode,
   initialState,
+  maxPrayers,
 }: {
   children: React.ReactNode
   mode: 'create' | 'edit'
   initialState: BuilderInitialState
+  maxPrayers: number
 }) {
   const { data: session } = useSession()
   const { language } = useLanguage()
@@ -432,6 +438,8 @@ function DoaListProviderWithNotifications({
     isDirty: false,
     saveStatus: 'idle',
     mode,
+    // Premium feature: max prayers per list
+    maxPrayers,
     // Local state
     searchQuery: '',
     selectedCategory: 'All Categories',
@@ -463,8 +471,8 @@ function DoaListProviderWithNotifications({
   const addPrayer = useCallback(
     (prayer: DoaItem) => {
       const currentState = state // Capture current state for limit check
-      if (currentState.selectedPrayers.length >= 15) {
-        addNotification('warning', 'Maximum 15 prayers allowed')
+      if (currentState.selectedPrayers.length >= currentState.maxPrayers) {
+        addNotification('warning', `Maximum ${currentState.maxPrayers} prayers allowed`)
         return
       }
       dispatch({ type: 'ADD_PRAYER', payload: prayer })
@@ -484,7 +492,7 @@ function DoaListProviderWithNotifications({
     const validation = validateDoaList({
       title: state.listName,
       prayers: state.selectedPrayers,
-    })
+    }, state.maxPrayers)
 
     if (!validation.isValid) {
       addNotification('error', validation.errors.join('\n'))
@@ -771,10 +779,12 @@ export { useDoaListState, useDoaListActions, useDoaListBuilder }
 // Import components where needed - NO LAZY LOADING to prevent flash
 import { PreviewModal } from './preview-modal'
 
-export function DoaListBuilder({ mode, initialState, listLimitInfo }: DoaListBuilderProps) {
+export function DoaListBuilder({ mode, initialState, listLimitInfo, isPremium = false }: DoaListBuilderProps) {
+  const maxPrayers = getMaxPrayersPerList(isPremium)
+
   return (
     <NotificationProvider>
-      <DoaListProviderWithNotifications mode={mode} initialState={initialState}>
+      <DoaListProviderWithNotifications mode={mode} initialState={initialState} maxPrayers={maxPrayers}>
         <DoaListBuilderContent listLimitInfo={listLimitInfo} />
       </DoaListProviderWithNotifications>
     </NotificationProvider>
@@ -800,6 +810,7 @@ function DoaListBuilderContent({ listLimitInfo }: { listLimitInfo?: ListLimitInf
     listId,
     language,
     user,
+    maxPrayers,
   } = useDoaListState()
 
   // Check if user can save: edit mode always allowed, create mode only if within limit
@@ -923,7 +934,7 @@ function DoaListBuilderContent({ listLimitInfo }: { listLimitInfo?: ListLimitInf
                 className="text-lg font-bold border-0 border-b border-transparent hover:border-border focus:border-primary bg-transparent px-1 h-auto py-1 flex-1"
               />
               <div className="text-sm text-muted-foreground font-medium shrink-0">
-                {selectedPrayers.length}/15
+                {selectedPrayers.length}/{maxPrayers}
               </div>
             </div>
             <div className="flex items-center gap-2">
@@ -1045,7 +1056,7 @@ function DoaListBuilderContent({ listLimitInfo }: { listLimitInfo?: ListLimitInf
                   className="text-xl md:text-2xl font-bold border-0 border-b border-transparent hover:border-border focus:border-primary bg-transparent px-0 h-auto py-1"
                 />
                 <p className="text-sm text-muted-foreground mt-1">
-                  {selectedPrayers.length} of 15 prayers selected
+                  {selectedPrayers.length} of {maxPrayers} prayers selected
                   {isDirty && <span className="ml-2 text-primary">• Unsaved changes</span>}
                 </p>
               </div>

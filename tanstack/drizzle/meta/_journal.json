@@ -15,6 +15,13 @@
       "when": 1767345811071,
       "tag": "0001_puzzling_power_pack",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1770743977247,
+      "tag": "0002_confused_gravity",
+      "breakpoints": true
     }
   ]
 }

@@ -1,3 +1,5 @@
+import { LIST_LIMIT_CONFIG } from '@/lib/list-limit'
+
 /**
  * Smart text truncation with ellipsis
  */
@@ -51,11 +53,16 @@ export function isPrayerSelected(
 
 /**
  * Validate the doa list
+ * @param list - The list to validate
+ * @param maxPrayers - Maximum prayers allowed (default: 15 for free users)
  */
-export function validateDoaList(list: {
-  title?: string
-  prayers?: Array<any>
-}): {
+export function validateDoaList(
+  list: {
+    title?: string
+    prayers?: Array<{ slug: string }>
+  },
+  maxPrayers: number = LIST_LIMIT_CONFIG.MAX_PRAYERS_PER_LIST_FREE,
+): {
   isValid: boolean
   errors: Array<string>
 } {
@@ -73,8 +80,8 @@ export function validateDoaList(list: {
     errors.push('Please select at least one prayer')
   }
 
-  if (list.prayers && list.prayers.length > 15) {
-    errors.push('Maximum 15 prayers allowed')
+  if (list.prayers && list.prayers.length > maxPrayers) {
+    errors.push(`Maximum ${maxPrayers} prayers allowed`)
   }
 
   return {

@@ -343,3 +343,37 @@ export const getActivityTimeline = createServerFn({ method: 'GET' })
 
     return timeline
   })
+
+// ============================================
+// SEARCH USER BY EMAIL (for admin grant)
+// ============================================
+export const searchUserByEmail = createServerFn({ method: 'GET' })
+  .inputValidator((data: { email: string }) => data)
+  .handler(
+    async ({
+      data,
+    }): Promise<{
+      found: boolean
+      user?: { id: string; name: string; email: string }
+    }> => {
+      await requireAdminAuth()
+
+      const foundUser = await db.query.user.findFirst({
+        where: eq(user.email, data.email.toLowerCase().trim()),
+        columns: { id: true, name: true, email: true },
+      })
+
+      if (!foundUser) {
+        return { found: false }
+      }
+
+      return {
+        found: true,
+        user: {
+          id: foundUser.id,
+          name: foundUser.name,
+          email: foundUser.email,
+        },
+      }
+    },
+  )

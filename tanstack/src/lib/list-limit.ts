@@ -18,6 +18,12 @@ export const LIST_LIMIT_CONFIG = {
   /** Bonus for active subscription (future) */
   SUBSCRIPTION_BONUS: 50,
 
+  /** Maximum prayers per list for free users */
+  MAX_PRAYERS_PER_LIST_FREE: 15,
+
+  /** Maximum prayers per list for premium users */
+  MAX_PRAYERS_PER_LIST_PREMIUM: 30,
+
   // Future purchase tiers (for reference)
   PURCHASE_TIERS: {
     PACK_5: { amount: 5, price: 'TBD' },
@@ -39,6 +45,15 @@ export const BONUS_TYPES = {
 
 export type BonusType = (typeof BONUS_TYPES)[keyof typeof BONUS_TYPES]
 export type UserListBonusRecord = InferSelectModel<typeof userListBonus>
+
+/**
+ * Get the maximum prayers allowed per list based on premium status.
+ */
+export function getMaxPrayersPerList(isPremium: boolean): number {
+  return isPremium
+    ? LIST_LIMIT_CONFIG.MAX_PRAYERS_PER_LIST_PREMIUM
+    : LIST_LIMIT_CONFIG.MAX_PRAYERS_PER_LIST_FREE
+}
 
 /**
  * Calculate the referral bonus (capped).

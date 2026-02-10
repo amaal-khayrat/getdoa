@@ -8,7 +8,7 @@ import { getDoasBySlugs } from './dashboard/functions/doa'
 import { getTemplateById } from '@/lib/list-templates'
 import type { DoaItem } from '@/types/doa.types'
 import type { ListStatus, ListVisibility } from '@/types/doa-list.types'
-import type { ListLimitInfo } from '@/lib/list-limit'
+import { getMaxPrayersPerList, type ListLimitInfo } from '@/lib/list-limit'
 import type { ShopeeOgData } from '@/types/shopee.types'
 import { DEFAULT_PREVIEW_SETTINGS } from '@/types/doa.types'
 
@@ -45,10 +45,11 @@ export const Route = createFileRoute('/dashboard/create-doa-list')({
   }),
   loader: async ({ deps, context }) => {
     const { listId, template, name } = deps
-    // Get user and listLimitInfo from parent route context (dashboard route)
-    const { user, listLimitInfo } = context as {
+    // Get user, listLimitInfo, and isPremium from parent route context (dashboard route)
+    const { user, listLimitInfo, isPremium } = context as {
       user?: { id: string; name: string; email: string; image: string | null }
       listLimitInfo?: ListLimitInfo
+      isPremium?: boolean
     }
 
     // EDIT MODE: Load existing list with all data
@@ -83,6 +84,7 @@ export const Route = createFileRoute('/dashboard/create-doa-list')({
           },
         } satisfies BuilderInitialState,
         listLimitInfo,
+        isPremium: isPremium ?? false,
       }
     }
 
@@ -114,11 +116,13 @@ export const Route = createFileRoute('/dashboard/create-doa-list')({
         },
       } satisfies BuilderInitialState,
       listLimitInfo,
+      isPremium: isPremium ?? false,
     }
   },
   component: CreateDoaListPage,
   head: ({ loaderData }) => {
     const isEdit = loaderData?.mode === 'edit'
+    const maxPrayers = getMaxPrayersPerList(loaderData?.isPremium ?? false)
     return {
       title: isEdit
         ? `Edit ${loaderData.initialState?.listName || 'List'} - GetDoa`
@@ -128,7 +132,7 @@ export const Route = createFileRoute('/dashboard/create-doa-list')({
           name: 'description',
           content: isEdit
             ? 'Edit your prayer list and update your collection.'
-            : 'Create and customize your personal prayer list. Select up to 15 prayers, arrange them in your preferred order.',
+            : `Create and customize your personal prayer list. Select up to ${maxPrayers} prayers, arrange them in your preferred order.`,
         },
       ],
     }
@@ -136,7 +140,7 @@ export const Route = createFileRoute('/dashboard/create-doa-list')({
 })
 
 function CreateDoaListPage() {
-  const { mode, initialState, listLimitInfo } = Route.useLoaderData()
+  const { mode, initialState, listLimitInfo, isPremium } = Route.useLoaderData()
 
   // Shopee referrals state management
   const [shopeeReferrals, setShopeeReferrals] = useState<
@@ -191,7 +195,7 @@ function CreateDoaListPage() {
 
   return (
     <div className="p-0">
-      <DoaListBuilder mode={mode} initialState={initialState} listLimitInfo={listLimitInfo} />
+      <DoaListBuilder mode={mode} initialState={initialState} listLimitInfo={listLimitInfo} isPremium={isPremium} />
       <div className="px-4 md:px-6 pb-6">
         <ShopeeReferralsSection
           referrals={shopeeReferrals}

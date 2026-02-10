@@ -2,6 +2,7 @@ import { createServerFn } from '@tanstack/react-start'
 
 // Re-export profile functions
 export * from './profile'
+export * from './subscription'
 import { getRequest } from '@tanstack/react-start/server'
 import { db } from '@/db'
 import {

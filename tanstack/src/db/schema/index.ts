@@ -6,6 +6,7 @@ export * from './doa'
 export * from './doa-list'
 export * from './referral'
 export * from './user-list-bonus'
+export * from './subscription'
 
 // Import for cross-module relations
 import { user, session, account, userProfile } from './auth'
@@ -13,6 +14,7 @@ import { doa, doaImageGeneration } from './doa'
 import { doaList, doaListItem, savedDoa, favoriteList } from './doa-list'
 import { referralCode, referral } from './referral'
 import { userListBonus } from './user-list-bonus'
+import { userSubscription } from './subscription'
 
 // ============================================
 // USER RELATIONS (combines all domains)
@@ -29,6 +31,7 @@ export const userRelations = relations(user, ({ one, many }) => ({
   listBonuses: many(userListBonus),
   profile: one(userProfile),
   imageGeneration: one(doaImageGeneration),
+  subscription: one(userSubscription),
 }))
 
 // ============================================

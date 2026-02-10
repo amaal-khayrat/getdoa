@@ -132,6 +132,29 @@ export const userProfile = pgTable(
     showFullName: boolean('show_full_name').default(true).notNull(), // false = show initials only
     showFavorites: boolean('show_favorites').default(false).notNull(), // Show favorited lists on profile
 
+    // Premium customization settings (stored even if subscription lapses)
+    // Fonts
+    premiumArabicFont: varchar('premium_arabic_font', { length: 20 }).default('simpo'), // 'simpo' | 'amiri' | 'scheherazade' | 'noto-naskh'
+    premiumTranslationFont: varchar('premium_translation_font', { length: 20 }).default(
+      'roboto',
+    ), // 'roboto' | 'playfair' | 'lora' | 'noto-sans'
+
+    // Colors (hex format, 7 chars including #)
+    premiumBackgroundColor: varchar('premium_background_color', { length: 7 }).default(
+      '#ffffff',
+    ),
+    premiumTextColor: varchar('premium_text_color', { length: 7 }).default('#1a1a1a'),
+    premiumTranslationColor: varchar('premium_translation_color', { length: 7 }).default(
+      '#666666',
+    ),
+
+    // Branding
+    premiumCustomWatermark: varchar('premium_custom_watermark', { length: 50 }),
+    premiumHideBranding: boolean('premium_hide_branding').default(false),
+
+    // Pattern
+    premiumPreferredPattern: varchar('premium_preferred_pattern', { length: 30 }),
+
     // Timestamps
     createdAt: timestamp('created_at').defaultNow().notNull(),
     updatedAt: timestamp('updated_at')

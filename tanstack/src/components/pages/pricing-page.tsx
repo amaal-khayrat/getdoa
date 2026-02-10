@@ -2,12 +2,11 @@ import {
   ArrowRight,
   Check,
   HelpCircle,
-  Star,
   X,
   Users,
   Gift,
   Sparkles,
-  Plus,
+  Crown,
 } from 'lucide-react'
 import {
   Card,
@@ -20,6 +19,13 @@ import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { LANDING_CONTENT } from '@/lib/constants'
 import { LIST_LIMIT_CONFIG } from '@/lib/list-limit'
+import { SubscribeButton } from '@/components/subscription/subscribe-button'
+
+interface PricingPageProps {
+  userId?: string
+  isPremium?: boolean
+  isAdminGranted?: boolean
+}
 
 // Reusable component for contribution cards
 function ContributionCard({
@@ -96,7 +102,11 @@ function ContributorCallout() {
   )
 }
 
-export function PricingPage() {
+export function PricingPage({
+  userId,
+  isPremium = false,
+  isAdminGranted = false,
+}: PricingPageProps) {
   const pricingContent = LANDING_CONTENT.pages.pricing
 
   return (
@@ -182,41 +192,41 @@ export function PricingPage() {
               )
             })()}
 
-            {/* Unlimited Access Plan */}
+            {/* Premium Plan */}
             {(() => {
-              const unlimitedPlan = pricingContent.plans.find(
-                (p) => p.name === 'Unlimited Access',
+              const premiumPlan = pricingContent.plans.find(
+                (p) => p.name === 'Premium',
               )
-              if (!unlimitedPlan) return null
+              if (!premiumPlan) return null
               return (
                 <div className="relative pt-8">
-                  <Badge className="absolute top-0 left-1/2 transform -translate-x-1/2 bg-gradient-to-r from-teal-500 to-emerald-600 text-white z-10">
-                    <Star className="w-3 h-3 mr-1" />
-                    Best Value
+                  <Badge className="absolute top-0 left-1/2 transform -translate-x-1/2 bg-gradient-to-r from-amber-500 to-yellow-500 text-white z-10">
+                    <Crown className="w-3 h-3 mr-1" />
+                    {premiumPlan.badge || 'Best Value'}
                   </Badge>
-                  <Card className="p-8 rounded-2xl border-2 border-teal-500 shadow-lg shadow-teal-500/20 h-full">
+                  <Card className="p-8 rounded-2xl border-2 border-amber-500 shadow-lg shadow-amber-500/20 h-full">
                     <CardContent className="p-0 flex flex-col h-full">
                       <div className="text-center mb-8">
                         <h3 className="text-2xl font-serif font-medium text-foreground mb-2">
-                          {unlimitedPlan.name}
+                          {premiumPlan.name}
                         </h3>
                         <div className="flex items-baseline justify-center gap-1 mb-4">
                           <span className="text-5xl font-bold text-foreground">
-                            {unlimitedPlan.price}
+                            {premiumPlan.price}
                           </span>
                           <span className="text-sm text-muted-foreground">
-                            {unlimitedPlan.period}
+                            {premiumPlan.period}
                           </span>
                         </div>
                         <p className="text-sm text-muted-foreground leading-relaxed">
-                          {unlimitedPlan.description}
+                          {premiumPlan.description}
                         </p>
                       </div>
 
                       <div className="flex-1 space-y-3 mb-8">
-                        {unlimitedPlan.features.map((feature, idx) => (
+                        {premiumPlan.features.map((feature, idx) => (
                           <div key={idx} className="flex items-start gap-3">
-                            <Check className="w-5 h-5 text-emerald-600 dark:text-emerald-400 flex-shrink-0 mt-0.5" />
+                            <Check className="w-5 h-5 text-amber-600 dark:text-amber-400 flex-shrink-0 mt-0.5" />
                             <span className="text-sm text-foreground">
                               {feature}
                             </span>
@@ -225,10 +235,22 @@ export function PricingPage() {
                       </div>
 
                       <div className="mt-auto">
-                        <Button className="w-full bg-gradient-to-r from-teal-500 to-emerald-600 hover:from-teal-600 hover:to-emerald-700 text-white">
-                          Get Unlimited Access
-                          <ArrowRight className="w-4 h-4 ml-2" />
-                        </Button>
+                        {userId ? (
+                          <SubscribeButton
+                            userId={userId}
+                            isPremium={isPremium}
+                            isAdminGranted={isAdminGranted}
+                            variant="full"
+                          />
+                        ) : (
+                          <Button
+                            className="w-full bg-gradient-to-r from-amber-500 to-yellow-500 hover:from-amber-600 hover:to-yellow-600 text-white"
+                            render={<a href="/login?redirect=/pricing" />}
+                          >
+                            Sign in to Subscribe
+                            <ArrowRight className="w-4 h-4 ml-2" />
+                          </Button>
+                        )}
                       </div>
                     </CardContent>
                   </Card>
@@ -533,13 +555,10 @@ export function PricingPage() {
                     Free
                   </th>
                   <th className="text-center py-4 px-6 font-medium text-foreground">
-                    Basic
-                  </th>
-                  <th className="text-center py-4 px-6 font-medium text-foreground">
-                    Complete
-                  </th>
-                  <th className="text-center py-4 px-6 font-medium text-foreground">
-                    Unlimited Access
+                    <span className="flex items-center justify-center gap-1">
+                      <Crown className="w-4 h-4 text-amber-500" />
+                      Premium
+                    </span>
                   </th>
                 </tr>
               </thead>
@@ -554,18 +573,38 @@ export function PricingPage() {
                     </span>
                   </td>
                   <td className="py-4 px-6 text-center">
-                    <span className="text-emerald-600 dark:text-emerald-400">
-                      +1 list
+                    <span className="text-amber-600 dark:text-amber-400 font-medium">
+                      Up to 61 lists
                     </span>
+                  </td>
+                </tr>
+                <tr className="border-b border-border">
+                  <td className="py-4 px-6 text-foreground">
+                    Prayers per List
                   </td>
                   <td className="py-4 px-6 text-center">
                     <span className="text-emerald-600 dark:text-emerald-400">
-                      +1 list
+                      15 prayers
                     </span>
                   </td>
                   <td className="py-4 px-6 text-center">
+                    <span className="text-amber-600 dark:text-amber-400 font-medium">
+                      30 prayers
+                    </span>
+                  </td>
+                </tr>
+                <tr className="border-b border-border">
+                  <td className="py-4 px-6 text-foreground">
+                    Daily Image Exports
+                  </td>
+                  <td className="py-4 px-6 text-center">
                     <span className="text-emerald-600 dark:text-emerald-400">
-                      Up to 50 lists
+                      1-3 exports*
+                    </span>
+                  </td>
+                  <td className="py-4 px-6 text-center">
+                    <span className="text-amber-600 dark:text-amber-400 font-medium">
+                      15 exports
                     </span>
                   </td>
                 </tr>
@@ -577,47 +616,62 @@ export function PricingPage() {
                     <Check className="w-5 h-5 text-emerald-600 dark:text-emerald-400 mx-auto" />
                   </td>
                   <td className="py-4 px-6 text-center">
-                    <Check className="w-5 h-5 text-emerald-600 dark:text-emerald-400 mx-auto" />
-                  </td>
-                  <td className="py-4 px-6 text-center">
-                    <Check className="w-5 h-5 text-emerald-600 dark:text-emerald-400 mx-auto" />
-                  </td>
-                  <td className="py-4 px-6 text-center">
-                    <Check className="w-5 h-5 text-emerald-600 dark:text-emerald-400 mx-auto" />
+                    <Check className="w-5 h-5 text-amber-600 dark:text-amber-400 mx-auto" />
                   </td>
                 </tr>
                 <tr className="border-b border-border">
                   <td className="py-4 px-6 text-foreground">
-                    Background Images
+                    Premium Arabic Fonts
                   </td>
                   <td className="py-4 px-6 text-center">
                     <X className="w-5 h-5 text-muted-foreground mx-auto" />
                   </td>
                   <td className="py-4 px-6 text-center">
-                    <X className="w-5 h-5 text-muted-foreground mx-auto" />
-                  </td>
-                  <td className="py-4 px-6 text-center">
-                    <Check className="w-5 h-5 text-emerald-600 dark:text-emerald-400 mx-auto" />
-                  </td>
-                  <td className="py-4 px-6 text-center">
-                    <Check className="w-5 h-5 text-emerald-600 dark:text-emerald-400 mx-auto" />
+                    <Check className="w-5 h-5 text-amber-600 dark:text-amber-400 mx-auto" />
                   </td>
                 </tr>
                 <tr className="border-b border-border">
                   <td className="py-4 px-6 text-foreground">
-                    Fonts Customization
+                    Custom Colors
                   </td>
                   <td className="py-4 px-6 text-center">
                     <X className="w-5 h-5 text-muted-foreground mx-auto" />
                   </td>
                   <td className="py-4 px-6 text-center">
-                    <X className="w-5 h-5 text-muted-foreground mx-auto" />
+                    <Check className="w-5 h-5 text-amber-600 dark:text-amber-400 mx-auto" />
+                  </td>
+                </tr>
+                <tr className="border-b border-border">
+                  <td className="py-4 px-6 text-foreground">
+                    Decorative Patterns
                   </td>
                   <td className="py-4 px-6 text-center">
                     <X className="w-5 h-5 text-muted-foreground mx-auto" />
                   </td>
                   <td className="py-4 px-6 text-center">
-                    <Check className="w-5 h-5 text-emerald-600 dark:text-emerald-400 mx-auto" />
+                    <Check className="w-5 h-5 text-amber-600 dark:text-amber-400 mx-auto" />
+                  </td>
+                </tr>
+                <tr className="border-b border-border">
+                  <td className="py-4 px-6 text-foreground">
+                    Custom Watermark
+                  </td>
+                  <td className="py-4 px-6 text-center">
+                    <X className="w-5 h-5 text-muted-foreground mx-auto" />
+                  </td>
+                  <td className="py-4 px-6 text-center">
+                    <Check className="w-5 h-5 text-amber-600 dark:text-amber-400 mx-auto" />
+                  </td>
+                </tr>
+                <tr className="border-b border-border">
+                  <td className="py-4 px-6 text-foreground">
+                    Remove Branding
+                  </td>
+                  <td className="py-4 px-6 text-center">
+                    <X className="w-5 h-5 text-muted-foreground mx-auto" />
+                  </td>
+                  <td className="py-4 px-6 text-center">
+                    <Check className="w-5 h-5 text-amber-600 dark:text-amber-400 mx-auto" />
                   </td>
                 </tr>
                 <tr className="border-b border-border">
@@ -628,13 +682,7 @@ export function PricingPage() {
                     <X className="w-5 h-5 text-muted-foreground mx-auto" />
                   </td>
                   <td className="py-4 px-6 text-center">
-                    <X className="w-5 h-5 text-muted-foreground mx-auto" />
-                  </td>
-                  <td className="py-4 px-6 text-center">
-                    <X className="w-5 h-5 text-muted-foreground mx-auto" />
-                  </td>
-                  <td className="py-4 px-6 text-center">
-                    <Check className="w-5 h-5 text-emerald-600 dark:text-emerald-400 mx-auto" />
+                    <Check className="w-5 h-5 text-amber-600 dark:text-amber-400 mx-auto" />
                   </td>
                 </tr>
               </tbody>
@@ -643,8 +691,8 @@ export function PricingPage() {
 
           {/* Footnote for referral bonus */}
           <p className="text-sm text-muted-foreground mt-4 text-center">
-            * Free users start with 1 list and can earn up to 10 additional
-            lists through referrals.
+            * Free users can earn bonus lists and daily exports through referrals.
+            Premium users get +50 lists on top of referral bonuses.
           </p>
         </div>
       </section>

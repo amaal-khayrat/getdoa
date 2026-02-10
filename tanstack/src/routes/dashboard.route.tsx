@@ -17,6 +17,7 @@ import {
   getSessionFromServer,
   getUserDoaLists,
   getUserListLimitInfo,
+  checkPremiumAccess,
 } from './dashboard/functions'
 import { ReferralProcessor } from '@/components/referral-processor'
 import { isAdminEmail } from '@/lib/admin'
@@ -35,6 +36,7 @@ declare module '@tanstack/react-router' {
     lists?: DoaListRecord[]
     listLimitInfo?: ListLimitInfo
     isAdmin?: boolean
+    isPremium?: boolean
   }
 }
 
@@ -54,16 +56,18 @@ export const Route = createFileRoute('/dashboard')({
       image: session.user.image ?? null,
     }
 
-    // Get list limit info - this goes into context for child routes
-    const listLimitInfo = await getUserListLimitInfo({
-      data: { userId: user.id },
-    })
+    // Fetch list limit and premium status in parallel
+    const [listLimitInfo, premiumResult] = await Promise.all([
+      getUserListLimitInfo({ data: { userId: user.id } }),
+      checkPremiumAccess({ data: { userId: user.id } }),
+    ])
 
     // Check admin status server-side
     const isAdmin = isAdminEmail(user.email)
+    const isPremium = premiumResult.isPremium
 
     // Return data to be available in context for child routes
-    return { user, listLimitInfo, isAdmin }
+    return { user, listLimitInfo, isAdmin, isPremium }
   },
   // loader fetches data needed for this route's component
   loader: async ({ context }) => {

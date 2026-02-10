@@ -53,7 +53,7 @@ export function PrayerBrowserPanel({
   }
   onPageChange: (page: number) => void
 }) {
-  const { language, selectedPrayers } = useDoaListState()
+  const { language, selectedPrayers, maxPrayers } = useDoaListState()
   const { addPrayer } = useDoaListActions()
 
   const getCategoryVariant = (category: string) => {
@@ -166,7 +166,7 @@ export function PrayerBrowserPanel({
           <div className="space-y-3 sm:space-y-4">
             {filteredPrayers.map((prayer) => {
               const isSelected = isPrayerSelected(selectedPrayers, prayer.slug)
-              const canAdd = selectedPrayers.length < 15 && !isSelected
+              const canAdd = selectedPrayers.length < maxPrayers && !isSelected
 
               return (
                 <div
