@@ -39,6 +39,7 @@ import { Route as ApiRazorpayWebhookRouteImport } from './routes/api/razorpay-we
 import { Route as ApiDoaRouteImport } from './routes/api/doa'
 import { Route as AdminSubscribersRouteImport } from './routes/admin.subscribers'
 import { Route as ApiShopeeOgSplatRouteImport } from './routes/api/shopee-og/$'
+import { Route as ApiListListIdRouteImport } from './routes/api/list/$listId'
 import { Route as ApiDoaRandomRouteImport } from './routes/api/doa/random'
 import { Route as ApiAuthSplatRouteImport } from './routes/api/auth/$'
 
@@ -192,6 +193,11 @@ const ApiShopeeOgSplatRoute = ApiShopeeOgSplatRouteImport.update({
   path: '/api/shopee-og/$',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiListListIdRoute = ApiListListIdRouteImport.update({
+  id: '/api/list/$listId',
+  path: '/api/list/$listId',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiDoaRandomRoute = ApiDoaRandomRouteImport.update({
   id: '/random',
   path: '/random',
@@ -235,6 +241,7 @@ export interface FileRoutesByFullPath {
   '/doa/': typeof DoaIndexRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
   '/api/doa/random': typeof ApiDoaRandomRoute
+  '/api/list/$listId': typeof ApiListListIdRoute
   '/api/shopee-og/$': typeof ApiShopeeOgSplatRoute
 }
 export interface FileRoutesByTo {
@@ -267,6 +274,7 @@ export interface FileRoutesByTo {
   '/doa': typeof DoaIndexRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
   '/api/doa/random': typeof ApiDoaRandomRoute
+  '/api/list/$listId': typeof ApiListListIdRoute
   '/api/shopee-og/$': typeof ApiShopeeOgSplatRoute
 }
 export interface FileRoutesById {
@@ -302,6 +310,7 @@ export interface FileRoutesById {
   '/doa/': typeof DoaIndexRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
   '/api/doa/random': typeof ApiDoaRandomRoute
+  '/api/list/$listId': typeof ApiListListIdRoute
   '/api/shopee-og/$': typeof ApiShopeeOgSplatRoute
 }
 export interface FileRouteTypes {
@@ -338,6 +347,7 @@ export interface FileRouteTypes {
     | '/doa/'
     | '/api/auth/$'
     | '/api/doa/random'
+    | '/api/list/$listId'
     | '/api/shopee-og/$'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -370,6 +380,7 @@ export interface FileRouteTypes {
     | '/doa'
     | '/api/auth/$'
     | '/api/doa/random'
+    | '/api/list/$listId'
     | '/api/shopee-og/$'
   id:
     | '__root__'
@@ -404,6 +415,7 @@ export interface FileRouteTypes {
     | '/doa/'
     | '/api/auth/$'
     | '/api/doa/random'
+    | '/api/list/$listId'
     | '/api/shopee-og/$'
   fileRoutesById: FileRoutesById
 }
@@ -428,6 +440,7 @@ export interface RootRouteChildren {
   ListListIdRoute: typeof ListListIdRoute
   UserUserIdRoute: typeof UserUserIdRoute
   ApiAuthSplatRoute: typeof ApiAuthSplatRoute
+  ApiListListIdRoute: typeof ApiListListIdRoute
   ApiShopeeOgSplatRoute: typeof ApiShopeeOgSplatRoute
 }
 
@@ -643,6 +656,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiShopeeOgSplatRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/list/$listId': {
+      id: '/api/list/$listId'
+      path: '/api/list/$listId'
+      fullPath: '/api/list/$listId'
+      preLoaderRoute: typeof ApiListListIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/doa/random': {
       id: '/api/doa/random'
       path: '/random'
@@ -740,6 +760,7 @@ const rootRouteChildren: RootRouteChildren = {
   ListListIdRoute: ListListIdRoute,
   UserUserIdRoute: UserUserIdRoute,
   ApiAuthSplatRoute: ApiAuthSplatRoute,
+  ApiListListIdRoute: ApiListListIdRoute,
   ApiShopeeOgSplatRoute: ApiShopeeOgSplatRoute,
 }
 export const routeTree = rootRouteImport
