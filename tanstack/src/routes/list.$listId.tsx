@@ -1,6 +1,6 @@
 import { createFileRoute, notFound, Link, useNavigate } from '@tanstack/react-router'
 import { useState, useTransition } from 'react'
-import { BookOpen, Heart, Share2, Copy, Eye, Download } from 'lucide-react'
+import { BookOpen, Heart, Share2, Copy, Eye, Download, Braces } from 'lucide-react'
 import { toast } from 'sonner'
 import {
   getDoaList,
@@ -295,6 +295,12 @@ function PublicListView({
     toast.success('Prayers copied to clipboard')
   }
 
+  const copyListId = () => {
+    const apiUrl = `${window.location.origin}/api/list/${list.id}`
+    navigator.clipboard.writeText(apiUrl)
+    toast.success('List ID copied to clipboard')
+  }
+
   const handleExportImage = async (settings?: ExportSettings) => {
     if (prayers.length === 0) {
       toast.error('This list has no prayers to export')
@@ -571,6 +577,12 @@ function PublicListView({
           <Copy className="h-4 w-4 mr-2" />
           Copy All
         </Button>
+        {list.visibility === 'public' && list.status === 'published' && (
+          <Button variant="outline" onClick={copyListId}>
+            <Braces className="h-4 w-4 mr-2" />
+            Copy List ID
+          </Button>
+        )}
       </div>
 
       {/* Prayers List */}

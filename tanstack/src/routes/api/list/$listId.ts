@@ -32,25 +32,31 @@ export const Route = createFileRoute('/api/list/$listId')({
         console.log('[ListAPI] GET request for listId:', listId)
 
         try {
+          // Step 1: fetch metadata only — avoids loading items for non-public lists
           const list = await db.query.doaList.findFirst({
             where: eq(doaList.id, listId),
-            with: {
-              items: {
-                with: { doa: true },
-                orderBy: [asc(doaListItem.order)],
-              },
-            },
           })
 
-          // Return 404 for both missing and private lists (no leakage)
-          if (!list || list.status !== 'published' || list.visibility !== 'public') {
-            console.log('[ListAPI] List not found or not public:', listId)
+          if (!list) {
+            console.log('[ListAPI] List not found:', listId)
             return jsonResponse({ error: 'List not found' }, 404)
           }
 
+          if (list.status !== 'published' || list.visibility !== 'public') {
+            console.log('[ListAPI] List is not public:', listId)
+            return jsonResponse({ error: 'List is not publicly accessible' }, 403)
+          }
+
+          // Step 2: fetch items only for public lists
+          const items = await db.query.doaListItem.findMany({
+            where: eq(doaListItem.listId, listId),
+            with: { doa: true },
+            orderBy: [asc(doaListItem.order)],
+          })
+
           const isEnglish = list.language === 'en'
 
-          const entries = list.items.map((item) => {
+          const entries = items.map((item) => {
             const doa = item.doa
             return {
               slug: doa.slug,
@@ -88,11 +94,10 @@ export const Route = createFileRoute('/api/list/$listId')({
 
           return jsonResponse(response)
         } catch (error) {
-          const message = error instanceof Error ? error.message : 'Unknown error'
-          console.error('[ListAPI] Error:', message)
+          console.error('[ListAPI] Error while fetching list:', listId, error)
 
           return jsonResponse(
-            { error: `Internal server error: ${message}` },
+            { error: 'Internal server error' },
             500,
           )
         }
