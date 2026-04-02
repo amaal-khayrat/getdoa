@@ -10,7 +10,7 @@ export * from './subscription'
 
 // Import for cross-module relations
 import { user, session, account, userProfile } from './auth'
-import { doa, doaImageGeneration } from './doa'
+import { doa, doaHadithMatch, doaImageGeneration } from './doa'
 import { doaList, doaListItem, savedDoa, favoriteList } from './doa-list'
 import { referralCode, referral } from './referral'
 import { userListBonus } from './user-list-bonus'
@@ -40,4 +40,12 @@ export const userRelations = relations(user, ({ one, many }) => ({
 export const doaRelations = relations(doa, ({ many }) => ({
   savedDoas: many(savedDoa),
   listItems: many(doaListItem),
+  hadithMatches: many(doaHadithMatch),
+}))
+
+export const doaHadithMatchRelations = relations(doaHadithMatch, ({ one }) => ({
+  doa: one(doa, {
+    fields: [doaHadithMatch.doaSlug],
+    references: [doa.slug],
+  }),
 }))

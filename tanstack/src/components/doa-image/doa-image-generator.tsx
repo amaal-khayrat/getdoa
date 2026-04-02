@@ -15,7 +15,7 @@ import {
   CollapsibleTrigger,
 } from '@/components/ui/collapsible'
 import { useLanguage } from '@/contexts/language-context'
-import { recordImageGeneration } from '@/routes/dashboard/functions/image-generator'
+import { recordImageGeneration } from '@/server-functions/dashboard/image-generator'
 import {
   generateSingleDoaImage,
   downloadDoaImage,

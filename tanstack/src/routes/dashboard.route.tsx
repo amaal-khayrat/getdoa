@@ -18,7 +18,7 @@ import {
   getUserDoaLists,
   getUserListLimitInfo,
   checkPremiumAccess,
-} from './dashboard/functions'
+} from '@/server-functions/dashboard'
 import { ReferralProcessor } from '@/components/referral-processor'
 import { isAdminEmail } from '@/lib/admin'
 import type { DoaListRecord } from '@/types/doa-list.types'

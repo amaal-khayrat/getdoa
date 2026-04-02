@@ -14,7 +14,7 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from '@/components/ui/alert-dialog'
-import { cancelUserSubscription } from '@/routes/dashboard/functions/subscription'
+import { cancelUserSubscription } from '@/server-functions/dashboard/subscription'
 import type { SubscriptionInfo } from '@/lib/subscription'
 import { useRouter } from '@tanstack/react-router'
 

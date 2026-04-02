@@ -6,8 +6,8 @@ import {
   updateLeaderboardSettings,
   type ReferralStats,
   type LeaderboardSettings,
-} from './dashboard/functions/referral'
-import { getSessionFromServer, getUserListLimitInfo } from './dashboard/functions'
+} from '@/server-functions/dashboard/referral'
+import { getSessionFromServer, getUserListLimitInfo } from '@/server-functions/dashboard'
 import { LIST_LIMIT_CONFIG, type ListLimitInfo } from '@/lib/list-limit'
 import {
   Card,

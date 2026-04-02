@@ -1,13 +1,13 @@
 import { createFileRoute, redirect, Link, useRouter } from '@tanstack/react-router'
 import { z } from 'zod'
 import { useCallback, useRef, useState, useTransition } from 'react'
-import { checkAdminAuth, searchUserByEmail } from './admin/functions'
+import { checkAdminAuth, searchUserByEmail } from '@/server-functions/admin'
 import {
   adminListSubscribers,
   adminGrantPremium,
   adminRevokePremium,
   type SubscriberInfo,
-} from './dashboard/functions/subscription'
+} from '@/server-functions/dashboard/subscription'
 import {
   Card,
   CardContent,

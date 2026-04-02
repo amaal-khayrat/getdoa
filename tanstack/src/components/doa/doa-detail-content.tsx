@@ -1,16 +1,22 @@
 import { useEffect, useState } from 'react'
 import { Link, getRouteApi } from '@tanstack/react-router'
-import { BookOpen, Copy, Heart, Share2 } from 'lucide-react'
+import { BookOpen, Copy, ExternalLink, Heart, Share2 } from 'lucide-react'
 import { MosqueDonationCard } from './mosque-donation-card'
 import { DoaNotFound } from './doa-not-found'
 import { ShopeeReferralsSection } from '@/components/shopee/shopee-referrals-section'
-import { Button } from '@/components/ui/button'
+import { Button, buttonVariants } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from '@/components/ui/accordion'
 import { useLanguage } from '@/contexts/language-context'
 import { SedekahJeApiError, getRandomMosque } from '@/lib/sedekah-je-api'
-import { getAllDoas } from '@/routes/dashboard/functions/doa'
-import type { Doa } from '@/types/doa.types'
+import { getAllDoas } from '@/server-functions/dashboard/doa'
+import type { Doa, DoaHadithMatch } from '@/types/doa.types'
 import type { ShopeeOgData } from '@/types/shopee.types'
 
 // Get the route API for typed access to loader data
@@ -175,6 +181,282 @@ function ContextSection({
       {context && (
         <p className="text-muted-foreground leading-relaxed">{context}</p>
       )}
+    </Card>
+  )
+}
+
+function formatHadithChapterNumber(chapterNumber: number | null): string | null {
+  if (chapterNumber === null || Number.isNaN(chapterNumber)) {
+    return null
+  }
+
+  return Number.isInteger(chapterNumber)
+    ? chapterNumber.toString()
+    : chapterNumber.toString()
+}
+
+function buildHadithAccordionValue(match: DoaHadithMatch, index: number): string {
+  return [
+    match.referenceUrl,
+    match.matchedReference,
+    match.book,
+    match.inBookReference,
+    String(index),
+  ]
+    .filter(Boolean)
+    .join('::')
+}
+
+function HadithMetaItem({
+  label,
+  value,
+  dir,
+}: {
+  label: string
+  value: string | null
+  dir?: 'rtl'
+}) {
+  if (!value) {
+    return null
+  }
+
+  return (
+    <div className="rounded-2xl border border-border/70 bg-secondary/35 p-4">
+      <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">
+        {label}
+      </p>
+      <p
+        dir={dir}
+        className="mt-2 break-words text-sm leading-relaxed text-foreground whitespace-pre-line"
+      >
+        {value}
+      </p>
+    </div>
+  )
+}
+
+function HadithMatchesSection({
+  matches,
+  language,
+}: {
+  matches: DoaHadithMatch[]
+  language: 'en' | 'my'
+}) {
+  if (matches.length === 0) {
+    return null
+  }
+
+  const copy =
+    language === 'my'
+      ? {
+          eyebrow: 'Sumber Hadis',
+          title: 'Hadis Berkaitan',
+          description:
+            'Padanan hadis yang ditemui untuk doa ini, lengkap dengan teks sumber dan pautan rujukan apabila tersedia.',
+          singleResult: 'padanan',
+          multipleResults: 'padanan',
+          fallbackTitle: 'Hadis',
+          summaryFallback: 'Tekan untuk melihat butiran hadis penuh.',
+          sourceButton: 'Buka sumber',
+          matchedReferenceLabel: 'Rujukan padanan',
+          chapterNumberLabel: 'Bab',
+          chapterTitleEnglishLabel: 'Tajuk bab (Inggeris)',
+          chapterTitleArabicLabel: 'Tajuk bab (Arab)',
+          inBookReferenceLabel: 'Rujukan dalam kitab',
+          sourceUrlLabel: 'URL sumber',
+          arabicTextLabel: 'Teks hadis Arab',
+          englishTextLabel: 'Teks hadis Inggeris',
+          grade: 'Darjat',
+        }
+      : {
+          eyebrow: 'Hadith Source',
+          title: 'Supporting Hadith',
+          description:
+            'Matched hadith entries for this doa, with source text and reference links when available.',
+          singleResult: 'match',
+          multipleResults: 'matches',
+          fallbackTitle: 'Hadith',
+          summaryFallback: 'Open this item to see the full hadith details.',
+          sourceButton: 'Open source',
+          matchedReferenceLabel: 'Matched reference',
+          chapterNumberLabel: 'Chapter',
+          chapterTitleEnglishLabel: 'Chapter title (English)',
+          chapterTitleArabicLabel: 'Chapter title (Arabic)',
+          inBookReferenceLabel: 'In-book reference',
+          sourceUrlLabel: 'Source URL',
+          arabicTextLabel: 'Arabic hadith text',
+          englishTextLabel: 'English source text',
+          grade: 'Grade',
+        }
+
+  const defaultValue =
+    matches.length === 1 ? [buildHadithAccordionValue(matches[0], 0)] : []
+
+  return (
+    <Card className="overflow-hidden rounded-3xl border-border py-0 shadow-green-sm">
+      <div className="border-b border-border bg-gradient-bg-section px-5 py-5 sm:px-6">
+        <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
+          <div className="max-w-2xl">
+            <div className="flex items-center gap-2 text-sm font-semibold text-primary">
+              <BookOpen className="h-4 w-4" />
+              <span>{copy.eyebrow}</span>
+            </div>
+            <h3 className="mt-3 font-display text-2xl font-semibold text-foreground">
+              {copy.title}
+            </h3>
+            <p className="mt-2 text-sm leading-relaxed text-muted-foreground sm:text-base">
+              {copy.description}
+            </p>
+          </div>
+          <Badge
+            variant="secondary"
+            className="h-auto rounded-full px-3 py-1.5 text-sm font-semibold"
+          >
+            {matches.length}{' '}
+            {matches.length === 1 ? copy.singleResult : copy.multipleResults}
+          </Badge>
+        </div>
+      </div>
+
+      <Accordion multiple defaultValue={defaultValue} className="w-full">
+        {matches.map((match, index) => {
+          const itemValue = buildHadithAccordionValue(match, index)
+          const chapterNumber = formatHadithChapterNumber(match.chapterNumber)
+          const heading =
+            match.matchedReference ?? `${copy.fallbackTitle} ${index + 1}`
+          const subheading =
+            match.chapterTitleEnglish ??
+            match.chapterTitleArabic ??
+            match.inBookReference ??
+            copy.summaryFallback
+
+          return (
+            <AccordionItem
+              key={itemValue}
+              value={itemValue}
+              className="border-border/70 last:border-b-0"
+            >
+              <AccordionTrigger className="px-5 py-5 hover:no-underline sm:px-6">
+                <div className="flex min-w-0 flex-1 flex-col gap-3 pr-4">
+                  <div className="flex flex-wrap items-center gap-2">
+                    {match.book && (
+                      <Badge
+                        variant="secondary"
+                        className="h-auto rounded-full px-3 py-1.5 text-xs font-semibold"
+                      >
+                        {match.book}
+                      </Badge>
+                    )}
+                    {match.inBookReference && (
+                      <Badge
+                        variant="outline"
+                        className="h-auto rounded-full px-3 py-1.5 text-xs"
+                      >
+                        {match.inBookReference}
+                      </Badge>
+                    )}
+                    {match.grade && (
+                      <Badge
+                        variant="outline"
+                        className="h-auto rounded-full border-emerald-200 bg-emerald-50 px-3 py-1.5 text-xs text-emerald-700 dark:border-emerald-900/60 dark:bg-emerald-950/40 dark:text-emerald-300"
+                      >
+                        {copy.grade}: {match.grade}
+                      </Badge>
+                    )}
+                  </div>
+
+                  <div className="space-y-1 text-left">
+                    <p className="break-words font-mono text-sm font-semibold uppercase tracking-[0.14em] text-foreground sm:text-base">
+                      {heading}
+                    </p>
+                    <p className="break-words text-sm text-muted-foreground">
+                      {subheading}
+                    </p>
+                  </div>
+                </div>
+              </AccordionTrigger>
+
+              <AccordionContent className="px-5 pb-6 sm:px-6">
+                <div className="grid gap-3 sm:grid-cols-2">
+                  <HadithMetaItem
+                    label={copy.matchedReferenceLabel}
+                    value={match.matchedReference}
+                  />
+                  <HadithMetaItem
+                    label={copy.chapterNumberLabel}
+                    value={chapterNumber}
+                  />
+                  <HadithMetaItem
+                    label={copy.chapterTitleEnglishLabel}
+                    value={match.chapterTitleEnglish}
+                  />
+                  <HadithMetaItem
+                    label={copy.chapterTitleArabicLabel}
+                    value={match.chapterTitleArabic}
+                    dir="rtl"
+                  />
+                  <HadithMetaItem
+                    label={copy.inBookReferenceLabel}
+                    value={match.inBookReference}
+                  />
+                </div>
+
+                {match.arabicText && (
+                  <div className="mt-4 rounded-3xl border border-border/70 bg-gradient-bg-section p-5 sm:p-6">
+                    <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">
+                      {copy.arabicTextLabel}
+                    </p>
+                    <p
+                      dir="rtl"
+                      lang="ar"
+                      className="mt-4 font-arabic text-xl leading-loose text-foreground whitespace-pre-line sm:text-2xl"
+                    >
+                      {match.arabicText}
+                    </p>
+                  </div>
+                )}
+
+                {match.englishText && (
+                  <div className="mt-4 rounded-3xl border border-border/70 bg-secondary/40 p-5 sm:p-6">
+                    <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">
+                      {copy.englishTextLabel}
+                    </p>
+                    <p className="mt-4 whitespace-pre-line text-sm leading-relaxed text-muted-foreground sm:text-base">
+                      {match.englishText}
+                    </p>
+                  </div>
+                )}
+
+                {match.referenceUrl && (
+                  <div className="mt-4 rounded-2xl border border-border/70 bg-background/80 p-4">
+                    <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">
+                      {copy.sourceUrlLabel}
+                    </p>
+                    <div className="mt-3 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                      <p className="break-all text-sm text-muted-foreground">
+                        {match.referenceUrl}
+                      </p>
+                      <a
+                        href={match.referenceUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className={buttonVariants({
+                          variant: 'outline',
+                          size: 'sm',
+                          className: 'w-full sm:w-auto',
+                        })}
+                      >
+                        {copy.sourceButton}
+                        <ExternalLink className="h-4 w-4" />
+                      </a>
+                    </div>
+                  </div>
+                )}
+              </AccordionContent>
+            </AccordionItem>
+          )
+        })}
+      </Accordion>
     </Card>
   )
 }
@@ -435,6 +717,12 @@ export function DoaDetailContent() {
 
           {/* Context & Description */}
           <ContextSection doa={doa} language={language} />
+
+          {/* Supporting Hadith */}
+          <HadithMatchesSection
+            matches={doa.hadithMatches ?? []}
+            language={language}
+          />
 
           {/* Reference */}
           <ReferenceCard doa={doa} language={language} />

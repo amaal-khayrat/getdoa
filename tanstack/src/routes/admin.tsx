@@ -4,7 +4,7 @@ import {
   getAdminDashboardOverview,
   getActivityTimeline,
   type TimelineDataPoint,
-} from './admin/functions'
+} from '@/server-functions/admin'
 import {
   Card,
   CardContent,

@@ -1,5 +1,5 @@
 import { createFileRoute, notFound } from '@tanstack/react-router'
-import { getDoaBySlug } from './dashboard/functions/doa'
+import { getDoaBySlug } from '@/server-functions/dashboard/doa'
 import { DoaDetailContent } from '@/components/doa/doa-detail-content'
 
 export const Route = createFileRoute('/doa/$slug')({

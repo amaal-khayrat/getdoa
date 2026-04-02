@@ -51,7 +51,7 @@ import {
   EmptyDescription,
 } from '@/components/ui/empty'
 import { cn } from '@/lib/utils'
-import { deleteDoaList, updateDoaList } from './dashboard/functions'
+import { deleteDoaList, updateDoaList } from '@/server-functions/dashboard'
 import type { DoaListRecord } from '@/types/doa-list.types'
 import { useSession } from '@/lib/auth-client'
 import { ListLimitIndicator } from '@/components/list/list-limit-indicator'

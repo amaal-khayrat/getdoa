@@ -1,7 +1,7 @@
 import { db } from '@/db'
-import { doa } from '@/db/schema'
-import { eq, ilike, or, sql } from 'drizzle-orm'
-import type { Doa } from '@/types/doa.types'
+import { doa, doaHadithMatch } from '@/db/schema'
+import { asc, eq, ilike, or, sql } from 'drizzle-orm'
+import type { Doa, DoaDetail } from '@/types/doa.types'
 
 /**
  * Load all DOA data from database
@@ -120,9 +120,26 @@ export async function getRandomDoaBatch(
 /**
  * Get DOA item by slug
  */
-export async function getDoaBySlug(slug: string): Promise<Doa | null> {
+export async function getDoaBySlug(slug: string): Promise<DoaDetail | null> {
   const result = await db.query.doa.findFirst({
     where: eq(doa.slug, slug),
+    with: {
+      hadithMatches: {
+        columns: {
+          matchedReference: true,
+          book: true,
+          chapterNumber: true,
+          chapterTitleArabic: true,
+          chapterTitleEnglish: true,
+          arabicText: true,
+          englishText: true,
+          grade: true,
+          referenceUrl: true,
+          inBookReference: true,
+        },
+        orderBy: [asc(doaHadithMatch.sortOrder)],
+      },
+    },
   })
   return result ?? null
 }

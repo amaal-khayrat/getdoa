@@ -18,7 +18,7 @@ import {
   EmptyTitle,
   EmptyDescription,
 } from '@/components/ui/empty'
-import { getFavoriteLists } from './dashboard/functions'
+import { getFavoriteLists } from '@/server-functions/dashboard'
 import { useSession } from '@/lib/auth-client'
 import type { DoaListWithUser } from '@/types/doa-list.types'
 

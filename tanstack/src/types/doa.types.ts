@@ -12,6 +12,23 @@ export type Doa = InferSelectModel<typeof doa>
 // Alias for backward compatibility with existing code
 export type DoaItem = Doa
 
+export interface DoaHadithMatch {
+  matchedReference: string | null
+  book: string | null
+  chapterNumber: number | null
+  chapterTitleArabic: string | null
+  chapterTitleEnglish: string | null
+  arabicText: string | null
+  englishText: string | null
+  grade: string | null
+  referenceUrl: string | null
+  inBookReference: string | null
+}
+
+export type DoaDetail = Doa & {
+  hadithMatches: DoaHadithMatch[]
+}
+
 // ============================================
 // ZOD VALIDATION SCHEMAS
 // ============================================

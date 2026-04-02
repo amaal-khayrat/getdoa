@@ -3,7 +3,7 @@ import { z } from 'zod'
 import {
   getPublicLists,
   getSessionFromServer,
-} from './dashboard/functions'
+} from '@/server-functions/dashboard'
 import { fetchShopeeReferrals } from '@/utils/shopee-fetch.server'
 import { LandingLayout } from '@/components/landing/layout/landing-layout'
 import { LanguageProvider } from '@/contexts/language-context'

@@ -1,5 +1,5 @@
 import { createFileRoute } from '@tanstack/react-router'
-import { getLeaderboard, type LeaderboardEntry } from './dashboard/functions/referral'
+import { getLeaderboard, type LeaderboardEntry } from '@/server-functions/dashboard/referral'
 import { LandingLayout } from '@/components/landing/layout/landing-layout'
 import {
   Card,

@@ -9,7 +9,7 @@ import {
   addFavoriteList,
   removeFavoriteList,
   logExport,
-} from '@/routes/dashboard/functions'
+} from '@/server-functions/dashboard'
 import { fetchShopeeReferrals } from '@/utils/shopee-fetch.server'
 import { generateDoaImage, downloadImage } from '@/utils/image-generator'
 import type { DoaList, TranslationLayout } from '@/types/doa.types'

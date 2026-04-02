@@ -4,7 +4,7 @@ import { PricingPage } from '@/components/pages/pricing-page'
 import {
   getSessionFromServer,
   checkPremiumAccess,
-} from './dashboard/functions'
+} from '@/server-functions/dashboard'
 
 export const Route = createFileRoute('/pricing')({
   loader: async () => {

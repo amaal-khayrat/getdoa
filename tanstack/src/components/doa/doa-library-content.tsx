@@ -14,8 +14,8 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { useLanguage } from '@/contexts/language-context'
 import { useSession } from '@/lib/auth-client'
-import { getAllDoas } from '@/routes/dashboard/functions/doa'
-import { getSavedDoas, saveDoa, unsaveDoa } from '@/routes/dashboard/functions'
+import { getAllDoas } from '@/server-functions/dashboard/doa'
+import { getSavedDoas, saveDoa, unsaveDoa } from '@/server-functions/dashboard'
 import type { Doa } from '@/types/doa.types'
 
 // Dynamic meta component for SEO

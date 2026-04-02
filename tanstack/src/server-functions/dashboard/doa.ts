@@ -1,8 +1,9 @@
 import { createServerFn } from '@tanstack/react-start'
 import { db } from '@/db'
-import { doa } from '@/db/schema'
+import { doa, doaHadithMatch } from '@/db/schema'
 import { eq, ilike, or, sql, inArray, asc, and, type SQL } from 'drizzle-orm'
 import { PAGINATION_DEFAULTS } from '@/types/doa.types'
+import type { DoaDetail } from '@/types/doa.types'
 
 // ============================================
 // Helper: Escape special characters for ILIKE
@@ -86,9 +87,26 @@ export const getAllDoas = createServerFn({ method: 'GET' })
 // ============================================
 export const getDoaBySlug = createServerFn({ method: 'GET' })
   .inputValidator((data: { slug: string }) => data)
-  .handler(async ({ data }) => {
+  .handler(async ({ data }): Promise<DoaDetail | null> => {
     const result = await db.query.doa.findFirst({
       where: eq(doa.slug, data.slug),
+      with: {
+        hadithMatches: {
+          columns: {
+            matchedReference: true,
+            book: true,
+            chapterNumber: true,
+            chapterTitleArabic: true,
+            chapterTitleEnglish: true,
+            arabicText: true,
+            englishText: true,
+            grade: true,
+            referenceUrl: true,
+            inBookReference: true,
+          },
+          orderBy: [asc(doaHadithMatch.sortOrder)],
+        },
+      },
     })
     return result ?? null
   })

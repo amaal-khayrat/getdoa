@@ -15,8 +15,8 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import {
   addFavoriteList,
   removeFavoriteList,
-} from '@/routes/dashboard/functions'
-import type { PublicListItem } from '@/routes/dashboard/functions'
+} from '@/server-functions/dashboard'
+import type { PublicListItem } from '@/server-functions/dashboard'
 
 interface ListDiscoveryCardProps {
   list: PublicListItem

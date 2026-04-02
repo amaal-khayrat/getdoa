@@ -1,7 +1,7 @@
 import { useRef, useState, useCallback, useEffect } from 'react'
 import { Loader2, Sparkles, Crown } from 'lucide-react'
 import { Button } from '@/components/ui/button'
-import { createUserSubscription } from '@/routes/dashboard/functions/subscription'
+import { createUserSubscription } from '@/server-functions/dashboard/subscription'
 import { cn } from '@/lib/utils'
 
 interface SubscribeButtonProps {

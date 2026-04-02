@@ -6,7 +6,7 @@ import { Label } from '@/components/ui/label'
 import { ListTemplateCard } from './list-template-card'
 import { LIST_TEMPLATES, getTemplateById } from '@/lib/list-templates'
 import { Loader2 } from 'lucide-react'
-import { createDoaList } from '@/routes/dashboard/functions'
+import { createDoaList } from '@/server-functions/dashboard'
 import type { PrayerReference } from '@/types/doa-list.types'
 import { toast } from 'sonner'
 

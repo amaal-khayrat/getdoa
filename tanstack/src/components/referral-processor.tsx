@@ -5,7 +5,7 @@ import {
   markReferralProcessed,
   wasReferralProcessed,
 } from '@/lib/referral-storage'
-import { processReferral } from '@/routes/dashboard/functions/referral'
+import { processReferral } from '@/server-functions/dashboard/referral'
 import { toast } from 'sonner'
 
 interface ReferralProcessorProps {

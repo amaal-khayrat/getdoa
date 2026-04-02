@@ -53,7 +53,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog'
-import { createDoaList, updateDoaList, getSavedDoas } from '@/routes/dashboard/functions'
+import { createDoaList, updateDoaList, getSavedDoas } from '@/server-functions/dashboard'
 import type { BuilderInitialState } from '@/routes/dashboard.create-doa-list'
 import { getMaxPrayersPerList, type ListLimitInfo } from '@/lib/list-limit'
 // Components will be imported where needed to avoid circular dependencies

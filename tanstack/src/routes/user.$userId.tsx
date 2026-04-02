@@ -1,6 +1,6 @@
 import { createFileRoute, Link, notFound } from '@tanstack/react-router'
 import { Calendar, BookOpen, Heart, Lock, Eye } from 'lucide-react'
-import { getPublicProfile } from './dashboard/functions/profile'
+import { getPublicProfile } from '@/server-functions/dashboard/profile'
 import { LandingLayout } from '@/components/landing/layout/landing-layout'
 import { LanguageProvider } from '@/contexts/language-context'
 import { buttonVariants } from '@/components/ui/button'
@@ -15,7 +15,7 @@ import {
   EmptyTitle,
   EmptyDescription,
 } from '@/components/ui/empty'
-import type { PublicProfileData } from './dashboard/functions/profile'
+import type { PublicProfileData } from '@/server-functions/dashboard/profile'
 
 export const Route = createFileRoute('/user/$userId')({
   loader: async ({ params }) => {

@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { getAllDoas, getDoaCategories } from '@/routes/dashboard/functions/doa'
+import { getAllDoas, getDoaCategories } from '@/server-functions/dashboard/doa'
 import type { Doa } from '@/types/doa.types'
 
 export function useDoaData() {

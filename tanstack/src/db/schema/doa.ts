@@ -6,8 +6,10 @@ import {
   pgTable,
   text,
   timestamp,
+  unique,
   varchar,
 } from 'drizzle-orm/pg-core'
+import { typeid } from 'typeid-js'
 import { user } from './auth'
 
 // ============================================
@@ -67,6 +69,45 @@ export const doa = pgTable(
 )
 
 // Note: Doa relations defined in index.ts to avoid circular imports
+
+// ============================================
+// DOA HADITH MATCH - Supporting hadith sources per doa
+// ============================================
+export const doaHadithMatch = pgTable(
+  'doa_hadith_match',
+  {
+    id: varchar('id', { length: 50 })
+      .primaryKey()
+      .$defaultFn(() => typeid('dhm').toString()),
+    doaSlug: varchar('doa_slug', { length: 255 })
+      .notNull()
+      .references(() => doa.slug, { onDelete: 'cascade' }),
+    sortOrder: integer('sort_order').notNull(),
+    matchedReference: varchar('matched_reference', { length: 255 }),
+    book: varchar('book', { length: 255 }),
+    chapterNumber: integer('chapter_number'),
+    chapterTitleArabic: text('chapter_title_arabic'),
+    chapterTitleEnglish: text('chapter_title_english'),
+    arabicText: text('arabic_text'),
+    englishText: text('english_text'),
+    grade: varchar('grade', { length: 255 }),
+    referenceUrl: text('reference_url'),
+    inBookReference: varchar('in_book_reference', { length: 255 }),
+    createdAt: timestamp('created_at').defaultNow().notNull(),
+    updatedAt: timestamp('updated_at')
+      .defaultNow()
+      .$onUpdate(() => new Date())
+      .notNull(),
+  },
+  (table) => [
+    index('doa_hadith_match_doa_slug_idx').on(table.doaSlug),
+    index('doa_hadith_match_sort_order_idx').on(table.doaSlug, table.sortOrder),
+    unique('doa_hadith_match_slug_sort_order_unique').on(
+      table.doaSlug,
+      table.sortOrder,
+    ),
+  ],
+)
 
 // ============================================
 // DOA IMAGE GENERATION TRACKING

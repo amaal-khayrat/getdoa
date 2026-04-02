@@ -27,8 +27,8 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog'
-import { getSavedDoas, unsaveDoa } from './dashboard/functions'
-import { getDoasBySlugs } from './dashboard/functions/doa'
+import { getSavedDoas, unsaveDoa } from '@/server-functions/dashboard'
+import { getDoasBySlugs } from '@/server-functions/dashboard/doa'
 import { useLanguage } from '@/contexts/language-context'
 import { useSession } from '@/lib/auth-client'
 import type { SavedDoaRecord } from '@/types/doa-list.types'

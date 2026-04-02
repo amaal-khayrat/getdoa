@@ -1,12 +1,129 @@
 import { readFileSync } from 'fs'
 import { resolve } from 'path'
 import { db } from './index'
-import { doa } from './schema'
+import { doa, doaHadithMatch } from './schema'
 import { eq, inArray, sql } from 'drizzle-orm'
-import { computeDoaHash, toDoaRecord, type DoaJsonEntry } from './seed-utils'
+import {
+  computeDoaHash,
+  toDoaHadithMatchRecords,
+  toDoaRecord,
+  type DoaJsonEntry,
+  type DoaJsonHadithMatchEntry,
+} from './seed-utils'
 
 // Advisory lock ID for preventing concurrent seed runs
 const SEED_LOCK_ID = 12345
+
+interface DoaHadithJoinedJsonEntry {
+  slug: string
+  hadith_matched: boolean
+  matched_reference: string | null
+  hadith_book: string | null
+  hadith_chapter_number: number | null
+  hadith_chapter_title_arabic: string | null
+  hadith_chapter_title_english: string | null
+  hadith_arabic_text: string | null
+  hadith_english_text: string | null
+  hadith_grade: string | null
+  hadith_reference_url: string | null
+  hadith_inbook_reference: string | null
+}
+
+function readJsonFile<T>(relativePath: string, label: string): T {
+  const jsonPath = resolve(process.cwd(), relativePath)
+
+  try {
+    return JSON.parse(readFileSync(jsonPath, 'utf-8')) as T
+  } catch (err) {
+    throw new Error(
+      `Failed to read/parse ${label}: ${err instanceof Error ? err.message : err}`,
+    )
+  }
+}
+
+function normalizeNullableText(value: string | null | undefined): string | null {
+  const normalized = value?.trim()
+  return normalized ? normalized : null
+}
+
+function buildHadithMatchesBySlug(
+  baseEntries: DoaJsonEntry[],
+  joinedEntries: DoaHadithJoinedJsonEntry[],
+): Map<string, DoaJsonHadithMatchEntry[]> {
+  const baseSlugs = new Set(baseEntries.map((entry) => entry.slug))
+  const joinedSlugs = new Set(joinedEntries.map((entry) => entry.slug))
+
+  const missingInBase = [...joinedSlugs].filter((slug) => !baseSlugs.has(slug))
+  if (missingInBase.length > 0) {
+    throw new Error(
+      `Found ${missingInBase.length} slugs in doa_hadith_joined.json that are missing from doa.json: ${missingInBase.slice(0, 10).join(', ')}${missingInBase.length > 10 ? '...' : ''}`,
+    )
+  }
+
+  const missingInJoined = [...baseSlugs].filter((slug) => !joinedSlugs.has(slug))
+  if (missingInJoined.length > 0) {
+    throw new Error(
+      `Found ${missingInJoined.length} slugs in doa.json that are missing from doa_hadith_joined.json: ${missingInJoined.slice(0, 10).join(', ')}${missingInJoined.length > 10 ? '...' : ''}`,
+    )
+  }
+
+  const matchesBySlug = new Map<string, DoaJsonHadithMatchEntry[]>()
+  const seenKeysBySlug = new Map<string, Set<string>>()
+
+  for (const entry of joinedEntries) {
+    if (!entry.hadith_matched) {
+      continue
+    }
+
+    const match: DoaJsonHadithMatchEntry = {
+      matched_reference: normalizeNullableText(entry.matched_reference),
+      hadith_book: normalizeNullableText(entry.hadith_book),
+      hadith_chapter_number:
+        typeof entry.hadith_chapter_number === 'number' &&
+        Number.isFinite(entry.hadith_chapter_number)
+          ? entry.hadith_chapter_number
+          : null,
+      hadith_chapter_title_arabic: normalizeNullableText(
+        entry.hadith_chapter_title_arabic,
+      ),
+      hadith_chapter_title_english: normalizeNullableText(
+        entry.hadith_chapter_title_english,
+      ),
+      hadith_arabic_text: normalizeNullableText(entry.hadith_arabic_text),
+      hadith_english_text: normalizeNullableText(entry.hadith_english_text),
+      hadith_grade: normalizeNullableText(entry.hadith_grade),
+      hadith_reference_url: normalizeNullableText(entry.hadith_reference_url),
+      hadith_inbook_reference: normalizeNullableText(
+        entry.hadith_inbook_reference,
+      ),
+    }
+
+    if (
+      !match.matched_reference &&
+      !match.hadith_reference_url &&
+      !match.hadith_arabic_text &&
+      !match.hadith_english_text
+    ) {
+      continue
+    }
+
+    const dedupeKey = JSON.stringify(match)
+    const seenKeys = seenKeysBySlug.get(entry.slug) ?? new Set<string>()
+
+    if (seenKeys.has(dedupeKey)) {
+      continue
+    }
+
+    seenKeys.add(dedupeKey)
+    seenKeysBySlug.set(entry.slug, seenKeys)
+
+    const existingMatches = matchesBySlug.get(entry.slug) ?? []
+    existingMatches.push(match)
+    matchesBySlug.set(entry.slug, existingMatches)
+  }
+
+  return matchesBySlug
+}
 
 export interface SeedResult {
   inserted: number
@@ -66,16 +183,11 @@ export async function seedDoa(options?: {
     }
 
     // 1. Load and validate JSON data
-    const jsonPath = resolve(process.cwd(), 'data/doa.json')
-    let jsonData: DoaJsonEntry[]
-
-    try {
-      jsonData = JSON.parse(readFileSync(jsonPath, 'utf-8'))
-    } catch (err) {
-      throw new Error(
-        `Failed to read/parse doa.json: ${err instanceof Error ? err.message : err}`,
-      )
-    }
+    const jsonData = readJsonFile<DoaJsonEntry[]>('data/doa.json', 'doa.json')
+    const hadithJoinedData = readJsonFile<DoaHadithJoinedJsonEntry[]>(
+      'data/doa_hadith_joined.json',
+      'doa_hadith_joined.json',
+    )
 
     // Validate required fields
     const invalidEntries = jsonData.filter(
@@ -102,9 +214,26 @@ export async function seedDoa(options?: {
     }
 
     console.log(`Loaded ${jsonData.length} duas from doa.json`)
+    console.log(
+      `Loaded ${hadithJoinedData.length} rows from doa_hadith_joined.json`,
+    )
 
-    // 2. Compute hashes
-    const doaWithHashes = jsonData.map((entry) => ({
+    const hadithMatchesBySlug = buildHadithMatchesBySlug(
+      jsonData,
+      hadithJoinedData,
+    )
+    const matchedSlugCount = [...hadithMatchesBySlug.values()].filter(
+      (matches) => matches.length > 0,
+    ).length
+    console.log(`Matched hadith found for ${matchedSlugCount} duas`)
+
+    // 2. Merge hadith data and compute hashes
+    const mergedDoaEntries = jsonData.map((entry) => ({
+      ...entry,
+      hadith_matches: hadithMatchesBySlug.get(entry.slug) ?? [],
+    }))
+
+    const doaWithHashes = mergedDoaEntries.map((entry) => ({
       ...entry,
       contentHash: computeDoaHash(entry),
     }))
@@ -172,6 +301,9 @@ export async function seedDoa(options?: {
 
     // 6. Execute changes in a transaction
     await db.transaction(async (tx) => {
+      const changedEntries = [...toInsert, ...toUpdate]
+      const changedSlugs = changedEntries.map((entry) => entry.slug)
+
       // Batch insert
       if (toInsert.length > 0) {
         console.log(`\nInserting ${toInsert.length} new duas...`)
@@ -197,6 +329,32 @@ export async function seedDoa(options?: {
         }
         result.updated = toUpdate.length
         console.log(`   Updated ${toUpdate.length} records`)
+      }
+
+      // Replace hadith matches for changed duas
+      if (changedSlugs.length > 0) {
+        console.log(`\nSyncing hadith matches for ${changedSlugs.length} duas...`)
+
+        await tx
+          .delete(doaHadithMatch)
+          .where(inArray(doaHadithMatch.doaSlug, changedSlugs))
+
+        const hadithMatchRecords = changedEntries.flatMap((entry) =>
+          toDoaHadithMatchRecords(entry),
+        )
+
+        if (hadithMatchRecords.length > 0) {
+          const BATCH_SIZE = 100
+
+          for (let i = 0; i < hadithMatchRecords.length; i += BATCH_SIZE) {
+            const batch = hadithMatchRecords.slice(i, i + BATCH_SIZE)
+            await tx.insert(doaHadithMatch).values(batch)
+          }
+        }
+
+        console.log(
+          `   Synced ${changedEntries.reduce((count, entry) => count + (entry.hadith_matches?.length ?? 0), 0)} hadith matches`,
+        )
       }
 
       // Delete orphans if requested
