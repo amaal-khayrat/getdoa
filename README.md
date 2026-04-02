@@ -14,7 +14,7 @@ GetDoa is a mobile app companion website for an Islamic prayer companion app. Br
 https://getdoa.com/api
 ```
 
-### Endpoints
+### Public Endpoints
 
 #### 1. Get Paginated Doa List
 
@@ -24,9 +24,13 @@ GET /api/doa?page=1&limit=10
 
 | Parameter | Type | Default | Description |
 |-----------|------|---------|-------------|
-| `page` | number | 1 | Page number (1-indexed) |
-| `limit` | number | 10 | Items per page (max: 100) |
-| `search` | string | - | Search query (optional) |
+| `page` | number | `1` | 1-indexed page number |
+| `limit` | number | `10` | Items per page, from `1` to `100` |
+| `search` | string | - | Optional search across doa name, content, and meaning |
+
+Notes:
+- If `search` is provided, the response also includes a top-level `search` field.
+- Returned doa objects use the current database-backed camelCase field names.
 
 **Response:**
 
@@ -35,21 +39,28 @@ GET /api/doa?page=1&limit=10
   "data": [
     {
       "slug": "penghulu-bagi-doa-keampunan",
-      "name_my": "Penghulu Bagi Doa Keampunan",
-      "name_en": "The Master of Forgiveness Prayer",
+      "nameMy": "Penghulu Bagi Doa Keampunan",
+      "nameEn": "The Master of Forgiveness Prayer",
       "content": "اَللَّهُمَّ أَنْتَ رَبِّيْ ...",
-      "meaning_my": "Ya Allah, Engkau adalah Tuhanku...",
-      "meaning_en": "O Allah, You are my Lord...",
-      "reference_my": "Riwayat al-Bukhari (6306)",
-      "reference_en": "Narrated by Bukhari (6306)",
-      "category_names": ["Keampunan", "Forgiveness", "Taubat", "Repentance"]
+      "referenceMy": "Riwayat al-Bukhari (6306)",
+      "referenceEn": "Narrated by al-Bukhari (6306)",
+      "meaningMy": "Ya Allah, Engkau adalah Tuhanku...",
+      "meaningEn": "O Allah, You are my Lord...",
+      "categoryNames": ["Keampunan", "Forgiveness", "Taubat", "Repentance"],
+      "descriptionMy": null,
+      "descriptionEn": null,
+      "contextMy": null,
+      "contextEn": null,
+      "contentHash": "sha256-hash-value",
+      "createdAt": "2026-04-02T00:00:00.000Z",
+      "updatedAt": "2026-04-02T00:00:00.000Z"
     }
   ],
   "pagination": {
     "page": 1,
     "limit": 10,
-    "total": 90,
-    "totalPages": 9,
+    "total": 99,
+    "totalPages": 10,
     "hasNextPage": true,
     "hasPrevPage": false
   }
@@ -64,34 +75,77 @@ GET /api/doa/random
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `category` | string | Filter by category (optional) |
-| `count` | number | Number of results (1-10, optional) |
+| `category` | string | Optional category filter |
+| `count` | number | Optional result count from `1` to `10` |
 
-**Examples:**
+Notes:
+- Without `count`, or with `count=1`, the response shape is `{ "data": { ... } }`
+- With `count > 1`, the response shape is `{ "data": [...], "count": n, "category": "..." }`
 
-```bash
-# Single random Doa
-GET /api/doa/random
-
-# Random from category
-GET /api/doa/random?category=Keampunan
-
-# Multiple random Doa
-GET /api/doa/random?count=3
-```
-
-**Response:**
+**Single-item response:**
 
 ```json
 {
   "data": {
     "slug": "penghulu-bagi-doa-keampunan",
-    "name_my": "Penghulu Bagi Doa Keampunan",
-    "name_en": "The Master of Forgiveness Prayer",
-    "content": "...",
-    "meaning_my": "...",
-    "meaning_en": "...",
-    "category_names": ["Keampunan", "Forgiveness"]
+    "nameMy": "Penghulu Bagi Doa Keampunan",
+    "nameEn": "The Master of Forgiveness Prayer",
+    "content": "اَللَّهُمَّ أَنْتَ رَبِّيْ ...",
+    "referenceMy": "Riwayat al-Bukhari (6306)",
+    "referenceEn": "Narrated by al-Bukhari (6306)",
+    "meaningMy": "Ya Allah, Engkau adalah Tuhanku...",
+    "meaningEn": "O Allah, You are my Lord...",
+    "categoryNames": ["Keampunan", "Forgiveness"]
+  }
+}
+```
+
+**Batch response:**
+
+```json
+{
+  "data": [
+    {
+      "slug": "penghulu-bagi-doa-keampunan",
+      "nameMy": "Penghulu Bagi Doa Keampunan",
+      "nameEn": "The Master of Forgiveness Prayer",
+      "content": "اَللَّهُمَّ أَنْتَ رَبِّيْ ..."
+    }
+  ],
+  "count": 3,
+  "category": "Keampunan"
+}
+```
+
+#### 3. Get a Public Shared Doa List
+
+```
+GET /api/list/:listId
+```
+
+This endpoint returns published public lists only.
+
+**Response:**
+
+```json
+{
+  "id": "dl_123",
+  "title": "Daily Protection",
+  "description": "Morning and evening duas",
+  "language": "en",
+  "entries": [
+    {
+      "slug": "penghulu-bagi-doa-keampunan",
+      "title": "The Master of Forgiveness Prayer",
+      "text": "اَللَّهُمَّ أَنْتَ رَبِّيْ ...",
+      "translation": "O Allah, You are my Lord...",
+      "source": "Narrated by al-Bukhari (6306)"
+    }
+  ],
+  "meta": {
+    "itemCount": 1,
+    "createdAt": "2026-04-02T00:00:00.000Z",
+    "updatedAt": "2026-04-02T00:00:00.000Z"
   }
 }
 ```
@@ -100,20 +154,25 @@ GET /api/doa/random?count=3
 
 **JavaScript:**
 
-```typescript
-fetch('https://getdoa.com/api/doa/random')
-  .then(r => r.json())
-  .then(data => console.log(data.data));
+```ts
+const paginated = await fetch('https://getdoa.com/api/doa?page=1&limit=10').then(
+  (r) => r.json(),
+)
+
+const random = await fetch(
+  'https://getdoa.com/api/doa/random?category=Keampunan&count=3',
+).then((r) => r.json())
 ```
 
 **cURL:**
 
 ```bash
 curl "https://getdoa.com/api/doa?page=1&limit=10"
-curl "https://getdoa.com/api/doa/random"
+curl "https://getdoa.com/api/doa?search=ampunan&page=1&limit=5"
+curl "https://getdoa.com/api/doa/random?category=Keampunan"
+curl "https://getdoa.com/api/list/<public-list-id>"
 ```
 
 ### Categories
 
-Keampunan, Taubat, Bacaan Pagi, Bacaan Petang, Perlindungan, Kesihatan, Keluarga, Rezeki, Solat, Ramadan, and more.
-
+Categories are returned in the `categoryNames` field. Common examples include Keampunan, Taubat, Bacaan Pagi, Bacaan Petang, Perlindungan, Kesihatan, Keluarga, Rezeki, Solat, Ramadan, and more.
