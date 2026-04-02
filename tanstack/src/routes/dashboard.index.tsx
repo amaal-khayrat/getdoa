@@ -16,12 +16,16 @@ import {
 import { Button, buttonVariants } from '@/components/ui/button'
 import {
   Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
+  CardFooter,
   CardTitle,
 } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
+import { Switch } from '@/components/ui/switch'
+import {
+  Tooltip,
+  TooltipTrigger,
+  TooltipContent,
+} from '@/components/ui/tooltip'
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -172,7 +176,7 @@ function DashboardIndex() {
 
       {/* Limit reached banner */}
       {listLimitInfo && !listLimitInfo.canCreate && (
-        <div className="mb-6 p-4 rounded-lg bg-primary/5 border border-primary/20">
+        <div className="mb-6 p-4 rounded-r-lg bg-background border border-border border-l-4 border-l-primary">
           <div className="flex items-center justify-between gap-4">
             <div className="flex items-center gap-3">
               <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center">
@@ -275,42 +279,22 @@ function ListCard({
   const prayerCount = list.itemCount
 
   return (
-    <Card className="group hover:shadow-md transition-shadow">
-      <CardHeader className="pb-2">
-        <div className="flex items-start justify-between">
-          <div className="space-y-1 min-w-0 flex-1">
-            <Link to="/list/$listId" params={{ listId: list.id }}>
-              <CardTitle className="text-lg hover:text-primary transition-colors truncate">
-                {list.name}
-              </CardTitle>
-            </Link>
-            <CardDescription className="flex items-center gap-2 flex-wrap">
-              <span>{prayerCount} duas</span>
-              <Badge
-                variant={list.status === 'published' ? 'default' : 'secondary'}
-              >
-                {list.status}
-              </Badge>
-              {list.visibility === 'public' ? (
-                <Badge variant="outline" className="gap-1">
-                  <Globe className="h-3 w-3" />
-                  Public
-                </Badge>
-              ) : (
-                <Badge variant="outline" className="gap-1">
-                  <Lock className="h-3 w-3" />
-                  Private
-                </Badge>
-              )}
-            </CardDescription>
-          </div>
+    <Card className="group hover:shadow-md transition-shadow bg-card py-0 gap-0">
+      {/* Green inset zone — own rounded corners, inset from card edges */}
+      <div className="m-1 p-4 bg-secondary rounded-t-xl rounded-b-none">
+        <div className="flex items-start justify-between gap-2">
+          <Link to="/list/$listId" params={{ listId: list.id }} className="min-w-0 flex-1">
+            <CardTitle className="text-xl font-bold hover:text-primary transition-colors truncate leading-snug">
+              {list.name}
+            </CardTitle>
+          </Link>
           <DropdownMenu>
             <DropdownMenuTrigger
               render={
                 <Button
                   variant="ghost"
                   size="icon"
-                  className="opacity-0 group-hover:opacity-100 h-8 w-8"
+                  className="h-7 w-7 shrink-0 text-primary/60 hover:text-primary transition-colors"
                   disabled={isPending}
                 />
               }
@@ -320,11 +304,13 @@ function ListCard({
             <DropdownMenuContent align="end">
               <DropdownMenuItem
                 render={<Link to="/list/$listId" params={{ listId: list.id }} />}
+                className="focus:text-primary"
               >
                 <Eye className="h-4 w-4 mr-2" />
                 View
               </DropdownMenuItem>
               <DropdownMenuItem
+                className="focus:text-primary"
                 render={
                   <Link
                     to="/dashboard/create-doa-list"
@@ -336,28 +322,15 @@ function ListCard({
                 Edit
               </DropdownMenuItem>
               {list.status === 'draft' && (
-                <DropdownMenuItem onClick={onPublish}>
-                  <Eye className="h-4 w-4 mr-2" />
+                <DropdownMenuItem onClick={onPublish} className="focus:text-primary">
+                  <Eye className="h-4 w-4 mr-2 text-primary" />
                   Publish
                 </DropdownMenuItem>
               )}
-              <DropdownMenuItem onClick={onToggleVisibility}>
-                {list.visibility === 'public' ? (
-                  <>
-                    <Lock className="h-4 w-4 mr-2" />
-                    Make Private
-                  </>
-                ) : (
-                  <>
-                    <Globe className="h-4 w-4 mr-2" />
-                    Make Public
-                  </>
-                )}
-              </DropdownMenuItem>
               <DropdownMenuSeparator />
               <DropdownMenuItem
                 onClick={onDelete}
-                className="text-destructive focus:text-destructive"
+                variant="destructive"
               >
                 <Trash2 className="h-4 w-4 mr-2" />
                 Delete
@@ -365,34 +338,99 @@ function ListCard({
             </DropdownMenuContent>
           </DropdownMenu>
         </div>
-      </CardHeader>
-      <CardContent>
-        {list.description && (
-          <p className="text-sm text-muted-foreground line-clamp-2 mb-3">
-            {list.description}
-          </p>
-        )}
-        <div className="flex items-center justify-between text-xs text-muted-foreground">
-          <span>
-            {new Date(list.updatedAt).toLocaleDateString('en-US', {
+
+        {/* Typography hierarchy — duas (medium) · date (tertiary) */}
+        <div className="flex items-baseline gap-1.5 mt-3">
+          <span className="text-sm font-medium text-[#6B7280]">
+            {prayerCount} duas
+          </span>
+          <span className="text-xs text-[#9CA3AF]">·</span>
+          <span className="text-xs text-[#6B7280]">
+            Updated {new Date(list.updatedAt).toLocaleDateString('en-US', {
               month: 'short',
               day: 'numeric',
               year: 'numeric',
             })}
           </span>
-          <div className="flex items-center gap-3">
-            <span className="flex items-center gap-1">
-              <Eye className="h-3 w-3" /> {list.viewCount}
-            </span>
-            <span className="flex items-center gap-1">
-              <Download className="h-3 w-3" /> {list.exportCount}
-            </span>
-            <span className="flex items-center gap-1">
-              <Heart className="h-3 w-3" /> {list.favoriteCount}
-            </span>
-          </div>
         </div>
-      </CardContent>
+
+        {list.description && (
+          <p className="text-sm text-[#6B7280] line-clamp-2 mt-2">
+            {list.description}
+          </p>
+        )}
+      </div>
+
+      {/* White footer — badge + stats left · visibility toggle right */}
+      <CardFooter className="pt-2 pb-3 px-3 flex items-center justify-between gap-2">
+        {/* Left: status badge + stats */}
+        <div className="flex items-center gap-3 text-xs text-muted-foreground flex-wrap">
+          <Badge
+            variant="outline"
+            className={cn(
+              'text-xs font-medium',
+              list.status === 'published'
+                ? 'bg-primary/10 border-primary/40 text-primary/70'
+                : 'bg-muted border-muted-foreground/20 text-muted-foreground/60'
+            )}
+          >
+            {list.status === 'published' ? 'Published' : 'Draft'}
+          </Badge>
+          <span className="w-px h-3.5 bg-border self-center shrink-0" aria-hidden />
+          <span className="flex items-center gap-1">
+            <Eye className="h-3 w-3" /> {list.viewCount}
+          </span>
+          <span className="flex items-center gap-1">
+            <Download className="h-3 w-3" /> {list.exportCount}
+          </span>
+          <span className="flex items-center gap-1">
+            <Heart className="h-3 w-3" /> {list.favoriteCount}
+          </span>
+        </div>
+
+        {/* Right: visibility label + toggle + help */}
+        <div className="flex items-center gap-2 shrink-0">
+          <span className="flex items-center gap-1 text-xs text-muted-foreground">
+            {list.visibility === 'public' ? (
+              <Globe className="h-3.5 w-3.5" />
+            ) : (
+              <Lock className="h-3.5 w-3.5" />
+            )}
+            {list.visibility === 'public' ? 'Public' : 'Private'}
+          </span>
+          <div
+            className="cursor-pointer"
+            onClick={(e) => {
+              e.preventDefault()
+              e.stopPropagation()
+              if (!isPending) onToggleVisibility()
+            }}
+          >
+            <Switch
+              checked={list.visibility === 'public'}
+              disabled={isPending}
+              size="sm"
+              aria-label="Toggle list visibility"
+            />
+          </div>
+          <Tooltip>
+            <TooltipTrigger render={<span className="cursor-default" />}>
+              <span
+                className="flex items-center justify-center w-5 h-5 rounded-full text-white/90 text-[11px] font-bold select-none opacity-50"
+                style={{ background: 'var(--gradient-primary)' }}
+                aria-label="Visibility info"
+              >
+                ?
+              </span>
+            </TooltipTrigger>
+            <TooltipContent side="top" className="max-w-xs">
+              {list.visibility === 'public'
+                ? "This list is public — anyone on GetDoa can view it. The Copy List ID button is available for use in your website or app."
+                : "This list is private — only you can see it. Toggle to make it public and share it with others."}
+            </TooltipContent>
+          </Tooltip>
+        </div>
+      </CardFooter>
     </Card>
   )
 }

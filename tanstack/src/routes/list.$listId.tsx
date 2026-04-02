@@ -1,6 +1,6 @@
 import { createFileRoute, notFound, Link, useNavigate } from '@tanstack/react-router'
 import { useState, useTransition } from 'react'
-import { BookOpen, Heart, Share2, Copy, Eye, Download } from 'lucide-react'
+import { BookOpen, Heart, Share2, Copy, Eye, Download, Braces, Globe, Lock } from 'lucide-react'
 import { toast } from 'sonner'
 import {
   getDoaList,
@@ -295,6 +295,12 @@ function PublicListView({
     toast.success('Prayers copied to clipboard')
   }
 
+  const copyListId = () => {
+    const apiUrl = `${window.location.origin}/api/list/${list.id}`
+    navigator.clipboard.writeText(apiUrl)
+    toast.success('List ID copied to clipboard')
+  }
+
   const handleExportImage = async (settings?: ExportSettings) => {
     if (prayers.length === 0) {
       toast.error('This list has no prayers to export')
@@ -398,9 +404,24 @@ function PublicListView({
 
       {/* Header */}
       <div className="mb-8">
-        <h1 className="text-3xl sm:text-4xl font-bold text-foreground mb-4 font-display">
-          {list.name}
-        </h1>
+        <div className="flex items-center gap-3 mb-4 flex-wrap">
+          <h1 className="text-3xl sm:text-4xl font-bold text-foreground font-display">
+            {list.name}
+          </h1>
+          <Badge variant="outline" className="gap-1 shrink-0">
+            {list.visibility === 'public' ? (
+              <>
+                <Globe className="h-3 w-3" />
+                Public
+              </>
+            ) : (
+              <>
+                <Lock className="h-3 w-3" />
+                Private
+              </>
+            )}
+          </Badge>
+        </div>
 
         {list.description && (
           <p className="text-muted-foreground text-lg mb-4">
@@ -571,6 +592,12 @@ function PublicListView({
           <Copy className="h-4 w-4 mr-2" />
           Copy All
         </Button>
+        {list.visibility === 'public' && list.status === 'published' && (
+          <Button variant="outline" onClick={copyListId}>
+            <Braces className="h-4 w-4 mr-2" />
+            Copy List ID
+          </Button>
+        )}
       </div>
 
       {/* Prayers List */}
