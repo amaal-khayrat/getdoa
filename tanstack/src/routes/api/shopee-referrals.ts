@@ -15,10 +15,13 @@ export const Route = createFileRoute('/api/shopee-referrals')({
 
         if (isNaN(count) || count < 1 || count > 10) {
           console.log('[ShopeeReferralsAPI] Invalid count parameter')
-          return new Response(JSON.stringify({ error: 'Invalid count parameter' }), {
-            status: 400,
-            headers: { 'Content-Type': 'application/json' },
-          })
+          return new Response(
+            JSON.stringify({ error: 'Invalid count parameter' }),
+            {
+              status: 400,
+              headers: { 'Content-Type': 'application/json' },
+            },
+          )
         }
 
         try {
@@ -30,8 +33,14 @@ export const Route = createFileRoute('/api/shopee-referrals')({
           const duration = Date.now() - startTime
           console.log('[ShopeeReferralsAPI] Completed in', duration, 'ms')
 
-          const successfulCount = results.filter((r) => r.ogData).length
-          console.log('[ShopeeReferralsAPI] Results:', successfulCount, 'of', count, 'successful')
+          const successfulCount = results.filter((r) => r.ogData?.image).length
+          console.log(
+            '[ShopeeReferralsAPI] Results:',
+            successfulCount,
+            'of',
+            count,
+            'successful',
+          )
 
           const responseData = {
             items: results,
@@ -46,7 +55,8 @@ export const Route = createFileRoute('/api/shopee-referrals')({
             headers: { 'Content-Type': 'application/json' },
           })
         } catch (error) {
-          const message = error instanceof Error ? error.message : 'Unknown error'
+          const message =
+            error instanceof Error ? error.message : 'Unknown error'
           console.log('[ShopeeReferralsAPI] Error:', message)
 
           return new Response(JSON.stringify({ error: message }), {

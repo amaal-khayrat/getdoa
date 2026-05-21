@@ -1,43 +1,50 @@
-import { createFileRoute, notFound, Link, useNavigate } from '@tanstack/react-router'
-import { useState, useTransition } from 'react'
-import { BookOpen, Heart, Share2, Copy, Eye, Download, Braces, Globe, Lock } from 'lucide-react'
-import { toast } from 'sonner'
 import {
+  Link,
+  createFileRoute,
+  notFound,
+  useNavigate,
+} from '@tanstack/react-router'
+import { useState, useTransition } from 'react'
+import {
+  BookOpen,
+  Braces,
+  Copy,
+  Download,
+  Eye,
+  Globe,
+  Heart,
+  Lock,
+  Share2,
+} from 'lucide-react'
+import { toast } from 'sonner'
+import type { Doa, DoaList, TranslationLayout } from '@/types/doa.types'
+import type { DoaListWithUserAndItems } from '@/types/doa-list.types'
+import type { ExportSettings } from '@/components/list/list-export-preview-modal'
+import {
+  addFavoriteList,
   getDoaList,
   getSessionFromServer,
   isListFavorited,
-  addFavoriteList,
-  removeFavoriteList,
   logExport,
+  removeFavoriteList,
 } from '@/server-functions/dashboard'
-import { fetchShopeeReferrals } from '@/utils/shopee-fetch.server'
-import { generateDoaImage, downloadImage } from '@/utils/image-generator'
-import type { DoaList, TranslationLayout } from '@/types/doa.types'
+import { downloadImage, generateDoaImage } from '@/utils/image-generator'
 import { LandingLayout } from '@/components/landing/layout/landing-layout'
 import { LanguageProvider, useLanguage } from '@/contexts/language-context'
-import { ShopeeReferralsSection } from '@/components/shopee/shopee-referrals-section'
+import { ShopeeReferralsClientSection } from '@/components/shopee/shopee-referrals-client-section'
 import { Button, buttonVariants } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { cn } from '@/lib/utils'
-import {
-  ListExportPreviewModal,
-  type ExportSettings,
-} from '@/components/list/list-export-preview-modal'
-import type { DoaListWithUserAndItems } from '@/types/doa-list.types'
-import type { Doa } from '@/types/doa.types'
-import type { ShopeeOgData } from '@/types/shopee.types'
+import { ListExportPreviewModal } from '@/components/list/list-export-preview-modal'
 
 export const Route = createFileRoute('/list/$listId')({
   // Data loading - runs on server
   loader: async ({ params }) => {
-    // Run in parallel for performance
-    // Use Promise.allSettled for shopee so failure doesn't break the page
-    const [listResult, sessionResult, shopeeResult] = await Promise.allSettled([
+    const [listResult, sessionResult] = await Promise.allSettled([
       getDoaList({ data: { listId: params.listId } }),
       getSessionFromServer(),
-      fetchShopeeReferrals({ count: 8 }),
     ])
 
     // List is required - throw if failed
@@ -51,14 +58,8 @@ export const Route = createFileRoute('/list/$listId')({
     }
 
     // Session is optional but shouldn't fail silently
-    const session = sessionResult.status === 'fulfilled' ? sessionResult.value : null
-
-    // Shopee referrals are optional - use empty array on failure
-    // Map to only include url and ogData (component doesn't need error field)
-    const shopeeReferrals =
-      shopeeResult.status === 'fulfilled'
-        ? shopeeResult.value.map(({ url, ogData }) => ({ url, ogData }))
-        : []
+    const session =
+      sessionResult.status === 'fulfilled' ? sessionResult.value : null
 
     // Check favorite status if authenticated (needs list first to check ownership)
     let isFavorited = false
@@ -76,9 +77,8 @@ export const Route = createFileRoute('/list/$listId')({
       list,
       prayers,
       isAuthenticated: !!session?.user,
-      userId: session?.user?.id,
+      userId: session?.user.id,
       isFavorited,
-      shopeeReferrals,
     }
   },
   component: PublicListPage,
@@ -164,7 +164,6 @@ function PublicListPage() {
     isAuthenticated,
     userId,
     isFavorited: initialFavorited,
-    shopeeReferrals,
   } = Route.useLoaderData()
 
   return (
@@ -176,7 +175,6 @@ function PublicListPage() {
           isAuthenticated={isAuthenticated}
           userId={userId}
           initialFavorited={initialFavorited}
-          shopeeReferrals={shopeeReferrals}
         />
       </LandingLayout>
     </LanguageProvider>
@@ -185,11 +183,10 @@ function PublicListPage() {
 
 interface PublicListViewProps {
   list: DoaListWithUserAndItems
-  prayers: Doa[]
+  prayers: Array<Doa>
   isAuthenticated: boolean
   userId?: string
   initialFavorited: boolean
-  shopeeReferrals: Array<{ url: string; ogData?: ShopeeOgData }>
 }
 
 function PublicListView({
@@ -198,7 +195,6 @@ function PublicListView({
   isAuthenticated,
   userId,
   initialFavorited,
-  shopeeReferrals,
 }: PublicListViewProps) {
   const { language } = useLanguage()
   const navigate = useNavigate()
@@ -221,7 +217,7 @@ function PublicListView({
   // Display settings for reading experience
   const [viewMode, setViewMode] = useState<'detailed' | 'reading'>('detailed')
   const [layoutMode, setLayoutMode] = useState<'interleaved' | 'grouped'>(
-    list.translationLayout as 'interleaved' | 'grouped'
+    list.translationLayout as 'interleaved' | 'grouped',
   )
 
   // Is this the user's own list?
@@ -267,7 +263,7 @@ function PublicListView({
     const shareUrl = window.location.href
     const shareText = `${list.name} - A prayer list with ${prayers.length} duas`
 
-    if (navigator.share) {
+    if ('share' in navigator && typeof navigator.share === 'function') {
       try {
         await navigator.share({
           title: list.name,
@@ -380,9 +376,7 @@ function PublicListView({
   }
   const authorDisplayName =
     authorPrivacy.displayName ??
-    (authorPrivacy.showFullName
-      ? list.user.name
-      : getInitials(list.user.name))
+    (authorPrivacy.showFullName ? list.user.name : getInitials(list.user.name))
   const showAuthorAvatar = authorPrivacy.showAvatar && list.user.image
 
   return (
@@ -397,9 +391,7 @@ function PublicListView({
           Lists
         </Link>
         <span>/</span>
-        <span className="text-foreground truncate max-w-50">
-          {list.name}
-        </span>
+        <span className="text-foreground truncate max-w-50">{list.name}</span>
       </nav>
 
       {/* Header */}
@@ -479,7 +471,9 @@ function PublicListView({
             <div
               className={cn(
                 'absolute h-[calc(100%-4px)] w-[calc(50%-2px)] rounded-full bg-primary shadow-sm transition-transform duration-200 ease-out',
-                viewMode === 'reading' ? 'translate-x-[calc(100%+2px)]' : 'translate-x-0'
+                viewMode === 'reading'
+                  ? 'translate-x-[calc(100%+2px)]'
+                  : 'translate-x-0',
               )}
               aria-hidden="true"
             />
@@ -492,7 +486,7 @@ function PublicListView({
                 'relative z-10 flex items-center justify-center px-3 py-1.5 text-sm font-medium transition-colors duration-200',
                 viewMode === 'detailed'
                   ? 'text-primary-foreground'
-                  : 'text-muted-foreground hover:text-foreground'
+                  : 'text-muted-foreground hover:text-foreground',
               )}
             >
               Detailed
@@ -506,7 +500,7 @@ function PublicListView({
                 'relative z-10 flex items-center justify-center px-3 py-1.5 text-sm font-medium transition-colors duration-200',
                 viewMode === 'reading'
                   ? 'text-primary-foreground'
-                  : 'text-muted-foreground hover:text-foreground'
+                  : 'text-muted-foreground hover:text-foreground',
               )}
             >
               Reading
@@ -524,7 +518,9 @@ function PublicListView({
               <div
                 className={cn(
                   'absolute h-[calc(100%-4px)] w-[calc(50%-2px)] rounded-full bg-primary shadow-sm transition-transform duration-200 ease-out',
-                  layoutMode === 'grouped' ? 'translate-x-[calc(100%+2px)]' : 'translate-x-0'
+                  layoutMode === 'grouped'
+                    ? 'translate-x-[calc(100%+2px)]'
+                    : 'translate-x-0',
                 )}
                 aria-hidden="true"
               />
@@ -537,7 +533,7 @@ function PublicListView({
                   'relative z-10 flex items-center justify-center px-3 py-1.5 text-sm font-medium transition-colors duration-200',
                   layoutMode === 'interleaved'
                     ? 'text-primary-foreground'
-                    : 'text-muted-foreground hover:text-foreground'
+                    : 'text-muted-foreground hover:text-foreground',
                 )}
               >
                 Interleaved
@@ -551,7 +547,7 @@ function PublicListView({
                   'relative z-10 flex items-center justify-center px-3 py-1.5 text-sm font-medium transition-colors duration-200',
                   layoutMode === 'grouped'
                     ? 'text-primary-foreground'
-                    : 'text-muted-foreground hover:text-foreground'
+                    : 'text-muted-foreground hover:text-foreground',
                 )}
               >
                 Grouped
@@ -619,7 +615,9 @@ function PublicListView({
                   Duas
                 </h3>
               )}
-              <div className={viewMode === 'reading' ? 'space-y-0' : 'space-y-6'}>
+              <div
+                className={viewMode === 'reading' ? 'space-y-0' : 'space-y-6'}
+              >
                 {prayers.map((prayer, index) => (
                   <PrayerCard
                     key={prayer.slug}
@@ -634,18 +632,27 @@ function PublicListView({
             </Card>
 
             {/* Translations Section */}
-            <Card className={`${viewMode === 'reading' ? 'p-4 sm:p-6' : 'p-6'} mt-6`}>
+            <Card
+              className={`${viewMode === 'reading' ? 'p-4 sm:p-6' : 'p-6'} mt-6`}
+            >
               <h3 className="text-lg font-semibold text-foreground mb-4 pb-2 border-b">
                 {language === 'my' ? 'Terjemahan' : 'Translations'}
               </h3>
               <div className="space-y-4">
                 {prayers.map((prayer, index) => {
-                  const meaning = language === 'my' ? prayer.meaningMy : prayer.meaningEn
+                  const meaning =
+                    language === 'my' ? prayer.meaningMy : prayer.meaningEn
                   const name = language === 'my' ? prayer.nameMy : prayer.nameEn
                   return (
-                    <div key={`translation-${prayer.slug}`} className="py-2 border-b border-border/50 last:border-b-0">
+                    <div
+                      key={`translation-${prayer.slug}`}
+                      className="py-2 border-b border-border/50 last:border-b-0"
+                    >
                       <p className="text-sm text-muted-foreground mb-1">
-                        {index + 1}. {viewMode === 'detailed' && <span className="font-medium">{name}</span>}
+                        {index + 1}.{' '}
+                        {viewMode === 'detailed' && (
+                          <span className="font-medium">{name}</span>
+                        )}
                       </p>
                       <p className="text-foreground leading-relaxed">
                         {meaning}
@@ -686,7 +693,10 @@ function PublicListView({
               <Link to="/login" className={buttonVariants()}>
                 Get Started
               </Link>
-              <Link to="/doa" className={buttonVariants({ variant: 'outline' })}>
+              <Link
+                to="/doa"
+                className={buttonVariants({ variant: 'outline' })}
+              >
                 Browse Duas
               </Link>
             </div>
@@ -694,8 +704,7 @@ function PublicListView({
         </div>
       )}
 
-      {/* Shopee Referrals - loaded from server */}
-      <ShopeeReferralsSection referrals={shopeeReferrals} />
+      <ShopeeReferralsClientSection />
 
       {/* Export Preview Modal */}
       <ListExportPreviewModal
@@ -733,8 +742,7 @@ function PrayerCard({
 }: PrayerCardProps) {
   const name = language === 'my' ? prayer.nameMy : prayer.nameEn
   const meaning = language === 'my' ? prayer.meaningMy : prayer.meaningEn
-  const reference =
-    language === 'my' ? prayer.referenceMy : prayer.referenceEn
+  const reference = language === 'my' ? prayer.referenceMy : prayer.referenceEn
 
   const copyToClipboard = () => {
     const text = `${name}\n${prayer.content}\n${meaning}`
@@ -753,9 +761,7 @@ function PrayerCard({
           <span className="text-sm text-muted-foreground font-medium">
             {index}.
           </span>
-          <span className="text-sm text-muted-foreground">
-            {name}
-          </span>
+          <span className="text-sm text-muted-foreground">{name}</span>
         </div>
 
         {/* Arabic text */}

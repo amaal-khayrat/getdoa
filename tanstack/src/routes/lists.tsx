@@ -1,10 +1,9 @@
-import { createFileRoute, Link, useNavigate } from '@tanstack/react-router'
+import { Link, createFileRoute, useNavigate } from '@tanstack/react-router'
 import { z } from 'zod'
 import {
   getPublicLists,
   getSessionFromServer,
 } from '@/server-functions/dashboard'
-import { fetchShopeeReferrals } from '@/utils/shopee-fetch.server'
 import { LandingLayout } from '@/components/landing/layout/landing-layout'
 import { LanguageProvider } from '@/contexts/language-context'
 import { ListDiscoveryCard } from '@/components/list/list-discovery-card'
@@ -12,60 +11,39 @@ import { ListDiscoverySkeleton } from '@/components/list/list-discovery-skeleton
 import { ListFilterBar } from '@/components/list/list-filter-bar'
 import { ListsEmptyState } from '@/components/list/lists-empty-state'
 import { ListsPagination } from '@/components/list/lists-pagination'
-import { ShopeeReferralsSection } from '@/components/shopee/shopee-referrals-section'
+import { ShopeeReferralsClientSection } from '@/components/shopee/shopee-referrals-client-section'
 import { buttonVariants } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
 
 // Search params schema for URL state
 const listsSearchSchema = z.object({
   page: z.coerce.number().int().positive().optional().default(1),
-  sort: z
-    .enum(['newest', 'popular', 'favorites'])
-    .optional()
-    .default('newest'),
+  sort: z.enum(['newest', 'popular', 'favorites']).optional().default('newest'),
   q: z.string().optional().default(''),
 })
 
 export const Route = createFileRoute('/lists')({
   validateSearch: listsSearchSchema,
 
-  // Server-side data loading - NO useEffect needed!
+  // Server-side data loading for list data.
   loaderDeps: ({ search }) => ({ search }),
   loader: async ({ deps: { search } }) => {
     const session = await getSessionFromServer()
 
-    // Fetch lists and shopee referrals in parallel
-    // Use Promise.allSettled so shopee failure doesn't break the page
-    const [listsResult, shopeeResult] = await Promise.allSettled([
-      getPublicLists({
-        data: {
-          page: search.page,
-          limit: 12,
-          sortBy: search.sort,
-          search: search.q,
-          userId: session?.user?.id,
-        },
-      }),
-      fetchShopeeReferrals({ count: 8 }),
-    ])
-
-    // Lists are required - throw if failed
-    if (listsResult.status === 'rejected') {
-      throw listsResult.reason
-    }
-
-    // Shopee referrals are optional - use empty array on failure
-    // Map to only include url and ogData (component doesn't need error field)
-    const shopeeReferrals =
-      shopeeResult.status === 'fulfilled'
-        ? shopeeResult.value.map(({ url, ogData }) => ({ url, ogData }))
-        : []
+    const listsResult = await getPublicLists({
+      data: {
+        page: search.page,
+        limit: 12,
+        sortBy: search.sort,
+        search: search.q,
+        userId: session?.user.id,
+      },
+    })
 
     return {
-      ...listsResult.value,
+      ...listsResult,
       isAuthenticated: !!session?.user,
-      userId: session?.user?.id,
-      shopeeReferrals,
+      userId: session?.user.id,
     }
   },
 
@@ -104,7 +82,7 @@ function ListsPageSkeleton() {
 }
 
 function ListsPage() {
-  const { lists, total, page, totalPages, isAuthenticated, userId, shopeeReferrals } =
+  const { lists, total, page, totalPages, isAuthenticated, userId } =
     Route.useLoaderData()
   const search = Route.useSearch()
   const navigate = useNavigate()
@@ -206,8 +184,7 @@ function ListsPage() {
             </div>
           )}
 
-          {/* Shopee Referrals - loaded from server */}
-          <ShopeeReferralsSection referrals={shopeeReferrals} />
+          <ShopeeReferralsClientSection />
         </div>
       </LandingLayout>
     </LanguageProvider>

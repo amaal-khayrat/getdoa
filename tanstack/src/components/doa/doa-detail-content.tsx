@@ -12,8 +12,7 @@ import {
 } from 'lucide-react'
 import { MosqueDonationCard } from './mosque-donation-card'
 import type { Doa, DoaHadithMatch, SearchableDoa } from '@/types/doa.types'
-import type { ShopeeOgData } from '@/types/shopee.types'
-import { ShopeeReferralsSection } from '@/components/shopee/shopee-referrals-section'
+import { ShopeeReferralsClientSection } from '@/components/shopee/shopee-referrals-client-section'
 import { Button, buttonVariants } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
@@ -192,7 +191,9 @@ function ContextSection({
   )
 }
 
-function formatHadithChapterNumber(chapterNumber: number | null): string | null {
+function formatHadithChapterNumber(
+  chapterNumber: number | null,
+): string | null {
   if (chapterNumber === null || Number.isNaN(chapterNumber)) {
     return null
   }
@@ -202,7 +203,10 @@ function formatHadithChapterNumber(chapterNumber: number | null): string | null 
     : chapterNumber.toString()
 }
 
-function buildHadithAccordionValue(match: DoaHadithMatch, index: number): string {
+function buildHadithAccordionValue(
+  match: DoaHadithMatch,
+  index: number,
+): string {
   return [
     match.referenceUrl,
     match.matchedReference,
@@ -589,13 +593,6 @@ export function DoaDetailContent() {
   const [mosqueError, setMosqueError] = useState<string | null>(null)
   const [isMosqueLoading, setIsMosqueLoading] = useState(false)
 
-  // Shopee referrals state management
-  const [shopeeReferrals, setShopeeReferrals] = useState<
-    Array<{ url: string; ogData?: ShopeeOgData }>
-  >([])
-  const [shopeeError, setShopeeError] = useState<Error | null>(null)
-  const [isShopeeLoading, setIsShopeeLoading] = useState(false)
-
   // Fetch mosque data when component mounts
   useEffect(() => {
     const fetchMosqueData = async () => {
@@ -619,34 +616,6 @@ export function DoaDetailContent() {
 
     fetchMosqueData()
   }, [])
-
-  // Fetch shopee referrals when mosque data is available
-  useEffect(() => {
-    if (!mosqueData || isMosqueLoading) return
-
-    const fetchShopeeReferrals = async () => {
-      setIsShopeeLoading(true)
-      setShopeeError(null)
-
-      try {
-        const response = await fetch('/api/shopee-referrals?count=4')
-        if (!response.ok) {
-          throw new Error('Failed to fetch shopee referrals')
-        }
-        const data = await response.json()
-        setShopeeReferrals(data.items || [])
-      } catch (error) {
-        console.error('Failed to fetch shopee referrals:', error)
-        setShopeeError(
-          error instanceof Error ? error : new Error('Unknown error'),
-        )
-      } finally {
-        setIsShopeeLoading(false)
-      }
-    }
-
-    fetchShopeeReferrals()
-  }, [mosqueData, isMosqueLoading])
 
   const title = language === 'my' ? doa.nameMy : doa.nameEn
   const prayerTitle = language === 'my' ? 'Doa' : 'Prayer'
@@ -746,30 +715,7 @@ export function DoaDetailContent() {
                   qrContent={mosqueData.qrContent}
                   supportedPayment={mosqueData.supportedPayment}
                 />
-                <ShopeeReferralsSection
-                  referrals={shopeeReferrals}
-                  isLoading={isShopeeLoading}
-                  error={shopeeError || undefined}
-                  onRetry={() => {
-                    setShopeeReferrals([])
-                    setShopeeError(null)
-                    setIsShopeeLoading(true)
-                    fetch('/api/shopee-referrals?count=4')
-                      .then((res) => res.json())
-                      .then((data) => {
-                        setShopeeReferrals(data.items || [])
-                        setIsShopeeLoading(false)
-                      })
-                      .catch((err) => {
-                        setShopeeError(
-                          err instanceof Error
-                            ? err
-                            : new Error('Unknown error'),
-                        )
-                        setIsShopeeLoading(false)
-                      })
-                  }}
-                />
+                <ShopeeReferralsClientSection />
               </>
             )}
           </div>

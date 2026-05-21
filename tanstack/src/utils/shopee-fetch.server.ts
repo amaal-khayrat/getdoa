@@ -1,9 +1,10 @@
 import {
   fetchShopeeOgData,
-  getRandomUrls,
   getFreshUrl,
-  type ShopeeOgData,
+  getRandomUrls,
+  getReferralUrlCount,
 } from './shopee-og-parser'
+import type { ShopeeOgData } from './shopee-og-parser'
 
 export interface ShopeeReferralResult {
   url: string
@@ -21,8 +22,10 @@ const MAX_CONCURRENT = 4
 /**
  * Fetch OG data for multiple URLs in parallel with concurrency limit
  */
-async function fetchBatchOgData(urls: string[]): Promise<ShopeeReferralResult[]> {
-  const results: ShopeeReferralResult[] = []
+async function fetchBatchOgData(
+  urls: Array<string>,
+): Promise<Array<ShopeeReferralResult>> {
+  const results: Array<ShopeeReferralResult> = []
 
   for (let i = 0; i < urls.length; i += MAX_CONCURRENT) {
     const batch = urls.slice(i, i + MAX_CONCURRENT)
@@ -30,7 +33,7 @@ async function fetchBatchOgData(urls: string[]): Promise<ShopeeReferralResult[]>
       batch.map(async (url) => {
         const ogData = await fetchShopeeOgData(url)
         return { url, ogData } as ShopeeReferralResult
-      })
+      }),
     )
     results.push(...batchResults)
   }
@@ -43,68 +46,58 @@ async function fetchBatchOgData(urls: string[]): Promise<ShopeeReferralResult[]>
  * Fetches random URLs in parallel, retries failures, returns results
  */
 export async function fetchShopeeReferrals(
-  options: FetchReferralsOptions = {}
-): Promise<ShopeeReferralResult[]> {
-  const {
-    count = 4,
-    maxRetries = 2,
-  } = options
+  options: FetchReferralsOptions = {},
+): Promise<Array<ShopeeReferralResult>> {
+  const { count = 4, maxRetries = 3 } = options
 
-  const results: ShopeeReferralResult[] = []
+  const successfulResults: Array<ShopeeReferralResult> = []
+  const failedResults: Array<ShopeeReferralResult> = []
   const attemptedUrls = new Set<string>()
-  let urlsToFetch = getRandomUrls(count)
+  const targetCount = Math.max(1, count)
+  let attemptsRemaining = targetCount * (maxRetries + 1)
+  let urlsToFetch = getRandomUrls(Math.min(targetCount, attemptsRemaining))
 
-  // Initial fetch
-  let fetchResults = await fetchBatchOgData(urlsToFetch)
-
-  for (const result of fetchResults) {
-    attemptedUrls.add(result.url)
-    results.push(result)
-  }
-
-  // Retry failed items
-  let retries = 0
-  while (retries < maxRetries) {
-    const failedItems = results.filter((r) => !r.ogData && r.url)
-
-    if (failedItems.length === 0) {
-      break
-    }
-
-    // Get fresh URLs for failed items
-    const retryUrls = failedItems.map(() =>
-      getFreshUrl(Array.from(attemptedUrls))
-    )
-
-    // Add new URLs to attempted set
-    for (const url of retryUrls) {
+  while (
+    successfulResults.length < targetCount &&
+    attemptsRemaining > 0 &&
+    urlsToFetch.length > 0
+  ) {
+    for (const url of urlsToFetch) {
       attemptedUrls.add(url)
     }
 
-    const retryResults = await fetchBatchOgData(retryUrls)
+    attemptsRemaining -= urlsToFetch.length
+    const fetchResults = await fetchBatchOgData(urlsToFetch)
 
-    // Update results with retry data
-    for (let i = 0; i < retryResults.length; i++) {
-      const failedIndex = failedItems[i]?.url
-        ? results.findIndex((r) => r.url === failedItems[i]?.url)
-        : -1
-
-      if (failedIndex >= 0) {
-        results[failedIndex] = retryResults[i]
+    for (const result of fetchResults) {
+      if (result.ogData?.image) {
+        successfulResults.push(result)
       } else {
-        results.push(retryResults[i])
+        failedResults.push(result)
       }
     }
 
-    retries++
+    const remainingNeeded = targetCount - successfulResults.length
+    const nextBatchSize = Math.min(remainingNeeded, attemptsRemaining)
+    const nextUrls: Array<string> = []
+
+    while (nextUrls.length < nextBatchSize) {
+      const freshUrl = getFreshUrl([...Array.from(attemptedUrls), ...nextUrls])
+      if (attemptedUrls.has(freshUrl) || nextUrls.includes(freshUrl)) break
+      nextUrls.push(freshUrl)
+    }
+
+    urlsToFetch = nextUrls
   }
 
-  return results
+  return successfulResults.length > 0
+    ? successfulResults.slice(0, targetCount)
+    : failedResults.slice(0, targetCount)
 }
 
 /**
  * Get count of available referral URLs
  */
 export function getReferralCount(): number {
-  return getRandomUrls(0).length
+  return getReferralUrlCount()
 }
