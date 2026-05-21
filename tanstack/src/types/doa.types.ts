@@ -1,5 +1,5 @@
-import type { InferSelectModel } from 'drizzle-orm'
 import { z } from 'zod'
+import type { InferSelectModel } from 'drizzle-orm'
 import type { doa } from '@/db/schema'
 
 // ============================================
@@ -26,7 +26,11 @@ export interface DoaHadithMatch {
 }
 
 export type DoaDetail = Doa & {
-  hadithMatches: DoaHadithMatch[]
+  hadithMatches: Array<DoaHadithMatch>
+}
+
+export type SearchableDoa = Doa & {
+  hadithMatches?: Array<DoaHadithMatch>
 }
 
 // ============================================

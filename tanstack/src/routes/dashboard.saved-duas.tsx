@@ -1,6 +1,8 @@
-import { useState, useTransition, useEffect } from 'react'
-import { createFileRoute, Link } from '@tanstack/react-router'
-import { Heart, Trash2, Copy } from 'lucide-react'
+import { useEffect, useState, useTransition } from 'react'
+import { Link, createFileRoute } from '@tanstack/react-router'
+import { Copy, Heart, Trash2 } from 'lucide-react'
+import type { SavedDoaRecord } from '@/types/doa-list.types'
+import type { Doa } from '@/types/doa.types'
 import { Button, buttonVariants } from '@/components/ui/button'
 import {
   Card,
@@ -12,10 +14,10 @@ import {
 import { Badge } from '@/components/ui/badge'
 import {
   Empty,
+  EmptyDescription,
   EmptyHeader,
   EmptyMedia,
   EmptyTitle,
-  EmptyDescription,
 } from '@/components/ui/empty'
 import {
   AlertDialog,
@@ -31,8 +33,6 @@ import { getSavedDoas, unsaveDoa } from '@/server-functions/dashboard'
 import { getDoasBySlugs } from '@/server-functions/dashboard/doa'
 import { useLanguage } from '@/contexts/language-context'
 import { useSession } from '@/lib/auth-client'
-import type { SavedDoaRecord } from '@/types/doa-list.types'
-import type { Doa } from '@/types/doa.types'
 
 export const Route = createFileRoute('/dashboard/saved-duas')({
   loader: async () => {
@@ -54,7 +54,7 @@ export const Route = createFileRoute('/dashboard/saved-duas')({
 function SavedDuasPage() {
   const { data: session } = useSession()
   const { language } = useLanguage()
-  const [, setSavedDoas] = useState<SavedDoaRecord[]>([])
+  const [, setSavedDoas] = useState<Array<SavedDoaRecord>>([])
   const [enrichedDoas, setEnrichedDoas] = useState<
     Array<{ saved: SavedDoaRecord; doa: Doa }>
   >([])
@@ -244,7 +244,7 @@ function SavedDoaCard({ doa, language, onRemove }: SavedDoaCardProps) {
             </Link>
             <CardDescription>{reference}</CardDescription>
           </div>
-          <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+          <div className="flex items-center gap-1 opacity-100 transition-opacity md:opacity-0 md:group-hover:opacity-100">
             <Button
               variant="ghost"
               size="icon"

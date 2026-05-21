@@ -1,35 +1,29 @@
 import { createServerFn } from '@tanstack/react-start'
-
-// Re-export profile functions
-export * from './profile'
-export * from './subscription'
 import { getRequest } from '@tanstack/react-start/server'
+import { and, asc, desc, eq, ilike, or, sql } from 'drizzle-orm'
+import type {
+  CreateDoaListInput,
+  CreateDoaListResult,
+  DoaListRecord,
+  DoaListWithUser,
+  DoaListWithUserAndItems,
+  SavedDoaRecord,
+  UpdateDoaListInput,
+} from '@/types/doa-list.types'
+import type { ListLimitInfo } from '@/lib/list-limit'
 import { db } from '@/db'
 import {
   doaList,
   doaListItem,
-  savedDoa,
-  favoriteList,
   exportLog,
-  userListBonus,
-  referral,
+  favoriteList,
+  savedDoa,
 } from '@/db/schema'
-import { eq, and, desc, sql, asc, or, ilike } from 'drizzle-orm'
 import { auth } from '@/lib/auth'
-import {
-  getListLimitInfo,
-  type ListLimitInfo,
-  type UserListBonusRecord,
-} from '@/lib/list-limit'
-import type {
-  DoaListRecord,
-  DoaListWithUser,
-  DoaListWithUserAndItems,
-  CreateDoaListInput,
-  UpdateDoaListInput,
-  SavedDoaRecord,
-  CreateDoaListResult,
-} from '@/types/doa-list.types'
+import { getListLimitInfo } from '@/lib/list-limit'
+
+// Re-export profile functions
+export * from './profile'
 
 // ============================================
 // Auth Helper (internal use only)
@@ -69,24 +63,26 @@ export const getSessionFromServer = createServerFn({ method: 'GET' }).handler(
 // Get user's own lists with item count
 export const getUserDoaLists = createServerFn({ method: 'GET' })
   .inputValidator((data: { userId: string }) => data)
-  .handler(async ({ data }): Promise<(DoaListRecord & { itemCount: number })[]> => {
-    await requireAuth(data.userId)
+  .handler(
+    async ({ data }): Promise<Array<DoaListRecord & { itemCount: number }>> => {
+      await requireAuth(data.userId)
 
-    const lists = await db.query.doaList.findMany({
-      where: eq(doaList.userId, data.userId),
-      orderBy: [desc(doaList.updatedAt)],
-      with: {
-        items: {
-          columns: { id: true },
+      const lists = await db.query.doaList.findMany({
+        where: eq(doaList.userId, data.userId),
+        orderBy: [desc(doaList.updatedAt)],
+        with: {
+          items: {
+            columns: { id: true },
+          },
         },
-      },
-    })
+      })
 
-    return lists.map((list) => ({
-      ...list,
-      itemCount: list.items.length,
-    }))
-  })
+      return lists.map((list) => ({
+        ...list,
+        itemCount: list.items.length,
+      }))
+    },
+  )
 
 // Check if user has any lists (for onboarding redirect)
 export const checkUserHasDoaLists = createServerFn({ method: 'GET' })
@@ -110,83 +106,25 @@ export const getUserListLimitInfo = createServerFn({ method: 'GET' })
   .handler(async ({ data }): Promise<ListLimitInfo> => {
     await requireAuth(data.userId)
 
-    // Run all queries in parallel for performance
-    const [listCountResult, referralCountResult, bonusesResult] =
-      await Promise.all([
-        // Count user's lists
-        db
-          .select({ count: sql<number>`count(*)::int` })
-          .from(doaList)
-          .where(eq(doaList.userId, data.userId)),
-
-        // Count user's successful referrals
-        db
-          .select({ count: sql<number>`count(*)::int` })
-          .from(referral)
-          .where(eq(referral.referrerId, data.userId)),
-
-        // Get user's bonus records
-        db.query.userListBonus.findMany({
-          where: eq(userListBonus.userId, data.userId),
-        }),
-      ])
+    const listCountResult = await db
+      .select({ count: sql<number>`count(*)::int` })
+      .from(doaList)
+      .where(eq(doaList.userId, data.userId))
 
     const currentListCount = listCountResult[0]?.count ?? 0
-    const referralCount = referralCountResult[0]?.count ?? 0
-    const bonuses = bonusesResult as UserListBonusRecord[]
 
-    return getListLimitInfo(currentListCount, referralCount, bonuses)
+    return getListLimitInfo(currentListCount, 0, [])
   })
 
-// Create new list (with limit checking)
+// Create new list
 export const createDoaList = createServerFn({ method: 'POST' })
-  .inputValidator(
-    (data: { userId: string; input: CreateDoaListInput }) => data,
-  )
+  .inputValidator((data: { userId: string; input: CreateDoaListInput }) => data)
   .handler(async ({ data }): Promise<CreateDoaListResult> => {
     await requireAuth(data.userId)
 
     const { userId, input } = data
 
-    // Use a transaction to prevent race conditions (TOCTOU)
-    // This ensures the limit check and insert are atomic
     return await db.transaction(async (tx) => {
-      // Fetch all data needed for limit check within transaction
-      const [listCountResult, referralCountResult, bonusesResult] =
-        await Promise.all([
-          tx
-            .select({ count: sql<number>`count(*)::int` })
-            .from(doaList)
-            .where(eq(doaList.userId, userId)),
-          tx
-            .select({ count: sql<number>`count(*)::int` })
-            .from(referral)
-            .where(eq(referral.referrerId, userId)),
-          tx.query.userListBonus.findMany({
-            where: eq(userListBonus.userId, userId),
-          }),
-        ])
-
-      const currentCount = listCountResult[0]?.count ?? 0
-      const referralCount = referralCountResult[0]?.count ?? 0
-      const bonuses = bonusesResult as UserListBonusRecord[]
-
-      const limitInfo = getListLimitInfo(currentCount, referralCount, bonuses)
-
-      // Check limit
-      if (!limitInfo.canCreate) {
-        return {
-          success: false as const,
-          error: {
-            code: 'LIST_LIMIT_REACHED' as const,
-            message: `You've reached your list limit of ${limitInfo.limit}. Invite friends or upgrade to create more!`,
-            currentCount: limitInfo.current,
-            limit: limitInfo.limit,
-            breakdown: limitInfo.breakdown,
-          },
-        }
-      }
-
       // Insert the list
       const [newList] = await tx
         .insert(doaList)
@@ -380,7 +318,7 @@ export const deleteDoaList = createServerFn({ method: 'POST' })
 
 export const getSavedDoas = createServerFn({ method: 'GET' })
   .inputValidator((data: { userId: string }) => data)
-  .handler(async ({ data }): Promise<SavedDoaRecord[]> => {
+  .handler(async ({ data }): Promise<Array<SavedDoaRecord>> => {
     await requireAuth(data.userId)
 
     const saved = await db.query.savedDoa.findMany({
@@ -447,35 +385,40 @@ export const isDoaSaved = createServerFn({ method: 'GET' })
 
 export const getFavoriteLists = createServerFn({ method: 'GET' })
   .inputValidator((data: { userId: string }) => data)
-  .handler(async ({ data }): Promise<(DoaListWithUser & { itemCount: number })[]> => {
-    await requireAuth(data.userId)
+  .handler(
+    async ({
+      data,
+    }): Promise<Array<DoaListWithUser & { itemCount: number }>> => {
+      await requireAuth(data.userId)
 
-    const favorites = await db.query.favoriteList.findMany({
-      where: eq(favoriteList.userId, data.userId),
-      with: {
-        list: {
-          with: {
-            user: {
-              columns: { id: true, name: true, image: true },
-            },
-            items: {
-              columns: { id: true },
+      const favorites = await db.query.favoriteList.findMany({
+        where: eq(favoriteList.userId, data.userId),
+        with: {
+          list: {
+            with: {
+              user: {
+                columns: { id: true, name: true, image: true },
+              },
+              items: {
+                columns: { id: true },
+              },
             },
           },
         },
-      },
-      orderBy: [desc(favoriteList.createdAt)],
-    })
+        orderBy: [desc(favoriteList.createdAt)],
+      })
 
-    return favorites
-      .filter(
-        (f) => f.list.status === 'published' && f.list.visibility === 'public',
-      )
-      .map((f) => ({
-        ...(f.list as DoaListWithUser),
-        itemCount: f.list.items.length,
-      }))
-  })
+      return favorites
+        .filter(
+          (f) =>
+            f.list.status === 'published' && f.list.visibility === 'public',
+        )
+        .map((f) => ({
+          ...(f.list as DoaListWithUser),
+          itemCount: f.list.items.length,
+        }))
+    },
+  )
 
 export const addFavoriteList = createServerFn({ method: 'POST' })
   .inputValidator((data: { userId: string; listId: string }) => data)
@@ -602,7 +545,7 @@ export interface PublicListItem extends DoaListWithUser {
 }
 
 export interface PublicListsResult {
-  lists: PublicListItem[]
+  lists: Array<PublicListItem>
   total: number
   page: number
   totalPages: number
@@ -654,7 +597,7 @@ export const getPublicLists = createServerFn({ method: 'GET' })
         .from(doaList)
         .where(whereClause)
 
-      const total = countResult?.count ?? 0
+      const total = countResult.count
 
       // Early return if no results
       if (total === 0) {
@@ -672,7 +615,11 @@ export const getPublicLists = createServerFn({ method: 'GET' })
           ? [desc(doaList.viewCount)]
           : sortBy === 'favorites'
             ? [desc(doaList.favoriteCount)]
-            : [desc(sql`COALESCE(${doaList.publishedAt}, ${doaList.createdAt})`)]
+            : [
+                desc(
+                  sql`COALESCE(${doaList.publishedAt}, ${doaList.createdAt})`,
+                ),
+              ]
 
       // Get paginated results with user info and privacy settings
       const lists = await db.query.doaList.findMany({

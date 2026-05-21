@@ -8,25 +8,549 @@ export function truncateText(text: string, maxLength: number): string {
   return text.slice(0, maxLength - 3) + '...'
 }
 
+interface SearchableHadith {
+  matchedReference?: string | null
+  book?: string | null
+  chapterNumber?: number | null
+  chapterTitleArabic?: string | null
+  chapterTitleEnglish?: string | null
+  arabicText?: string | null
+  englishText?: string | null
+  grade?: string | null
+  referenceUrl?: string | null
+  inBookReference?: string | null
+}
+
+interface SearchablePrayer {
+  slug?: string | null
+  nameEn?: string | null
+  nameMy?: string | null
+  content?: string | null
+  meaningEn?: string | null
+  meaningMy?: string | null
+  referenceEn?: string | null
+  referenceMy?: string | null
+  descriptionEn?: string | null
+  descriptionMy?: string | null
+  contextEn?: string | null
+  contextMy?: string | null
+  categoryNames?: Array<string> | null
+  hadithMatches?: Array<SearchableHadith> | null
+}
+
+const SEARCH_STOP_WORDS = new Set([
+  'a',
+  'an',
+  'and',
+  'am',
+  'aku',
+  'bagi',
+  'bila',
+  'by',
+  'can',
+  'could',
+  'doa',
+  'dua',
+  'duaa',
+  'du',
+  'for',
+  'get',
+  'give',
+  'i',
+  'im',
+  'in',
+  'is',
+  'it',
+  'ketika',
+  'mohon',
+  'my',
+  'need',
+  'of',
+  'on',
+  'or',
+  'please',
+  'prayer',
+  'rasa',
+  'saya',
+  'show',
+  'supplication',
+  'that',
+  'the',
+  'to',
+  'untuk',
+  'when',
+  'with',
+  'yang',
+])
+
+const INTENT_GROUPS = [
+  {
+    triggers: [
+      'sedih',
+      'sad',
+      'sadness',
+      'grief',
+      'dukacita',
+      'duka',
+      'sorrow',
+      'distress',
+      'susah',
+      'kesusahan',
+      'anxiety',
+      'anxious',
+      'cemas',
+      'risau',
+      'worry',
+      'worried',
+      'stress',
+      'depressed',
+      'down',
+    ],
+    terms: [
+      'sedih',
+      'sad',
+      'sadness',
+      'grief',
+      'dukacita',
+      'duka',
+      'distress',
+      'kesusahan',
+      'tenang',
+      'calm',
+      'lapang',
+      'heart',
+      'hati',
+      'jiwa',
+      'soul',
+      'worry',
+      'cemas',
+      'risau',
+    ],
+  },
+  {
+    triggers: [
+      'takut',
+      'fear',
+      'afraid',
+      'protection',
+      'protect',
+      'lindung',
+      'berlindung',
+      'safe',
+      'safety',
+      'bahaya',
+      'harm',
+    ],
+    terms: [
+      'protection',
+      'protect',
+      'berlindung',
+      'lindung',
+      'keselamatan',
+      'safety',
+      'safe',
+      'harm',
+      'evil',
+      'jahat',
+    ],
+  },
+  {
+    triggers: [
+      'sakit',
+      'ill',
+      'illness',
+      'sick',
+      'pain',
+      'healing',
+      'heal',
+      'sembuh',
+      'penyakit',
+    ],
+    terms: [
+      'sakit',
+      'illness',
+      'healing',
+      'heal',
+      'sembuh',
+      'penyakit',
+      'afiyah',
+      'wellbeing',
+    ],
+  },
+  {
+    triggers: [
+      'forgive',
+      'forgiveness',
+      'sin',
+      'sins',
+      'taubat',
+      'ampun',
+      'keampunan',
+      'repent',
+      'repentance',
+    ],
+    terms: [
+      'forgiveness',
+      'forgive',
+      'keampunan',
+      'ampun',
+      'taubat',
+      'repentance',
+      'sins',
+      'dosa',
+    ],
+  },
+  {
+    triggers: [
+      'rezeki',
+      'sustenance',
+      'wealth',
+      'money',
+      'income',
+      'debt',
+      'hutang',
+      'rich',
+      'cukup',
+    ],
+    terms: [
+      'rezeki',
+      'sustenance',
+      'wealth',
+      'debt',
+      'hutang',
+      'kekayaan',
+      'cukup',
+      'income',
+    ],
+  },
+  {
+    triggers: [
+      'sleep',
+      'tidur',
+      'wake',
+      'waking',
+      'bangun',
+      'morning',
+      'pagi',
+      'evening',
+      'petang',
+      'night',
+      'malam',
+    ],
+    terms: [
+      'sleep',
+      'tidur',
+      'wake',
+      'bangun',
+      'morning',
+      'pagi',
+      'evening',
+      'petang',
+      'night',
+      'malam',
+    ],
+  },
+  {
+    triggers: [
+      'travel',
+      'journey',
+      'safar',
+      'musafir',
+      'trip',
+      'vehicle',
+      'kenderaan',
+    ],
+    terms: [
+      'travel',
+      'journey',
+      'safar',
+      'musafir',
+      'trip',
+      'vehicle',
+      'kenderaan',
+    ],
+  },
+  {
+    triggers: [
+      'rain',
+      'hujan',
+      'storm',
+      'thunder',
+      'petir',
+      'wind',
+      'angin',
+    ],
+    terms: ['rain', 'hujan', 'storm', 'thunder', 'petir', 'wind', 'angin'],
+  },
+  {
+    triggers: [
+      'guidance',
+      'guide',
+      'hidayah',
+      'decision',
+      'choose',
+      'choice',
+      'istikharah',
+      'confused',
+      'keliru',
+    ],
+    terms: [
+      'guidance',
+      'guide',
+      'hidayah',
+      'decision',
+      'choice',
+      'istikharah',
+      'wisdom',
+      'bijak',
+    ],
+  },
+  {
+    triggers: [
+      'study',
+      'exam',
+      'knowledge',
+      'learn',
+      'ilmu',
+      'belajar',
+      'faham',
+      'understand',
+    ],
+    terms: [
+      'study',
+      'exam',
+      'knowledge',
+      'learn',
+      'ilmu',
+      'belajar',
+      'understand',
+      'faham',
+    ],
+  },
+  {
+    triggers: [
+      'family',
+      'children',
+      'child',
+      'parents',
+      'ibu',
+      'bapa',
+      'anak',
+      'keluarga',
+      'spouse',
+      'pasangan',
+    ],
+    terms: [
+      'family',
+      'children',
+      'child',
+      'parents',
+      'ibu',
+      'bapa',
+      'anak',
+      'keluarga',
+      'spouse',
+      'pasangan',
+    ],
+  },
+  {
+    triggers: [
+      'thanks',
+      'thankful',
+      'gratitude',
+      'syukur',
+      'grateful',
+      'nikmat',
+    ],
+    terms: ['thanks', 'thankful', 'gratitude', 'syukur', 'grateful', 'nikmat'],
+  },
+]
+
+export function normalizeSearchText(value: unknown): string {
+  return String(value ?? '')
+    .normalize('NFKD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .replace(/['’]/g, '')
+    .replace(/[^a-zA-Z0-9\u0600-\u06ff]+/g, ' ')
+    .trim()
+    .toLowerCase()
+    .replace(/\s+/g, ' ')
+}
+
+function tokenizeSearchQuery(query: string): Array<string> {
+  return normalizeSearchText(query)
+    .split(' ')
+    .filter((token) => token.length > 1 && !SEARCH_STOP_WORDS.has(token))
+}
+
+function uniqueTerms(terms: Array<string>): Array<string> {
+  return [...new Set(terms.map(normalizeSearchText).filter(Boolean))]
+}
+
+function getIntentTerms(tokens: Array<string>): Array<string> {
+  if (tokens.length === 0) return []
+
+  return uniqueTerms(
+    INTENT_GROUPS.flatMap((group) =>
+      group.triggers.some((trigger) => tokens.includes(trigger))
+        ? group.terms
+        : [],
+    ),
+  )
+}
+
+function joinFields(fields: Array<unknown>): string {
+  return normalizeSearchText(fields.filter(Boolean).join(' '))
+}
+
+function buildHadithText(
+  hadithMatches: Array<SearchableHadith> | null | undefined,
+): string {
+  return joinFields(
+    (hadithMatches ?? []).flatMap((match) => [
+      match.matchedReference,
+      match.book,
+      match.chapterNumber,
+      match.chapterTitleArabic,
+      match.chapterTitleEnglish,
+      match.arabicText,
+      match.englishText,
+      match.grade,
+      match.referenceUrl,
+      match.inBookReference,
+    ]),
+  )
+}
+
+export function getSearchableText(prayer: SearchablePrayer): string {
+  return joinFields([
+    prayer.slug,
+    prayer.nameEn,
+    prayer.nameMy,
+    prayer.content,
+    prayer.meaningEn,
+    prayer.meaningMy,
+    prayer.referenceEn,
+    prayer.referenceMy,
+    prayer.descriptionEn,
+    prayer.descriptionMy,
+    prayer.contextEn,
+    prayer.contextMy,
+    ...(prayer.categoryNames ?? []),
+    buildHadithText(prayer.hadithMatches),
+  ])
+}
+
+function scoreTerm(text: string, term: string, weight: number): number {
+  if (!term || !text.includes(term)) return 0
+  return weight
+}
+
+export function getSearchScore(
+  prayer: SearchablePrayer,
+  query: string,
+): number {
+  const normalizedQuery = normalizeSearchText(query)
+  const tokens = tokenizeSearchQuery(query)
+  const intentTerms = getIntentTerms(tokens)
+  const expandedTerms = uniqueTerms([...tokens, ...intentTerms])
+
+  if (!normalizedQuery || expandedTerms.length === 0) {
+    return 0
+  }
+
+  const titleText = joinFields([prayer.nameEn, prayer.nameMy, prayer.slug])
+  const categoryText = joinFields(prayer.categoryNames ?? [])
+  const titleTerms = new Set(titleText.split(' ').filter(Boolean))
+  const exactCategoryTerms = new Set(
+    (prayer.categoryNames ?? []).map(normalizeSearchText).filter(Boolean),
+  )
+  const meaningText = joinFields([
+    prayer.meaningEn,
+    prayer.meaningMy,
+    prayer.descriptionEn,
+    prayer.descriptionMy,
+    prayer.contextEn,
+    prayer.contextMy,
+  ])
+  const referenceText = joinFields([prayer.referenceEn, prayer.referenceMy])
+  const arabicText = normalizeSearchText(prayer.content)
+  const hadithText = buildHadithText(prayer.hadithMatches)
+  const allText = joinFields([
+    titleText,
+    categoryText,
+    meaningText,
+    referenceText,
+    arabicText,
+    hadithText,
+  ])
+
+  let score = 0
+
+  if (titleText === normalizedQuery) {
+    score += 100
+  } else if (titleText.includes(normalizedQuery)) {
+    score += 70
+  } else if (allText.includes(normalizedQuery)) {
+    score += 30
+  }
+
+  if (tokens.length > 1 && tokens.every((token) => allText.includes(token))) {
+    score += 16
+  }
+
+  for (const term of tokens) {
+    if (titleTerms.has(term)) score += 24
+    if (exactCategoryTerms.has(term)) score += 180
+    score += scoreTerm(titleText, term, 18)
+    score += scoreTerm(categoryText, term, 16)
+    score += scoreTerm(meaningText, term, 8)
+    score += scoreTerm(hadithText, term, 8)
+    score += scoreTerm(referenceText, term, 6)
+    score += scoreTerm(arabicText, term, 3)
+  }
+
+  for (const term of intentTerms) {
+    if (tokens.includes(term)) continue
+    score += scoreTerm(titleText, term, 10)
+    score += scoreTerm(categoryText, term, 12)
+    score += scoreTerm(meaningText, term, 6)
+    score += scoreTerm(hadithText, term, 5)
+    score += scoreTerm(referenceText, term, 3)
+    score += scoreTerm(arabicText, term, 1)
+  }
+
+  return score
+}
+
 /**
- * Simple search function for filtering prayers
+ * Ranked search for prayers, including titles, meanings, categories, references,
+ * Arabic text, and supporting hadith metadata/text.
  */
-export function searchPrayers(prayers: Array<any>, query: string): Array<any> {
-  if (!query.trim()) return prayers
+export function searchPrayers<T extends SearchablePrayer>(
+  prayers: Array<T>,
+  query: string,
+): Array<T> {
+  const normalizedQuery = normalizeSearchText(query)
+  const tokens = tokenizeSearchQuery(query)
+  const intentTerms = getIntentTerms(tokens)
 
-  const searchTerm = query.toLowerCase()
+  if (!normalizedQuery || tokens.length === 0) return prayers
 
-  return prayers.filter((prayer) => {
-    return (
-      prayer.nameEn?.toLowerCase().includes(searchTerm) ||
-      prayer.nameMy?.toLowerCase().includes(searchTerm) ||
-      prayer.content?.toLowerCase().includes(searchTerm) ||
-      prayer.meaningEn?.toLowerCase().includes(searchTerm) ||
-      prayer.meaningMy?.toLowerCase().includes(searchTerm) ||
-      prayer.referenceEn?.toLowerCase().includes(searchTerm) ||
-      prayer.referenceMy?.toLowerCase().includes(searchTerm)
-    )
-  })
+  return prayers
+    .map((prayer, index) => ({
+      prayer,
+      index,
+      score: getSearchScore(prayer, query),
+      searchableText: getSearchableText(prayer),
+    }))
+    .filter((result) => {
+      if (result.score <= 0) return false
+      if (tokens.length <= 1 || intentTerms.length > 0) return true
+      return tokens.every((token) => result.searchableText.includes(token))
+    })
+    .sort((a, b) => b.score - a.score || a.index - b.index)
+    .map((result) => result.prayer)
 }
 
 /**
@@ -54,7 +578,7 @@ export function isPrayerSelected(
 /**
  * Validate the doa list
  * @param list - The list to validate
- * @param maxPrayers - Maximum prayers allowed (default: 15 for free users)
+ * @param maxPrayers - Maximum prayers allowed
  */
 export function validateDoaList(
   list: {

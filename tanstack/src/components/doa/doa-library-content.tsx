@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState, useCallback } from 'react'
+import { useCallback, useMemo, useState } from 'react'
 import { Link } from '@tanstack/react-router'
 import {
   BookOpen,
@@ -10,43 +10,19 @@ import {
   Share,
 } from 'lucide-react'
 import { toast } from 'sonner'
+import type { SearchableDoa } from '@/types/doa.types'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { useLanguage } from '@/contexts/language-context'
-import { useSession } from '@/lib/auth-client'
-import { getAllDoas } from '@/server-functions/dashboard/doa'
-import { getSavedDoas, saveDoa, unsaveDoa } from '@/server-functions/dashboard'
-import type { Doa } from '@/types/doa.types'
-
-// Dynamic meta component for SEO
-function DynamicMetaTags() {
-  const { t } = useLanguage()
-
-  // Update document title and meta description based on language
-  document.title = t('pageTitle')
-
-  // Update or create meta description
-  const existingMetaDescription = document.querySelector(
-    'meta[name="description"]',
-  )
-  if (existingMetaDescription) {
-    existingMetaDescription.setAttribute('content', t('pageDescription'))
-  } else {
-    const metaDescription = document.createElement('meta')
-    metaDescription.name = 'description'
-    metaDescription.content = t('pageDescription')
-    document.head.appendChild(metaDescription)
-  }
-
-  return null // This component doesn't render anything
-}
+import { saveDoa, unsaveDoa } from '@/server-functions/dashboard'
+import { searchPrayers } from '@/utils/text-helpers'
 
 // Constants
 const DOAS_PER_PAGE = 10
 
 // Prayer Card Component
 interface PrayerCardProps {
-  doa: Doa
+  doa: SearchableDoa
   language: 'en' | 'my'
   isSaved: boolean
   isAuthenticated: boolean
@@ -111,7 +87,7 @@ function PrayerCard({
               {getTitle()}
             </h2>
           </div>
-          <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+          <div className="flex items-center gap-1 opacity-100 transition-opacity duration-200 md:opacity-0 md:group-hover:opacity-100">
             <button
               className="p-2 rounded-full text-muted-foreground hover:text-primary hover:bg-secondary transition-colors"
               title={language === 'my' ? 'Salin' : 'Copy'}
@@ -165,7 +141,7 @@ function PrayerCard({
                     ? `${doa.nameMy} - ${doa.meaningMy?.slice(0, 100) || ''}...`
                     : `${doa.nameEn} - ${doa.meaningEn?.slice(0, 100) || ''}...`
 
-                if (navigator.share) {
+                if ('share' in navigator && typeof navigator.share === 'function') {
                   navigator.share({
                     title: language === 'my' ? doa.nameMy : doa.nameEn,
                     text: shareText,
@@ -247,8 +223,8 @@ function Pagination({
 }) {
   const pages = useMemo(() => {
     const delta = 2
-    const range: number[] = []
-    const rangeWithDots: (number | string)[] = []
+    const range: Array<number> = []
+    const rangeWithDots: Array<number | string> = []
     let l: number | undefined
 
     for (let i = 1; i <= totalPages; i++) {
@@ -367,55 +343,32 @@ function FilterBar({
   )
 }
 
+interface DoaLibraryContentProps {
+  initialDoas: Array<SearchableDoa>
+  initialSavedSlugs: Array<string>
+  user: {
+    id: string
+    name: string
+    email: string
+    image: string | null | undefined
+  } | null
+}
+
 // Main content component
-export function DoaLibraryContent() {
+export function DoaLibraryContent({
+  initialDoas,
+  initialSavedSlugs,
+  user,
+}: DoaLibraryContentProps) {
   const { language, t } = useLanguage()
-  const { data: session } = useSession()
   const [searchQuery, setSearchQuery] = useState('')
   const [currentPage, setCurrentPage] = useState(1)
-  const [allDoas, setAllDoas] = useState<Doa[]>([])
-  const [isLoading, setIsLoading] = useState(true)
-  const [savedSlugs, setSavedSlugs] = useState<Set<string>>(new Set())
+  const [savedSlugs, setSavedSlugs] = useState<Set<string>>(
+    () => new Set(initialSavedSlugs),
+  )
   const [savingSlug, setSavingSlug] = useState<string | null>(null)
 
-  const user = session?.user
   const isAuthenticated = !!user
-
-  // Fetch all duas and saved doas on mount
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        // Fetch duas
-        const result = await getAllDoas({ data: { limit: 100 } })
-        setAllDoas(result.data)
-      } catch (error) {
-        console.error('Failed to fetch duas:', error)
-      } finally {
-        setIsLoading(false)
-      }
-    }
-
-    fetchData()
-  }, [])
-
-  // Fetch saved doas when user becomes authenticated
-  useEffect(() => {
-    if (!user) {
-      setSavedSlugs(new Set())
-      return
-    }
-
-    const fetchSavedDoas = async () => {
-      try {
-        const saved = await getSavedDoas({ data: { userId: user.id } })
-        setSavedSlugs(new Set(saved.map((s) => s.doaSlug)))
-      } catch (error) {
-        console.error('Failed to fetch saved doas:', error)
-      }
-    }
-
-    fetchSavedDoas()
-  }, [user])
 
   // Handle toggle save with optimistic updates
   const handleToggleSave = useCallback(
@@ -484,38 +437,8 @@ export function DoaLibraryContent() {
 
   // Filter and search logic (client-side for instant feedback)
   const filteredDoas = useMemo(() => {
-    let filtered = allDoas
-
-    // Language-aware search filter
-    if (searchQuery.trim()) {
-      const query = searchQuery.toLowerCase()
-      filtered = filtered.filter((doa) => {
-        // Always search in Arabic content (language-independent)
-        const contentMatch = doa.content.toLowerCase().includes(query)
-
-        // Search in language-specific fields
-        if (language === 'my') {
-          return (
-            contentMatch ||
-            doa.nameMy.toLowerCase().includes(query) ||
-            (doa.meaningMy || '').toLowerCase().includes(query) ||
-            (doa.referenceMy || '').toLowerCase().includes(query) ||
-            doa.categoryNames.some((cat) => cat.toLowerCase().includes(query))
-          )
-        } else {
-          return (
-            contentMatch ||
-            doa.nameEn.toLowerCase().includes(query) ||
-            (doa.meaningEn || '').toLowerCase().includes(query) ||
-            (doa.referenceEn || '').toLowerCase().includes(query) ||
-            doa.categoryNames.some((cat) => cat.toLowerCase().includes(query))
-          )
-        }
-      })
-    }
-
-    return filtered
-  }, [searchQuery, language, allDoas])
+    return searchPrayers(initialDoas, searchQuery)
+  }, [searchQuery, initialDoas])
 
   // Pagination
   const totalPages = Math.ceil(filteredDoas.length / DOAS_PER_PAGE)
@@ -536,22 +459,8 @@ export function DoaLibraryContent() {
     window.scrollTo({ top: 200, behavior: 'smooth' })
   }
 
-  if (isLoading) {
-    return (
-      <main className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8 md:py-12 pb-24">
-        <div className="flex items-center justify-center py-16">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mr-3"></div>
-          <span className="text-muted-foreground">
-            {language === 'my' ? 'Memuatkan doa...' : 'Loading prayers...'}
-          </span>
-        </div>
-      </main>
-    )
-  }
-
   return (
     <>
-      <DynamicMetaTags />
       {/* Main Content */}
       <main className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8 md:py-12 pb-24">
         <FilterBar

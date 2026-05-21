@@ -12,7 +12,7 @@ import { typeid } from 'typeid-js'
 import { user } from './auth'
 
 // ============================================
-// USER LIST BONUS - Tracks list limit bonuses
+// USER LIST BONUS - Legacy referral bonus records
 // ============================================
 export const userListBonus = pgTable(
   'user_list_bonus',
@@ -25,25 +25,22 @@ export const userListBonus = pgTable(
       .notNull()
       .references(() => user.id, { onDelete: 'cascade' }),
 
-    // Type of bonus
-    // 'referral' - from referring other users
-    // 'purchase' - from buying add-on packs
-    // 'subscription' - from active subscription tier
+    // Type of legacy bonus, currently only 'referral' is written.
     bonusType: varchar('bonus_type', { length: 30 }).notNull(),
 
-    // Number of additional lists granted
+    // Legacy amount retained for existing data.
     amount: integer('amount').notNull(),
 
-    // Optional reference to the source (e.g., referral ID, purchase ID, subscription ID)
+    // Optional reference to the source, such as a referral ID.
     sourceId: varchar('source_id', { length: 100 }),
 
-    // Optional description (e.g., "10-pack purchase", "Pro subscription")
+    // Optional description.
     description: varchar('description', { length: 255 }),
 
-    // For expiring bonuses (like subscriptions)
+    // Optional expiration for historical records.
     expiresAt: timestamp('expires_at'),
 
-    // Soft delete for when subscription lapses (preserves history)
+    // Soft delete flag for historical records.
     isActive: boolean('is_active').default(true).notNull(),
 
     // Timestamps

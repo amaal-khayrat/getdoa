@@ -1,12 +1,11 @@
-import { useState, useCallback, useMemo, useEffect, useRef } from 'react'
-import { useRouter } from '@tanstack/react-router'
-import { Download, Loader2, ImageOff } from 'lucide-react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { Download, Loader2 } from 'lucide-react'
 import { DoaSelector } from './doa-selector'
 import { BackgroundPicker } from './background-picker'
 import { PreviewPanel } from './preview-panel'
-import { LimitIndicator } from './limit-indicator'
 import { StepHeader } from './step-header'
 import { SuccessModal } from './success-modal'
+import type { DoaItem, Language } from '@/types/doa.types'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
 import {
@@ -17,29 +16,23 @@ import {
 import { useLanguage } from '@/contexts/language-context'
 import { recordImageGeneration } from '@/server-functions/dashboard/image-generator'
 import {
-  generateSingleDoaImage,
   downloadDoaImage,
+  generateSingleDoaImage,
 } from '@/utils/doa-single-image-generator'
-import type { DoaItem, Language } from '@/types/doa.types'
-import type { ImageLimitInfo } from '@/lib/image-limit'
 import { cn } from '@/lib/utils'
 
 interface DoaImageGeneratorProps {
-  initialLimitInfo: ImageLimitInfo
-  prayers: DoaItem[]
-  categories: string[]
+  prayers: Array<DoaItem>
+  categories: Array<string>
 }
 
 export function DoaImageGenerator({
-  initialLimitInfo,
   prayers,
   categories,
 }: DoaImageGeneratorProps) {
   const { language: contextLanguage } = useLanguage()
-  const router = useRouter()
 
   // State
-  const [limitInfo, setLimitInfo] = useState<ImageLimitInfo>(initialLimitInfo)
   const [selectedDoa, setSelectedDoa] = useState<DoaItem | null>(null)
   const [selectedBackground, setSelectedBackground] = useState(1)
   const [language, setLanguage] = useState<Language>(
@@ -74,9 +67,9 @@ export function DoaImageGenerator({
     () => ({
       doaSelected: selectedDoa !== null,
       backgroundSelected: true, // Always has default
-      canGenerate: selectedDoa !== null && limitInfo.canGenerate,
+      canGenerate: selectedDoa !== null,
     }),
-    [selectedDoa, limitInfo.canGenerate],
+    [selectedDoa],
   )
 
   // Handlers
@@ -122,19 +115,9 @@ export function DoaImageGenerator({
     document.body.removeChild(link)
   }, [generatedImageUrl, generatedFilename])
 
-  // Handle reset time reached - invalidate route to get fresh limit info
-  const handleResetTimeReached = useCallback(() => {
-    router.invalidate()
-  }, [router])
-
   const handleGenerate = useCallback(async () => {
     if (!selectedDoa) {
       setError('Please select a doa first')
-      return
-    }
-
-    if (!limitInfo.canGenerate) {
-      setError('Daily limit reached. Please try again tomorrow.')
       return
     }
 
@@ -149,19 +132,15 @@ export function DoaImageGenerator({
         language,
       })
 
-      // Record the generation on the server (limit tracking)
+      // Record the generation on the server for usage analytics.
       const result = await recordImageGeneration({
         data: {
           doaSlug: selectedDoa.slug,
         },
       })
 
-      // Handle limit error from server
       if (!result.success) {
         setError(result.error.message)
-        if (result.error.limitInfo) {
-          setLimitInfo(result.error.limitInfo)
-        }
         return
       }
 
@@ -180,7 +159,6 @@ export function DoaImageGenerator({
 
       setGeneratedImageUrl(url)
       setGeneratedFilename(filename)
-      setLimitInfo(result.limitInfo)
       setShowSuccessModal(true)
 
       // Auto-download
@@ -195,60 +173,7 @@ export function DoaImageGenerator({
     } finally {
       setIsGenerating(false)
     }
-  }, [selectedDoa, selectedBackground, language, limitInfo.canGenerate])
-
-  // Blocked state (limit reached)
-  if (!limitInfo.canGenerate && !generatedImageUrl) {
-    return (
-      <div className="max-w-2xl mx-auto space-y-6">
-        {/* Header */}
-        <div className="text-center space-y-2">
-          <h1 className="text-2xl md:text-3xl font-serif font-semibold">
-            Doa Image Generator
-          </h1>
-          <p className="text-muted-foreground">
-            Create beautiful shareable images of your favorite duas
-          </p>
-        </div>
-
-        {/* Limit Reached Card */}
-        <Card className="border-amber-500/30 bg-amber-500/5">
-          <CardContent className="pt-6 text-center space-y-4">
-            <div className="h-16 w-16 mx-auto rounded-full bg-amber-500/20 flex items-center justify-center">
-              <ImageOff className="h-8 w-8 text-amber-600" />
-            </div>
-            <div>
-              <h2 className="text-lg font-semibold">Daily Limit Reached</h2>
-              <p className="text-muted-foreground mt-1">
-                You've used your free image generation for today.
-              </p>
-            </div>
-            <LimitIndicator
-              limitInfo={limitInfo}
-              onResetTimeReached={handleResetTimeReached}
-            />
-            <p className="text-sm text-muted-foreground">
-              Come back tomorrow to create another beautiful doa image!
-            </p>
-          </CardContent>
-        </Card>
-
-        {/* Show last generated image if available */}
-        {limitInfo.lastGeneratedAt && (
-          <Card>
-            <CardContent className="pt-6">
-              <p className="text-sm text-muted-foreground text-center">
-                You've created {limitInfo.totalGenerations} image
-                {limitInfo.totalGenerations === 1 ? '' : 's'} total.
-                Last generated:{' '}
-                {new Date(limitInfo.lastGeneratedAt).toLocaleDateString()}
-              </p>
-            </CardContent>
-          </Card>
-        )}
-      </div>
-    )
-  }
+  }, [selectedDoa, selectedBackground, language])
 
   return (
     <div className="max-w-5xl mx-auto space-y-6">
@@ -274,7 +199,9 @@ export function DoaImageGenerator({
             <div
               className={cn(
                 'absolute h-[calc(100%-4px)] w-[calc(50%-2px)] rounded-full bg-primary shadow-sm transition-transform duration-200 ease-out',
-                language === 'my' ? 'translate-x-[calc(100%+2px)]' : 'translate-x-0'
+                language === 'my'
+                  ? 'translate-x-[calc(100%+2px)]'
+                  : 'translate-x-0',
               )}
               aria-hidden="true"
             />
@@ -287,7 +214,7 @@ export function DoaImageGenerator({
                 'relative z-10 flex items-center justify-center px-3 py-1.5 text-sm font-medium transition-colors duration-200',
                 language === 'en'
                   ? 'text-primary-foreground'
-                  : 'text-muted-foreground hover:text-foreground'
+                  : 'text-muted-foreground hover:text-foreground',
               )}
             >
               EN
@@ -301,37 +228,13 @@ export function DoaImageGenerator({
                 'relative z-10 flex items-center justify-center px-3 py-1.5 text-sm font-medium transition-colors duration-200',
                 language === 'my'
                   ? 'text-primary-foreground'
-                  : 'text-muted-foreground hover:text-foreground'
+                  : 'text-muted-foreground hover:text-foreground',
               )}
             >
               MY
             </button>
           </div>
-
-          {/* Limit Badge (compact on tablet) */}
-          <LimitIndicator
-            limitInfo={limitInfo}
-            variant="compact"
-            className="hidden sm:flex lg:hidden"
-            onResetTimeReached={handleResetTimeReached}
-          />
         </div>
-      </div>
-
-      {/* Limit Indicator (mobile - full) */}
-      <div className="sm:hidden">
-        <LimitIndicator
-          limitInfo={limitInfo}
-          onResetTimeReached={handleResetTimeReached}
-        />
-      </div>
-
-      {/* Limit Indicator (large screens - full) */}
-      <div className="hidden lg:block">
-        <LimitIndicator
-          limitInfo={limitInfo}
-          onResetTimeReached={handleResetTimeReached}
-        />
       </div>
 
       {/* Error Message */}
@@ -496,8 +399,6 @@ export function DoaImageGenerator({
                     <Loader2 className="w-5 h-5 mr-2 animate-spin" />
                     Generating...
                   </>
-                ) : !limitInfo.canGenerate ? (
-                  'Daily Limit Reached'
                 ) : (
                   <>
                     <Download className="w-5 h-5 mr-2" />
@@ -510,7 +411,9 @@ export function DoaImageGenerator({
               {selectedDoa && (
                 <div className="p-3 rounded-lg bg-muted/50 text-sm">
                   <p className="font-medium">
-                    {language === 'my' ? selectedDoa.nameMy : selectedDoa.nameEn}
+                    {language === 'my'
+                      ? selectedDoa.nameMy
+                      : selectedDoa.nameEn}
                   </p>
                   <p className="text-muted-foreground text-xs mt-0.5">
                     {language === 'my'

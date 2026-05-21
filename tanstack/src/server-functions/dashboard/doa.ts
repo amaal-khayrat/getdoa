@@ -1,15 +1,35 @@
 import { createServerFn } from '@tanstack/react-start'
+import {  and, asc, eq, ilike, inArray, or, sql } from 'drizzle-orm'
+import type {SQL} from 'drizzle-orm';
+import type { DoaDetail, SearchableDoa } from '@/types/doa.types'
 import { db } from '@/db'
 import { doa, doaHadithMatch } from '@/db/schema'
-import { eq, ilike, or, sql, inArray, asc, and, type SQL } from 'drizzle-orm'
 import { PAGINATION_DEFAULTS } from '@/types/doa.types'
-import type { DoaDetail } from '@/types/doa.types'
 
 // ============================================
 // Helper: Escape special characters for ILIKE
 // ============================================
 function escapeIlike(str: string): string {
   return str.replace(/[%_\\]/g, '\\$&')
+}
+
+function buildHadithSearchCondition(searchTerm: string): SQL {
+  return sql`exists (
+    select 1 from ${doaHadithMatch}
+    where ${doaHadithMatch.doaSlug} = ${doa.slug}
+    and (
+      ${doaHadithMatch.matchedReference} ilike ${searchTerm}
+      or ${doaHadithMatch.book} ilike ${searchTerm}
+      or ${doaHadithMatch.chapterTitleArabic} ilike ${searchTerm}
+      or ${doaHadithMatch.chapterTitleEnglish} ilike ${searchTerm}
+      or ${doaHadithMatch.arabicText} ilike ${searchTerm}
+      or ${doaHadithMatch.englishText} ilike ${searchTerm}
+      or ${doaHadithMatch.grade} ilike ${searchTerm}
+      or ${doaHadithMatch.referenceUrl} ilike ${searchTerm}
+      or ${doaHadithMatch.inBookReference} ilike ${searchTerm}
+      or cast(${doaHadithMatch.chapterNumber} as text) ilike ${searchTerm}
+    )
+  )`
 }
 
 // ============================================
@@ -27,7 +47,7 @@ export const getAllDoas = createServerFn({ method: 'GET' })
     const offset = (page - 1) * limit
 
     // Build where conditions using drizzle-orm's `and()`
-    const conditions: SQL[] = []
+    const conditions: Array<SQL> = []
 
     if (search && search.trim()) {
       const searchTerm = `%${escapeIlike(search.trim())}%`
@@ -38,6 +58,13 @@ export const getAllDoas = createServerFn({ method: 'GET' })
           ilike(doa.content, searchTerm),
           ilike(doa.meaningMy, searchTerm),
           ilike(doa.meaningEn, searchTerm),
+          ilike(doa.referenceMy, searchTerm),
+          ilike(doa.referenceEn, searchTerm),
+          ilike(doa.descriptionMy, searchTerm),
+          ilike(doa.descriptionEn, searchTerm),
+          ilike(doa.contextMy, searchTerm),
+          ilike(doa.contextEn, searchTerm),
+          buildHadithSearchCondition(searchTerm),
         )!,
       )
     }
@@ -58,16 +85,32 @@ export const getAllDoas = createServerFn({ method: 'GET' })
       .from(doa)
       .where(whereClause)
 
-    const total = countResult?.count ?? 0
+    const total = countResult.count
 
-    // Get paginated data
-    const results = await db
-      .select()
-      .from(doa)
-      .where(whereClause)
-      .limit(limit)
-      .offset(offset)
-      .orderBy(asc(doa.nameEn))
+    // Get paginated data with hadith metadata so the client can search instantly.
+    const results: Array<SearchableDoa> = await db.query.doa.findMany({
+      where: whereClause,
+      with: {
+        hadithMatches: {
+          columns: {
+            matchedReference: true,
+            book: true,
+            chapterNumber: true,
+            chapterTitleArabic: true,
+            chapterTitleEnglish: true,
+            arabicText: true,
+            englishText: true,
+            grade: true,
+            referenceUrl: true,
+            inBookReference: true,
+          },
+          orderBy: [asc(doaHadithMatch.sortOrder)],
+        },
+      },
+      limit,
+      offset,
+      orderBy: [asc(doa.nameEn)],
+    })
 
     return {
       data: results,
@@ -115,7 +158,7 @@ export const getDoaBySlug = createServerFn({ method: 'GET' })
 // GET MULTIPLE DUAS BY SLUGS (for list resolution)
 // ============================================
 export const getDoasBySlugs = createServerFn({ method: 'GET' })
-  .inputValidator((data: { slugs: string[] }) => data)
+  .inputValidator((data: { slugs: Array<string> }) => data)
   .handler(async ({ data }) => {
     if (data.slugs.length === 0) return []
 
@@ -125,7 +168,7 @@ export const getDoasBySlugs = createServerFn({ method: 'GET' })
     const results = await db
       .select()
       .from(doa)
-      .where(inArray(doa.slug, uniqueSlugs as [string, ...string[]]))
+      .where(inArray(doa.slug, uniqueSlugs as [string, ...Array<string>]))
 
     // Maintain order from input slugs
     const slugMap = new Map(results.map((d) => [d.slug, d]))
@@ -137,7 +180,7 @@ export const getDoasBySlugs = createServerFn({ method: 'GET' })
 // ============================================
 // GET ALL UNIQUE CATEGORIES (with simple caching)
 // ============================================
-let categoriesCache: { data: string[]; timestamp: number } | null = null
+let categoriesCache: { data: Array<string>; timestamp: number } | null = null
 const CACHE_TTL_MS = 5 * 60 * 1000 // 5 minutes
 
 export const getDoaCategories = createServerFn({ method: 'GET' }).handler(
@@ -155,7 +198,7 @@ export const getDoaCategories = createServerFn({ method: 'GET' }).handler(
     // Flatten and dedupe
     const categories = new Set<string>()
     results.forEach((r) => {
-      ;(r.categoryNames ?? []).forEach((cat) => {
+      r.categoryNames.forEach((cat) => {
         if (cat && cat.trim()) categories.add(cat.trim())
       })
     })
@@ -186,7 +229,7 @@ export const getRandomDoa = createServerFn({ method: 'GET' })
       .orderBy(sql`RANDOM()`)
       .limit(1)
 
-    return result ?? null
+    return result
   })
 
 // ============================================
@@ -197,6 +240,6 @@ export const getDoaCount = createServerFn({ method: 'GET' }).handler(
     const [result] = await db
       .select({ count: sql<number>`count(*)::int` })
       .from(doa)
-    return result?.count ?? 0
+    return result.count
   },
 )

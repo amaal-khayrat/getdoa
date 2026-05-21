@@ -1,17 +1,16 @@
-import { useRef, useEffect, useCallback } from 'react'
-import { Check, Lock, X } from 'lucide-react'
+import { useCallback, useEffect, useRef } from 'react'
+import { Check, X } from 'lucide-react'
+import type {
+  PatternCategory,
+  PatternId,
+} from '@/types/image-customization.types'
 import { cn } from '@/lib/utils'
-import {
-  PATTERNS,
-  type PatternId,
-  type PatternCategory,
-} from '@/types/premium.types'
+import { PATTERNS } from '@/types/image-customization.types'
 import { renderPattern } from '@/utils/patterns'
 
 interface PatternPickerProps {
   selectedPattern: PatternId | null
   onSelect: (pattern: PatternId | null) => void
-  isPremium: boolean
 }
 
 // Group patterns by category for organized display
@@ -23,7 +22,7 @@ const CATEGORY_LABELS: Record<PatternCategory, string> = {
   minimalist: 'Minimalist',
 }
 
-const CATEGORY_ORDER: PatternCategory[] = [
+const CATEGORY_ORDER: Array<PatternCategory> = [
   'minimalist',
   'islamic-geometric',
   'organic',
@@ -43,13 +42,11 @@ function PatternsByCategory(): Record<PatternCategory, typeof PATTERNS> {
 function PatternThumbnail({
   patternId,
   isSelected,
-  isLocked,
   onClick,
   patternName,
 }: {
   patternId: PatternId
   isSelected: boolean
-  isLocked: boolean
   onClick: () => void
   patternName: string
 }) {
@@ -81,16 +78,14 @@ function PatternThumbnail({
     <button
       type="button"
       onClick={onClick}
-      disabled={isLocked}
       className={cn(
         'relative aspect-[4/3] rounded-lg overflow-hidden border-2 transition-all',
         'hover:scale-105 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2',
         isSelected
           ? 'border-primary ring-2 ring-primary/30'
           : 'border-transparent hover:border-muted-foreground/30',
-        isLocked && 'opacity-60 cursor-not-allowed hover:scale-100 hover:border-transparent',
       )}
-      title={isLocked ? `${patternName} (Premium)` : patternName}
+      title={patternName}
     >
       <canvas
         ref={canvasRef}
@@ -112,13 +107,6 @@ function PatternThumbnail({
           </div>
         </div>
       )}
-
-      {/* Lock icon for premium patterns */}
-      {isLocked && (
-        <div className="absolute top-1 right-1 w-5 h-5 rounded-full bg-muted/90 flex items-center justify-center">
-          <Lock className="w-3 h-3 text-muted-foreground" />
-        </div>
-      )}
     </button>
   )
 }
@@ -126,18 +114,14 @@ function PatternThumbnail({
 export function PatternPicker({
   selectedPattern,
   onSelect,
-  isPremium,
 }: PatternPickerProps) {
   const patternsByCategory = PatternsByCategory()
 
   const handleSelect = useCallback(
-    (patternId: PatternId, isPremiumPattern: boolean) => {
-      if (!isPremiumPattern || isPremium) {
-        // Toggle off if clicking the same pattern
-        onSelect(selectedPattern === patternId ? null : patternId)
-      }
+    (patternId: PatternId) => {
+      onSelect(selectedPattern === patternId ? null : patternId)
     },
-    [selectedPattern, onSelect, isPremium],
+    [selectedPattern, onSelect],
   )
 
   return (
@@ -170,7 +154,6 @@ export function PatternPicker({
             <div className="grid grid-cols-3 sm:grid-cols-4 gap-2">
               {patterns.map((pattern) => {
                 const isSelected = selectedPattern === pattern.id
-                const isLocked = pattern.isPremium && !isPremium
 
                 return (
                   <PatternThumbnail
@@ -178,8 +161,7 @@ export function PatternPicker({
                     patternId={pattern.id}
                     patternName={pattern.name}
                     isSelected={isSelected}
-                    isLocked={isLocked}
-                    onClick={() => handleSelect(pattern.id, pattern.isPremium)}
+                    onClick={() => handleSelect(pattern.id)}
                   />
                 )
               })}
@@ -187,12 +169,6 @@ export function PatternPicker({
           </div>
         )
       })}
-
-      {!isPremium && (
-        <p className="text-xs text-muted-foreground">
-          Upgrade to Premium to unlock all 20 decorative patterns
-        </p>
-      )}
     </div>
   )
 }

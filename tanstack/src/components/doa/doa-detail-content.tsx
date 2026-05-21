@@ -1,8 +1,18 @@
 import { useEffect, useState } from 'react'
 import { Link, getRouteApi } from '@tanstack/react-router'
-import { BookOpen, Copy, ExternalLink, Heart, Share2 } from 'lucide-react'
+import {
+  BookOpen,
+  Copy,
+  ExternalLink,
+  Heart,
+  Library,
+  Quote,
+  Share2,
+  ShieldCheck,
+} from 'lucide-react'
 import { MosqueDonationCard } from './mosque-donation-card'
-import { DoaNotFound } from './doa-not-found'
+import type { Doa, DoaHadithMatch, SearchableDoa } from '@/types/doa.types'
+import type { ShopeeOgData } from '@/types/shopee.types'
 import { ShopeeReferralsSection } from '@/components/shopee/shopee-referrals-section'
 import { Button, buttonVariants } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
@@ -15,9 +25,6 @@ import {
 } from '@/components/ui/accordion'
 import { useLanguage } from '@/contexts/language-context'
 import { SedekahJeApiError, getRandomMosque } from '@/lib/sedekah-je-api'
-import { getAllDoas } from '@/server-functions/dashboard/doa'
-import type { Doa, DoaHadithMatch } from '@/types/doa.types'
-import type { ShopeeOgData } from '@/types/shopee.types'
 
 // Get the route API for typed access to loader data
 const routeApi = getRouteApi('/doa/$slug')
@@ -221,8 +228,8 @@ function HadithMetaItem({
   }
 
   return (
-    <div className="rounded-2xl border border-border/70 bg-secondary/35 p-4">
-      <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">
+    <div className="rounded-xl border border-border/70 bg-background/70 p-4">
+      <p className="text-[11px] font-semibold uppercase text-muted-foreground">
         {label}
       </p>
       <p
@@ -239,7 +246,7 @@ function HadithMatchesSection({
   matches,
   language,
 }: {
-  matches: DoaHadithMatch[]
+  matches: Array<DoaHadithMatch>
   language: 'en' | 'my'
 }) {
   if (matches.length === 0) {
@@ -293,15 +300,15 @@ function HadithMatchesSection({
     matches.length === 1 ? [buildHadithAccordionValue(matches[0], 0)] : []
 
   return (
-    <Card className="overflow-hidden rounded-3xl border-border py-0 shadow-green-sm">
+    <Card className="overflow-hidden rounded-2xl border-border py-0 shadow-green-sm">
       <div className="border-b border-border bg-gradient-bg-section px-5 py-5 sm:px-6">
         <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
           <div className="max-w-2xl">
             <div className="flex items-center gap-2 text-sm font-semibold text-primary">
-              <BookOpen className="h-4 w-4" />
+              <ShieldCheck className="h-4 w-4" />
               <span>{copy.eyebrow}</span>
             </div>
-            <h3 className="mt-3 font-display text-2xl font-semibold text-foreground">
+            <h3 className="mt-3 font-display text-2xl font-semibold leading-tight text-foreground">
               {copy.title}
             </h3>
             <p className="mt-2 text-sm leading-relaxed text-muted-foreground sm:text-base">
@@ -344,6 +351,7 @@ function HadithMatchesSection({
                         variant="secondary"
                         className="h-auto rounded-full px-3 py-1.5 text-xs font-semibold"
                       >
+                        <Library className="mr-1 h-3 w-3" />
                         {match.book}
                       </Badge>
                     )}
@@ -366,7 +374,7 @@ function HadithMatchesSection({
                   </div>
 
                   <div className="space-y-1 text-left">
-                    <p className="break-words font-mono text-sm font-semibold uppercase tracking-[0.14em] text-foreground sm:text-base">
+                    <p className="break-words text-sm font-semibold text-foreground sm:text-base">
                       {heading}
                     </p>
                     <p className="break-words text-sm text-muted-foreground">
@@ -402,10 +410,11 @@ function HadithMatchesSection({
                 </div>
 
                 {match.arabicText && (
-                  <div className="mt-4 rounded-3xl border border-border/70 bg-gradient-bg-section p-5 sm:p-6">
-                    <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">
-                      {copy.arabicTextLabel}
-                    </p>
+                  <div className="mt-4 rounded-2xl border border-border/70 bg-gradient-bg-section p-5 sm:p-6">
+                    <div className="flex items-center gap-2 text-[11px] font-semibold uppercase text-muted-foreground">
+                      <Quote className="h-3.5 w-3.5" />
+                      <span>{copy.arabicTextLabel}</span>
+                    </div>
                     <p
                       dir="rtl"
                       lang="ar"
@@ -417,10 +426,11 @@ function HadithMatchesSection({
                 )}
 
                 {match.englishText && (
-                  <div className="mt-4 rounded-3xl border border-border/70 bg-secondary/40 p-5 sm:p-6">
-                    <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">
-                      {copy.englishTextLabel}
-                    </p>
+                  <div className="mt-4 rounded-2xl border border-border/70 bg-secondary/40 p-5 sm:p-6">
+                    <div className="flex items-center gap-2 text-[11px] font-semibold uppercase text-muted-foreground">
+                      <Quote className="h-3.5 w-3.5" />
+                      <span>{copy.englishTextLabel}</span>
+                    </div>
                     <p className="mt-4 whitespace-pre-line text-sm leading-relaxed text-muted-foreground sm:text-base">
                       {match.englishText}
                     </p>
@@ -471,17 +481,13 @@ function ActionButtons({ doa }: { doa: Doa }) {
       ? `${doa.nameMy} - ${(doa.meaningMy || '').slice(0, 100)}...`
       : `${doa.nameEn} - ${(doa.meaningEn || '').slice(0, 100)}...`
 
-  // Fix SSR issue by using useEffect to get window.location.href
-  const [shareUrl, setShareUrl] = useState('')
-
-  useEffect(() => {
-    if (typeof window !== 'undefined') {
-      setShareUrl(window.location.href)
-    }
-  }, [])
-
   const handleShare = async () => {
-    if (navigator.share) {
+    const shareUrl =
+      typeof window !== 'undefined'
+        ? window.location.href
+        : `https://getdoa.com/doa/${doa.slug}`
+
+    if ('share' in navigator && typeof navigator.share === 'function') {
       try {
         await navigator.share({
           title: language === 'my' ? doa.nameMy : doa.nameEn,
@@ -525,48 +531,15 @@ function ActionButtons({ doa }: { doa: Doa }) {
   )
 }
 
-// Related prayers component - fetches from database
+// Related prayers component
 function RelatedPrayers({
-  currentDoa,
+  relatedPrayers,
   language,
 }: {
-  currentDoa: Doa
+  relatedPrayers: Array<SearchableDoa>
   language: 'en' | 'my'
 }) {
-  const [relatedPrayers, setRelatedPrayers] = useState<Doa[]>([])
-  const [isLoading, setIsLoading] = useState(true)
-
-  useEffect(() => {
-    // Fetch related prayers based on category
-    const fetchRelated = async () => {
-      if (currentDoa.categoryNames.length === 0) {
-        setIsLoading(false)
-        return
-      }
-
-      try {
-        // Get the first category to find related prayers
-        const result = await getAllDoas({
-          data: { category: currentDoa.categoryNames[0], limit: 4 },
-        })
-
-        // Filter out the current doa and limit to 3
-        const filtered = result.data
-          .filter((d: Doa) => d.slug !== currentDoa.slug)
-          .slice(0, 3)
-
-        setRelatedPrayers(filtered)
-      } catch (error) {
-        console.error('Failed to fetch related prayers:', error)
-      } finally {
-        setIsLoading(false)
-      }
-    }
-
-    fetchRelated()
-  }, [currentDoa.slug, currentDoa.categoryNames])
-
-  if (isLoading || relatedPrayers.length === 0) return null
+  if (relatedPrayers.length === 0) return null
 
   const title = language === 'my' ? 'Doa Berkaitan' : 'Related Prayers'
 
@@ -606,7 +579,7 @@ function RelatedPrayers({
 }
 
 export function DoaDetailContent() {
-  const { doa } = routeApi.useLoaderData()
+  const { doa, relatedPrayers } = routeApi.useLoaderData()
   const { language } = useLanguage()
 
   // Mosque donation state management
@@ -675,10 +648,6 @@ export function DoaDetailContent() {
     fetchShopeeReferrals()
   }, [mosqueData, isMosqueLoading])
 
-  if (!doa) {
-    return <DoaNotFound searchedSlug="" />
-  }
-
   const title = language === 'my' ? doa.nameMy : doa.nameEn
   const prayerTitle = language === 'my' ? 'Doa' : 'Prayer'
 
@@ -720,7 +689,7 @@ export function DoaDetailContent() {
 
           {/* Supporting Hadith */}
           <HadithMatchesSection
-            matches={doa.hadithMatches ?? []}
+            matches={doa.hadithMatches}
             language={language}
           />
 
@@ -807,7 +776,7 @@ export function DoaDetailContent() {
         )}
 
         {/* Related Prayers */}
-        <RelatedPrayers currentDoa={doa} language={language} />
+        <RelatedPrayers relatedPrayers={relatedPrayers} language={language} />
       </div>
     </>
   )

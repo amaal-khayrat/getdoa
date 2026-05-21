@@ -2,9 +2,9 @@ import type { InferSelectModel } from 'drizzle-orm'
 import type {
   doaList,
   doaListItem,
-  savedDoa,
-  favoriteList,
   exportLog,
+  favoriteList,
+  savedDoa,
 } from '@/db/schema'
 import type { Doa } from './doa.types'
 
@@ -50,19 +50,19 @@ export interface DoaListWithUser extends DoaListRecord {
 
 // List with items (prayers) included
 export interface DoaListWithItems extends DoaListRecord {
-  items: DoaListItemWithDoa[]
+  items: Array<DoaListItemWithDoa>
 }
 
 // List with both user and items
 export interface DoaListWithUserAndItems extends DoaListWithUser {
-  items: DoaListItemWithDoa[]
+  items: Array<DoaListItemWithDoa>
 }
 
 // Create input
 export interface CreateDoaListInput {
   name: string
   description?: string
-  prayers?: PrayerReference[]
+  prayers?: Array<PrayerReference>
   showTranslations?: boolean
   translationLayout?: 'grouped' | 'interleaved'
   language?: 'en' | 'my'
@@ -74,7 +74,7 @@ export interface CreateDoaListInput {
 export interface UpdateDoaListInput {
   name?: string
   description?: string
-  prayers?: PrayerReference[]
+  prayers?: Array<PrayerReference>
   showTranslations?: boolean
   translationLayout?: 'grouped' | 'interleaved'
   language?: 'en' | 'my'
@@ -96,26 +96,12 @@ export interface ListTemplate {
   description: string
   descriptionMs: string
   icon: string
-  doaSlugs: string[]
+  doaSlugs: Array<string>
 }
 
 // ============================================
 // CREATE DOA LIST RESULT TYPES
 // ============================================
-
-/** Error when list limit is reached */
-export interface ListLimitReachedError {
-  code: 'LIST_LIMIT_REACHED'
-  message: string
-  currentCount: number
-  limit: number
-  breakdown: {
-    base: number
-    referral: number
-    purchase: number
-    subscription: number
-  }
-}
 
 /** Error for unauthorized access */
 export interface UnauthorizedError {
@@ -124,7 +110,7 @@ export interface UnauthorizedError {
 }
 
 /** All possible create list errors */
-export type CreateDoaListError = ListLimitReachedError | UnauthorizedError
+export type CreateDoaListError = UnauthorizedError
 
 /** Discriminated union for create list result */
 export type CreateDoaListResult =

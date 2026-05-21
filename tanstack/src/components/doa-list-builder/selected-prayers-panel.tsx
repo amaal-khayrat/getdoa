@@ -121,7 +121,7 @@ export function SelectedPrayersPanel({
 }: {
   filteredPrayers: Array<any>
 }) {
-  const { selectedPrayers, language, maxPrayers } = useDoaListState()
+  const { selectedPrayers, language } = useDoaListState()
 
   const { updateState, addPrayer } = useDoaListActions()
 
@@ -174,7 +174,7 @@ export function SelectedPrayersPanel({
               Select prayers from the right panel to create your personalized
               prayer list
             </p>
-            <p className="text-xs text-primary">You can add up to {maxPrayers} prayers</p>
+            <p className="text-xs text-primary">Add any prayers you want from the browser</p>
           </div>
         ) : (
           <DndContext
@@ -200,7 +200,7 @@ export function SelectedPrayersPanel({
         )}
 
         {/* Quick Add Suggestions */}
-        {selectedPrayers.length > 0 && selectedPrayers.length < maxPrayers && (
+        {selectedPrayers.length > 0 && (
           <div className="mt-6 pt-4 border-t">
             <h4 className="text-sm font-medium mb-3">Quick Add Suggestions</h4>
             <div className="space-y-2">
@@ -243,10 +243,7 @@ export function SelectedPrayersPanel({
       {/* Footer */}
       <div className="p-4 border-t bg-muted/30">
         <div className="flex items-center justify-between text-xs text-muted-foreground">
-          <span>{selectedPrayers.length} of {maxPrayers} prayers</span>
-          {selectedPrayers.length === maxPrayers && (
-            <span className="text-primary">Maximum reached</span>
-          )}
+          <span>{selectedPrayers.length} prayers selected</span>
         </div>
       </div>
     </div>

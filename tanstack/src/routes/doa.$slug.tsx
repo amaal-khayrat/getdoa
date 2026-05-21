@@ -1,5 +1,5 @@
 import { createFileRoute, notFound } from '@tanstack/react-router'
-import { getDoaBySlug } from '@/server-functions/dashboard/doa'
+import { getAllDoas, getDoaBySlug } from '@/server-functions/dashboard/doa'
 import { DoaDetailContent } from '@/components/doa/doa-detail-content'
 
 export const Route = createFileRoute('/doa/$slug')({
@@ -11,7 +11,18 @@ export const Route = createFileRoute('/doa/$slug')({
       throw notFound()
     }
 
-    return { doa }
+    const relatedResult =
+      doa.categoryNames.length > 0
+        ? await getAllDoas({
+            data: { category: doa.categoryNames[0], limit: 4 },
+          })
+        : { data: [] }
+
+    const relatedPrayers = relatedResult.data
+      .filter((relatedDoa) => relatedDoa.slug !== doa.slug)
+      .slice(0, 3)
+
+    return { doa, relatedPrayers }
   },
   head: ({ loaderData }) => {
     if (!loaderData?.doa) {

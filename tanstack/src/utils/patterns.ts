@@ -3,7 +3,8 @@
  * All patterns are programmatically drawn - no image assets needed.
  */
 
-import { PATTERNS, type PatternId } from '@/types/premium.types'
+import type {PatternId} from '@/types/image-customization.types';
+import { PATTERNS  } from '@/types/image-customization.types'
 
 interface PatternConfig {
   width: number
@@ -408,14 +409,12 @@ export function renderPattern(
   config: PatternConfig,
 ): void {
   const renderer = PATTERN_RENDERERS[patternId]
-  if (renderer) {
-    renderer(ctx, config)
-  }
+  renderer(ctx, config)
 }
 
 /**
- * Get available patterns for a premium status.
+ * Get all available patterns.
  */
-export function getAvailablePatterns(isPremium: boolean): PatternId[] {
-  return PATTERNS.filter((p) => isPremium || !p.isPremium).map((p) => p.id)
+export function getAvailablePatterns(): Array<PatternId> {
+  return PATTERNS.map((p) => p.id)
 }

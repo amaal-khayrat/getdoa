@@ -206,10 +206,6 @@ export const LANDING_CONTENT = {
     tagline: 'Crafting digital experiences for the modern soul.',
     copyright: `© ${new Date().getFullYear()} GetDoa App. All rights reserved.`,
     columns: {
-      product: {
-        title: 'Product',
-        links: [{ label: 'Pricing', href: '/pricing' }],
-      },
       company: {
         title: 'Company',
         links: [
@@ -222,7 +218,6 @@ export const LANDING_CONTENT = {
         links: [
           { label: 'Privacy Policy', href: '/privacy' },
           { label: 'Terms of Service', href: '/terms' },
-          { label: 'Refund Policy', href: '/refund' },
         ],
       },
     },
@@ -274,96 +269,6 @@ export const LANDING_CONTENT = {
       ],
     },
 
-    pricing: {
-      hero: {
-        title: 'Choose Your Spiritual Journey',
-        subtitle: 'Flexible pricing to support your prayer needs',
-      },
-      plans: [
-        {
-          name: 'Free',
-          price: 'RM0',
-          period: 'forever',
-          description: 'Everything you need to start your spiritual journey',
-          features: [
-            '1 personalized doa list (up to 11 with referrals)',
-            '15 prayers per list (30 with Premium)',
-            '1 image export per day (up to 3 with referrals)',
-            'Access to authentic prayers library',
-            'Cloud synchronization',
-            'Basic email support',
-          ],
-          excluded: [
-            'Premium fonts',
-            'Custom colors',
-            'Custom watermark',
-            'Remove branding',
-            'Decorative patterns',
-          ],
-          popular: false,
-        },
-        {
-          name: 'Premium',
-          price: 'RM9.90',
-          period: 'per month',
-          description: 'Complete freedom to customize your spiritual journey',
-          features: [
-            '+50 additional doa lists (total up to 61)',
-            '30 prayers per list (double the free limit)',
-            '15 image exports per day',
-            'Premium Arabic fonts (Amiri, Scheherazade, Noto Naskh)',
-            'Custom translation fonts',
-            'Custom background & text colors',
-            'Add personal watermark',
-            'Remove GetDoa branding',
-            '20 decorative patterns',
-            'Priority support',
-            'Early access to new features',
-          ],
-          excluded: [],
-          popular: true,
-          badge: 'Best Value',
-        },
-      ],
-      faq: [
-        {
-          question: 'Which plan is right for me?',
-          answer:
-            'Start with Free - it includes everything you need for basic prayer management! You can earn up to 11 lists and 3 daily image exports by inviting friends. For premium features like custom fonts, colors, and unlimited customization, upgrade to Premium for just RM9.90/month.',
-        },
-        {
-          question: 'Is the Free plan really free forever?',
-          answer:
-            'Yes! The Free plan includes cloud sync, one personalized doa list, and one daily image export at no cost. You can earn up to 10 additional lists and 2 extra daily exports by inviting friends through the referral program.',
-        },
-        {
-          question: 'How does the referral program work?',
-          answer:
-            'Share your unique referral link with friends. When they sign up using your link, you earn +1 doa list bonus and +1 daily image export. You can earn up to 10 bonus lists and 2 bonus daily exports this way!',
-        },
-        {
-          question: 'What does Premium include?',
-          answer:
-            'Premium gives you 50 additional doa lists (61 total with referrals), 15 daily image exports, premium Arabic fonts (Amiri, Scheherazade, Noto Naskh), custom colors, personal watermarks, 20 decorative patterns, and the option to remove GetDoa branding.',
-        },
-        {
-          question: 'Is Premium worth it?',
-          answer:
-            'Absolutely! For just RM9.90/month, you get complete customization freedom with premium fonts, custom colors, decorative patterns, and 15 daily image exports. Perfect for creating beautiful personalized prayer content.',
-        },
-        {
-          question: 'Is my data secure and synchronized?',
-          answer:
-            'Absolutely! All plans include cloud synchronization with 256-bit encryption. Your prayers and settings are automatically synced across all your devices.',
-        },
-        {
-          question: 'Do you offer refunds?',
-          answer:
-            "Yes, we offer refunds within 14 working days if you haven't used any paid features. Please see our refund policy for details.",
-        },
-      ],
-    },
-
     contact: {
       hero: {
         title: 'Get in Touch',
@@ -403,7 +308,7 @@ export const LANDING_CONTENT = {
         {
           title: 'Service Description',
           content:
-            'GetDoa is a digital platform that provides access to Islamic prayers, supplications, and spiritual content. The service is offered on a subscription basis with various pricing tiers.',
+            'GetDoa is a free digital platform that provides access to Islamic prayers, supplications, and spiritual content.',
         },
         {
           title: 'User Responsibilities',
@@ -413,7 +318,7 @@ export const LANDING_CONTENT = {
         {
           title: 'Payment Terms',
           content:
-            'Payment processing is handled through Razorpay Curlec. By subscribing to our services, you agree to their terms of service and payment policies.',
+            'GetDoa is currently offered free of charge. There are no fees for using the platform.',
         },
         {
           title: 'Intellectual Property',
@@ -448,12 +353,12 @@ export const LANDING_CONTENT = {
         {
           title: 'Data Collection',
           content:
-            'We collect information necessary to provide our services, including your email address, payment information, and usage data. Payment processing is handled securely through Razorpay Curlec.',
+            'We collect information necessary to provide our services, including your email address and usage data.',
         },
         {
           title: 'Information Usage',
           content:
-            'Your information is used to provide and improve our services, process payments, and communicate with you about your account and service updates.',
+            'Your information is used to provide and improve our services and communicate with you about your account and service updates.',
         },
         {
           title: 'Data Security',
@@ -461,9 +366,9 @@ export const LANDING_CONTENT = {
             'We implement appropriate technical and organizational measures to protect your personal data against unauthorized access, alteration, disclosure, or destruction.',
         },
         {
-          title: 'Payment Processing',
+          title: 'Payments',
           content:
-            'Payment information is processed securely through Razorpay Curlec. We do not store your complete payment details on our servers.',
+            'GetDoa does not charge users for access, so we do not collect payment details for app usage.',
         },
         {
           title: 'User Rights',
@@ -478,44 +383,9 @@ export const LANDING_CONTENT = {
         {
           title: 'Third-Party Services',
           content:
-            'We may share information with trusted third-party service providers necessary for our operations, such as payment processing and analytics.',
+            'We may share information with trusted third-party service providers necessary for our operations, such as authentication, hosting, and analytics.',
         },
       ],
-    },
-
-    refund: {
-      hero: {
-        title: 'Refund Policy',
-        subtitle: 'Our commitment to your satisfaction',
-      },
-      lastUpdated: 'Last updated: December 2024',
-      eligibility: {
-        title: 'Refund Eligibility',
-        description:
-          'You are eligible for a full refund if you have not used any paid features of your subscription.',
-        criteria: [
-          'Request must be made within 14 days of purchase',
-          'No usage of paid features or services',
-          'Valid reason for refund request',
-          'Account in good standing',
-        ],
-      },
-      process: {
-        title: 'Refund Process',
-        steps: [
-          'Contact us at hazqeel@ellzaf.com with your refund request',
-          'Provide your order number and reason for refund',
-          'We review your request within 3-5 business days',
-          'Refund is processed within 14 working days',
-          'Refund timing depends on your payment provider',
-        ],
-      },
-      timeline: {
-        title: 'Processing Time',
-        description:
-          'Refunds are typically processed within 14 working days. The exact timing depends on your payment provider and may vary.',
-        note: 'Please note that it may take additional time for the refund to appear in your account, depending on your bank or payment method.',
-      },
     },
   },
 }

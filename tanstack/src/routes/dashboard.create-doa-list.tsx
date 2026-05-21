@@ -1,15 +1,14 @@
-import { useEffect, useState } from 'react'
 import { createFileRoute, redirect } from '@tanstack/react-router'
 import { z } from 'zod'
+import type { DoaItem } from '@/types/doa.types'
+import type { ListStatus, ListVisibility } from '@/types/doa-list.types'
+import type { ShopeeReferralItem } from '@/components/shopee/shopee-referrals-section'
 import { DoaListBuilder } from '@/components/doa-list-builder/doa-list-builder'
 import { ShopeeReferralsSection } from '@/components/shopee/shopee-referrals-section'
 import { getDoaList } from '@/server-functions/dashboard'
 import { getDoasBySlugs } from '@/server-functions/dashboard/doa'
 import { getTemplateById } from '@/lib/list-templates'
-import type { DoaItem } from '@/types/doa.types'
-import type { ListStatus, ListVisibility } from '@/types/doa-list.types'
-import { getMaxPrayersPerList, type ListLimitInfo } from '@/lib/list-limit'
-import type { ShopeeOgData } from '@/types/shopee.types'
+import { fetchShopeeReferrals } from '@/utils/shopee-fetch.server'
 import { DEFAULT_PREVIEW_SETTINGS } from '@/types/doa.types'
 
 // Search params schema for creating/editing lists
@@ -27,12 +26,22 @@ export type CreateDoaListSearch = z.infer<typeof createDoaListSearchSchema>
 export interface BuilderInitialState {
   listId: string | null
   listName: string
-  selectedPrayers: DoaItem[]
+  selectedPrayers: Array<DoaItem>
   listStatus: ListStatus
   listVisibility: ListVisibility
   previewSettings: {
     showTranslations: boolean
     translationLayout: 'grouped' | 'interleaved'
+  }
+}
+
+async function loadShopeeReferrals(): Promise<Array<ShopeeReferralItem>> {
+  try {
+    const referrals = await fetchShopeeReferrals({ count: 8 })
+    return referrals.map(({ url, ogData }) => ({ url, ogData }))
+  } catch (error) {
+    console.error('Failed to fetch shopee referrals:', error)
+    return []
   }
 }
 
@@ -45,11 +54,11 @@ export const Route = createFileRoute('/dashboard/create-doa-list')({
   }),
   loader: async ({ deps, context }) => {
     const { listId, template, name } = deps
-    // Get user, listLimitInfo, and isPremium from parent route context (dashboard route)
-    const { user, listLimitInfo, isPremium } = context as {
+    const shopeeReferralsPromise = loadShopeeReferrals()
+
+    // Get user and access context from parent route
+    const { user } = context as {
       user?: { id: string; name: string; email: string; image: string | null }
-      listLimitInfo?: ListLimitInfo
-      isPremium?: boolean
     }
 
     // EDIT MODE: Load existing list with all data
@@ -64,9 +73,11 @@ export const Route = createFileRoute('/dashboard/create-doa-list')({
       }
 
       // Transform list items to DoaItem format IN THE LOADER
-      const selectedPrayers: DoaItem[] = existingList.items.map((item) => ({
-        ...item.doa,
-      }))
+      const selectedPrayers: Array<DoaItem> = existingList.items.map(
+        (item) => ({
+          ...item.doa,
+        }),
+      )
 
       return {
         mode: 'edit' as const,
@@ -83,13 +94,12 @@ export const Route = createFileRoute('/dashboard/create-doa-list')({
               | 'interleaved',
           },
         } satisfies BuilderInitialState,
-        listLimitInfo,
-        isPremium: isPremium ?? false,
+        shopeeReferrals: await shopeeReferralsPromise,
       }
     }
 
     // CREATE MODE: Load template prayers if specified
-    let templatePrayers: DoaItem[] = []
+    let templatePrayers: Array<DoaItem> = []
 
     if (template && template !== 'empty') {
       const templateData = getTemplateById(template)
@@ -115,24 +125,22 @@ export const Route = createFileRoute('/dashboard/create-doa-list')({
           translationLayout: DEFAULT_PREVIEW_SETTINGS.translationLayout,
         },
       } satisfies BuilderInitialState,
-      listLimitInfo,
-      isPremium: isPremium ?? false,
+      shopeeReferrals: await shopeeReferralsPromise,
     }
   },
   component: CreateDoaListPage,
   head: ({ loaderData }) => {
     const isEdit = loaderData?.mode === 'edit'
-    const maxPrayers = getMaxPrayersPerList(loaderData?.isPremium ?? false)
     return {
       title: isEdit
-        ? `Edit ${loaderData.initialState?.listName || 'List'} - GetDoa`
+        ? `Edit ${loaderData.initialState.listName || 'List'} - GetDoa`
         : 'Create Your Prayer List - GetDoa',
       meta: [
         {
           name: 'description',
           content: isEdit
             ? 'Edit your prayer list and update your collection.'
-            : `Create and customize your personal prayer list. Select up to ${maxPrayers} prayers, arrange them in your preferred order.`,
+            : 'Create and customize your personal prayer list. Select prayers, arrange them in your preferred order, and share your collection.',
         },
       ],
     }
@@ -140,69 +148,13 @@ export const Route = createFileRoute('/dashboard/create-doa-list')({
 })
 
 function CreateDoaListPage() {
-  const { mode, initialState, listLimitInfo, isPremium } = Route.useLoaderData()
-
-  // Shopee referrals state management
-  const [shopeeReferrals, setShopeeReferrals] = useState<
-    Array<{ url: string; ogData?: ShopeeOgData }>
-  >([])
-  const [shopeeError, setShopeeError] = useState<Error | null>(null)
-  const [isShopeeLoading, setIsShopeeLoading] = useState(true)
-
-  // Fetch shopee referrals when component mounts
-  useEffect(() => {
-    const fetchShopeeReferrals = async () => {
-      setIsShopeeLoading(true)
-      setShopeeError(null)
-
-      try {
-        const response = await fetch('/api/shopee-referrals?count=8')
-        if (!response.ok) {
-          throw new Error('Failed to fetch shopee referrals')
-        }
-        const data = await response.json()
-        setShopeeReferrals(data.items || [])
-      } catch (error) {
-        console.error('Failed to fetch shopee referrals:', error)
-        setShopeeError(
-          error instanceof Error ? error : new Error('Unknown error'),
-        )
-      } finally {
-        setIsShopeeLoading(false)
-      }
-    }
-
-    fetchShopeeReferrals()
-  }, [])
-
-  const handleShopeeRetry = () => {
-    setShopeeReferrals([])
-    setShopeeError(null)
-    setIsShopeeLoading(true)
-    fetch('/api/shopee-referrals?count=8')
-      .then((res) => res.json())
-      .then((data) => {
-        setShopeeReferrals(data.items || [])
-        setIsShopeeLoading(false)
-      })
-      .catch((err) => {
-        setShopeeError(
-          err instanceof Error ? err : new Error('Unknown error'),
-        )
-        setIsShopeeLoading(false)
-      })
-  }
+  const { mode, initialState, shopeeReferrals } = Route.useLoaderData()
 
   return (
     <div className="p-0">
-      <DoaListBuilder mode={mode} initialState={initialState} listLimitInfo={listLimitInfo} isPremium={isPremium} />
-      <div className="px-4 md:px-6 pb-6">
-        <ShopeeReferralsSection
-          referrals={shopeeReferrals}
-          isLoading={isShopeeLoading}
-          error={shopeeError || undefined}
-          onRetry={handleShopeeRetry}
-        />
+      <DoaListBuilder mode={mode} initialState={initialState} />
+      <div className="mx-auto max-w-5xl px-4 pb-6 md:px-6">
+        <ShopeeReferralsSection referrals={shopeeReferrals} />
       </div>
     </div>
   )

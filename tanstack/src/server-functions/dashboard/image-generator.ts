@@ -1,6 +1,8 @@
 import { createServerFn } from '@tanstack/react-start'
 import { getRequest } from '@tanstack/react-start/server'
-import { eq } from 'drizzle-orm'
+import { sql } from 'drizzle-orm'
+import type { Language } from '@/types/doa.types'
+import type { ImageExportSettings } from '@/types/image-customization.types'
 import { auth } from '@/lib/auth'
 import { db } from '@/db'
 import { doaImageGeneration } from '@/db/schema'
@@ -8,15 +10,9 @@ import {
   generateDoaImageWithSharp,
   loadDoaBySlug,
 } from '@/lib/server-image-generator'
-import {
-  calculateImageLimitInfo,
-  isToday,
-  IMAGE_LIMIT_CONFIG,
-  type ImageLimitInfo,
-} from '@/lib/image-limit'
-import { getUserPremiumStatus, validateExportSettings } from '@/lib/premium-gate'
-import type { Language } from '@/types/doa.types'
-import type { ImageExportSettings } from '@/types/premium.types'
+import { validateExportSettings } from '@/lib/customization-access'
+
+const MALAYSIA_TIME_ZONE = 'Asia/Kuala_Lumpur'
 
 // Input validation types
 interface GenerateImageInput {
@@ -25,10 +21,10 @@ interface GenerateImageInput {
   language: Language
 }
 
-// Input for recording image generation (limit tracking only)
+// Input for recording browser-side image generation.
 interface RecordImageGenerationInput {
   doaSlug: string
-  exportSettings?: ImageExportSettings // Premium customization options
+  exportSettings?: ImageExportSettings
 }
 
 // Structured result type (following createDoaList pattern)
@@ -38,14 +34,12 @@ type GenerateImageResult =
       imageBase64: string
       filename: string
       mimeType: string
-      limitInfo: ImageLimitInfo
     }
   | {
       success: false
       error: {
-        code: 'DAILY_LIMIT_REACHED' | 'DOA_NOT_FOUND' | 'GENERATION_FAILED' | 'PREMIUM_REQUIRED'
+        code: 'DOA_NOT_FOUND' | 'GENERATION_FAILED'
         message: string
-        limitInfo?: ImageLimitInfo
       }
     }
 
@@ -61,33 +55,55 @@ async function requireAuth() {
   return session
 }
 
-// ============================================
-// GET IMAGE LIMIT INFO
-// ============================================
-export const getImageLimitInfo = createServerFn({ method: 'GET' })
-  .inputValidator((data: { userId: string }) => {
-    if (!data.userId) throw new Error('User ID required')
-    return data
+function getMalaysiaMidnightUtc(date: Date = new Date()): Date {
+  const formatter = new Intl.DateTimeFormat('en-CA', {
+    timeZone: MALAYSIA_TIME_ZONE,
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
   })
-  .handler(async ({ data }): Promise<ImageLimitInfo> => {
-    const record = await db.query.doaImageGeneration.findFirst({
-      where: eq(doaImageGeneration.userId, data.userId),
+
+  const parts = formatter.formatToParts(date)
+  const year = Number(parts.find((part) => part.type === 'year')?.value)
+  const month = Number(parts.find((part) => part.type === 'month')?.value) - 1
+  const day = Number(parts.find((part) => part.type === 'day')?.value)
+
+  return new Date(Date.UTC(year, month, day, -8, 0, 0, 0))
+}
+
+async function recordSuccessfulImageGeneration(userId: string) {
+  const now = new Date()
+  const todayMidnight = getMalaysiaMidnightUtc(now)
+  const tomorrowMidnight = new Date(
+    todayMidnight.getTime() + 24 * 60 * 60 * 1000,
+  )
+
+  await db
+    .insert(doaImageGeneration)
+    .values({
+      userId,
+      generationsToday: 1,
+      lastGeneratedAt: now,
+      totalGenerations: 1,
     })
-
-    if (!record) {
-      // No record = never generated, full quota available
-      return calculateImageLimitInfo(0, null, 0)
-    }
-
-    return calculateImageLimitInfo(
-      record.generationsToday,
-      record.lastGeneratedAt,
-      record.totalGenerations,
-    )
-  })
+    .onConflictDoUpdate({
+      target: doaImageGeneration.userId,
+      set: {
+        generationsToday: sql<number>`case
+          when ${doaImageGeneration.lastGeneratedAt} >= ${todayMidnight}
+            and ${doaImageGeneration.lastGeneratedAt} < ${tomorrowMidnight}
+          then ${doaImageGeneration.generationsToday} + 1
+          else 1
+        end`,
+        lastGeneratedAt: now,
+        totalGenerations: sql<number>`${doaImageGeneration.totalGenerations} + 1`,
+        updatedAt: now,
+      },
+    })
+}
 
 // ============================================
-// GENERATE DOA IMAGE (with limit check)
+// GENERATE DOA IMAGE
 // ============================================
 export const generateDoaImage = createServerFn({
   method: 'POST',
@@ -106,10 +122,6 @@ export const generateDoaImage = createServerFn({
       throw new Error('Invalid background image ID (must be 1-12)')
     }
 
-    if (data.language !== 'en' && data.language !== 'my') {
-      throw new Error('Invalid language (must be "en" or "my")')
-    }
-
     return data
   })
   .handler(async ({ data }): Promise<GenerateImageResult> => {
@@ -117,36 +129,7 @@ export const generateDoaImage = createServerFn({
     const userId = session.user.id
     const { doaSlug, backgroundId, language } = data
 
-    // Step 1: Check limit FIRST (outside transaction - read only)
-    const existingRecord = await db.query.doaImageGeneration.findFirst({
-      where: eq(doaImageGeneration.userId, userId),
-    })
-
-    const currentUsed =
-      existingRecord && isToday(existingRecord.lastGeneratedAt)
-        ? existingRecord.generationsToday
-        : 0
-
-    if (currentUsed >= IMAGE_LIMIT_CONFIG.DAILY_LIMIT) {
-      const limitInfo = calculateImageLimitInfo(
-        currentUsed,
-        existingRecord?.lastGeneratedAt ?? null,
-        existingRecord?.totalGenerations ?? 0,
-      )
-
-      return {
-        success: false,
-        error: {
-          code: 'DAILY_LIMIT_REACHED',
-          message:
-            'Daily limit reached. You can generate 1 image per day. Please try again tomorrow.',
-          limitInfo,
-        },
-      }
-    }
-
-    // Step 2: Load doa data and generate image BEFORE updating count
-    // This ensures we don't charge the user if generation fails
+    // Load doa data and generate image before updating usage analytics.
     const doaData = await loadDoaBySlug(doaSlug)
     if (!doaData) {
       return {
@@ -176,114 +159,34 @@ export const generateDoaImage = createServerFn({
       }
     }
 
-    // Step 3: Update count in a transaction (only after successful generation)
-    const now = new Date()
-    const result = await db.transaction(async (tx) => {
-      // Re-check limit inside transaction to prevent race conditions
-      const record = await tx.query.doaImageGeneration.findFirst({
-        where: eq(doaImageGeneration.userId, userId),
-      })
+    await recordSuccessfulImageGeneration(userId)
 
-      const usedToday =
-        record && isToday(record.lastGeneratedAt)
-          ? record.generationsToday
-          : 0
-
-      // Double-check limit (race condition protection)
-      if (usedToday >= IMAGE_LIMIT_CONFIG.DAILY_LIMIT) {
-        return {
-          blocked: true as const,
-          usedToday,
-          totalGenerations: record?.totalGenerations ?? 0,
-        }
-      }
-
-      if (record) {
-        // Reset count if new day, otherwise increment
-        const newCount = isToday(record.lastGeneratedAt)
-          ? record.generationsToday + 1
-          : 1
-
-        await tx
-          .update(doaImageGeneration)
-          .set({
-            generationsToday: newCount,
-            lastGeneratedAt: now,
-            totalGenerations: record.totalGenerations + 1,
-          })
-          .where(eq(doaImageGeneration.userId, userId))
-
-        return {
-          blocked: false as const,
-          usedToday: newCount,
-          totalGenerations: record.totalGenerations + 1,
-        }
-      } else {
-        // First generation ever
-        await tx.insert(doaImageGeneration).values({
-          userId,
-          generationsToday: 1,
-          lastGeneratedAt: now,
-          totalGenerations: 1,
-        })
-
-        return { blocked: false as const, usedToday: 1, totalGenerations: 1 }
-      }
-    })
-
-    // Handle race condition (another request completed between check and update)
-    if (result.blocked) {
-      const limitInfo = calculateImageLimitInfo(
-        result.usedToday,
-        existingRecord?.lastGeneratedAt ?? null,
-        result.totalGenerations,
-      )
-      return {
-        success: false,
-        error: {
-          code: 'DAILY_LIMIT_REACHED',
-          message: 'Daily limit reached. Please try again tomorrow.',
-          limitInfo,
-        },
-      }
-    }
-
-    // Step 4: Return success with image data
     const imageBase64 = imageBuffer.toString('base64')
     const filename = `getdoa-${doaSlug}-${Date.now()}.png`
-
-    const limitInfo = calculateImageLimitInfo(
-      result.usedToday,
-      now,
-      result.totalGenerations,
-    )
 
     return {
       success: true,
       imageBase64,
       filename,
       mimeType: 'image/png',
-      limitInfo,
     }
   })
 
 // ============================================
 // RECORD IMAGE GENERATION (browser-side generation)
-// Tracks usage limits without server-side image generation
+// Tracks usage analytics without server-side image generation.
 // ============================================
 
 // Result type for recording image generation
 type RecordImageGenerationResult =
   | {
       success: true
-      limitInfo: ImageLimitInfo
     }
   | {
       success: false
       error: {
-        code: 'DAILY_LIMIT_REACHED' | 'UNAUTHORIZED' | 'PREMIUM_REQUIRED'
+        code: 'INVALID_EXPORT_SETTINGS'
         message: string
-        limitInfo?: ImageLimitInfo
       }
     }
 
@@ -300,136 +203,22 @@ export const recordImageGeneration = createServerFn({
     const session = await requireAuth()
     const userId = session.user.id
 
-    // Get premium status and calculate effective daily limit
-    const { isPremium, referralCount, imageLimit } = await getUserPremiumStatus(userId)
-
-    // Validate premium-only features in export settings (if provided)
     if (data.exportSettings) {
-      const validation = validateExportSettings(data.exportSettings, isPremium)
+      const validation = validateExportSettings(data.exportSettings)
       if (!validation.valid) {
         return {
           success: false,
           error: {
-            code: 'PREMIUM_REQUIRED',
+            code: 'INVALID_EXPORT_SETTINGS',
             message: validation.errors[0],
           },
         }
       }
     }
 
-    // Step 1: Check limit FIRST (outside transaction - read only)
-    const existingRecord = await db.query.doaImageGeneration.findFirst({
-      where: eq(doaImageGeneration.userId, userId),
-    })
-
-    const currentUsed =
-      existingRecord && isToday(existingRecord.lastGeneratedAt)
-        ? existingRecord.generationsToday
-        : 0
-
-    // Use dynamic imageLimit (15 for premium, 1-3 for free based on referrals)
-    if (currentUsed >= imageLimit) {
-      const limitInfo = calculateImageLimitInfo(
-        currentUsed,
-        existingRecord?.lastGeneratedAt ?? null,
-        existingRecord?.totalGenerations ?? 0,
-        isPremium,
-        referralCount,
-      )
-
-      return {
-        success: false,
-        error: {
-          code: 'DAILY_LIMIT_REACHED',
-          message: isPremium
-            ? 'Daily limit reached. You can generate 15 images per day.'
-            : `Daily limit reached. ${imageLimit === 1 ? 'Invite friends to unlock more!' : 'Upgrade to Premium for 15/day.'}`,
-          limitInfo,
-        },
-      }
-    }
-
-    // Step 2: Update count in a transaction
-    const now = new Date()
-    const result = await db.transaction(async (tx) => {
-      // Re-check limit inside transaction to prevent race conditions
-      const record = await tx.query.doaImageGeneration.findFirst({
-        where: eq(doaImageGeneration.userId, userId),
-      })
-
-      const usedToday =
-        record && isToday(record.lastGeneratedAt) ? record.generationsToday : 0
-
-      // Double-check limit with dynamic imageLimit (race condition protection)
-      if (usedToday >= imageLimit) {
-        return {
-          blocked: true as const,
-          usedToday,
-          totalGenerations: record?.totalGenerations ?? 0,
-        }
-      }
-
-      if (record) {
-        // Reset count if new day, otherwise increment
-        const newCount = isToday(record.lastGeneratedAt) ? record.generationsToday + 1 : 1
-
-        await tx
-          .update(doaImageGeneration)
-          .set({
-            generationsToday: newCount,
-            lastGeneratedAt: now,
-            totalGenerations: record.totalGenerations + 1,
-          })
-          .where(eq(doaImageGeneration.userId, userId))
-
-        return {
-          blocked: false as const,
-          usedToday: newCount,
-          totalGenerations: record.totalGenerations + 1,
-        }
-      } else {
-        // First generation ever
-        await tx.insert(doaImageGeneration).values({
-          userId,
-          generationsToday: 1,
-          lastGeneratedAt: now,
-          totalGenerations: 1,
-        })
-
-        return { blocked: false as const, usedToday: 1, totalGenerations: 1 }
-      }
-    })
-
-    // Handle race condition
-    if (result.blocked) {
-      const limitInfo = calculateImageLimitInfo(
-        result.usedToday,
-        existingRecord?.lastGeneratedAt ?? null,
-        result.totalGenerations,
-        isPremium,
-        referralCount,
-      )
-      return {
-        success: false,
-        error: {
-          code: 'DAILY_LIMIT_REACHED',
-          message: 'Daily limit reached. Please try again tomorrow.',
-          limitInfo,
-        },
-      }
-    }
-
-    // Return success with updated limit info (including premium context)
-    const limitInfo = calculateImageLimitInfo(
-      result.usedToday,
-      now,
-      result.totalGenerations,
-      isPremium,
-      referralCount,
-    )
+    await recordSuccessfulImageGeneration(userId)
 
     return {
       success: true,
-      limitInfo,
     }
   })

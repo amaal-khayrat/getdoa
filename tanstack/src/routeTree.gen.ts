@@ -10,9 +10,7 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as TermsRouteImport } from './routes/terms'
-import { Route as RefundRouteImport } from './routes/refund'
 import { Route as PrivacyRouteImport } from './routes/privacy'
-import { Route as PricingRouteImport } from './routes/pricing'
 import { Route as OnboardingRouteImport } from './routes/onboarding'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as ListsRouteImport } from './routes/lists'
@@ -35,9 +33,7 @@ import { Route as DashboardProfileRouteImport } from './routes/dashboard.profile
 import { Route as DashboardDoaImageRouteImport } from './routes/dashboard.doa-image'
 import { Route as DashboardCreateDoaListRouteImport } from './routes/dashboard.create-doa-list'
 import { Route as ApiShopeeReferralsRouteImport } from './routes/api/shopee-referrals'
-import { Route as ApiRazorpayWebhookRouteImport } from './routes/api/razorpay-webhook'
 import { Route as ApiDoaRouteImport } from './routes/api/doa'
-import { Route as AdminSubscribersRouteImport } from './routes/admin.subscribers'
 import { Route as ApiShopeeOgSplatRouteImport } from './routes/api/shopee-og/$'
 import { Route as ApiListListIdRouteImport } from './routes/api/list/$listId'
 import { Route as ApiDoaRandomRouteImport } from './routes/api/doa/random'
@@ -48,19 +44,9 @@ const TermsRoute = TermsRouteImport.update({
   path: '/terms',
   getParentRoute: () => rootRouteImport,
 } as any)
-const RefundRoute = RefundRouteImport.update({
-  id: '/refund',
-  path: '/refund',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const PrivacyRoute = PrivacyRouteImport.update({
   id: '/privacy',
   path: '/privacy',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const PricingRoute = PricingRouteImport.update({
-  id: '/pricing',
-  path: '/pricing',
   getParentRoute: () => rootRouteImport,
 } as any)
 const OnboardingRoute = OnboardingRouteImport.update({
@@ -173,20 +159,10 @@ const ApiShopeeReferralsRoute = ApiShopeeReferralsRouteImport.update({
   path: '/api/shopee-referrals',
   getParentRoute: () => rootRouteImport,
 } as any)
-const ApiRazorpayWebhookRoute = ApiRazorpayWebhookRouteImport.update({
-  id: '/api/razorpay-webhook',
-  path: '/api/razorpay-webhook',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const ApiDoaRoute = ApiDoaRouteImport.update({
   id: '/api/doa',
   path: '/api/doa',
   getParentRoute: () => rootRouteImport,
-} as any)
-const AdminSubscribersRoute = AdminSubscribersRouteImport.update({
-  id: '/subscribers',
-  path: '/subscribers',
-  getParentRoute: () => AdminRoute,
 } as any)
 const ApiShopeeOgSplatRoute = ApiShopeeOgSplatRouteImport.update({
   id: '/api/shopee-og/$',
@@ -214,19 +190,15 @@ export interface FileRoutesByFullPath {
   '/dashboard': typeof DashboardRouteRouteWithChildren
   '/doa': typeof DoaRouteRouteWithChildren
   '/about': typeof AboutRoute
-  '/admin': typeof AdminRouteWithChildren
+  '/admin': typeof AdminRoute
   '/contact': typeof ContactRoute
   '/leaderboard': typeof LeaderboardRoute
   '/lists': typeof ListsRoute
   '/login': typeof LoginRoute
   '/onboarding': typeof OnboardingRoute
-  '/pricing': typeof PricingRoute
   '/privacy': typeof PrivacyRoute
-  '/refund': typeof RefundRoute
   '/terms': typeof TermsRoute
-  '/admin/subscribers': typeof AdminSubscribersRoute
   '/api/doa': typeof ApiDoaRouteWithChildren
-  '/api/razorpay-webhook': typeof ApiRazorpayWebhookRoute
   '/api/shopee-referrals': typeof ApiShopeeReferralsRoute
   '/dashboard/create-doa-list': typeof DashboardCreateDoaListRoute
   '/dashboard/doa-image': typeof DashboardDoaImageRoute
@@ -247,19 +219,15 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
-  '/admin': typeof AdminRouteWithChildren
+  '/admin': typeof AdminRoute
   '/contact': typeof ContactRoute
   '/leaderboard': typeof LeaderboardRoute
   '/lists': typeof ListsRoute
   '/login': typeof LoginRoute
   '/onboarding': typeof OnboardingRoute
-  '/pricing': typeof PricingRoute
   '/privacy': typeof PrivacyRoute
-  '/refund': typeof RefundRoute
   '/terms': typeof TermsRoute
-  '/admin/subscribers': typeof AdminSubscribersRoute
   '/api/doa': typeof ApiDoaRouteWithChildren
-  '/api/razorpay-webhook': typeof ApiRazorpayWebhookRoute
   '/api/shopee-referrals': typeof ApiShopeeReferralsRoute
   '/dashboard/create-doa-list': typeof DashboardCreateDoaListRoute
   '/dashboard/doa-image': typeof DashboardDoaImageRoute
@@ -283,19 +251,15 @@ export interface FileRoutesById {
   '/dashboard': typeof DashboardRouteRouteWithChildren
   '/doa': typeof DoaRouteRouteWithChildren
   '/about': typeof AboutRoute
-  '/admin': typeof AdminRouteWithChildren
+  '/admin': typeof AdminRoute
   '/contact': typeof ContactRoute
   '/leaderboard': typeof LeaderboardRoute
   '/lists': typeof ListsRoute
   '/login': typeof LoginRoute
   '/onboarding': typeof OnboardingRoute
-  '/pricing': typeof PricingRoute
   '/privacy': typeof PrivacyRoute
-  '/refund': typeof RefundRoute
   '/terms': typeof TermsRoute
-  '/admin/subscribers': typeof AdminSubscribersRoute
   '/api/doa': typeof ApiDoaRouteWithChildren
-  '/api/razorpay-webhook': typeof ApiRazorpayWebhookRoute
   '/api/shopee-referrals': typeof ApiShopeeReferralsRoute
   '/dashboard/create-doa-list': typeof DashboardCreateDoaListRoute
   '/dashboard/doa-image': typeof DashboardDoaImageRoute
@@ -326,13 +290,9 @@ export interface FileRouteTypes {
     | '/lists'
     | '/login'
     | '/onboarding'
-    | '/pricing'
     | '/privacy'
-    | '/refund'
     | '/terms'
-    | '/admin/subscribers'
     | '/api/doa'
-    | '/api/razorpay-webhook'
     | '/api/shopee-referrals'
     | '/dashboard/create-doa-list'
     | '/dashboard/doa-image'
@@ -359,13 +319,9 @@ export interface FileRouteTypes {
     | '/lists'
     | '/login'
     | '/onboarding'
-    | '/pricing'
     | '/privacy'
-    | '/refund'
     | '/terms'
-    | '/admin/subscribers'
     | '/api/doa'
-    | '/api/razorpay-webhook'
     | '/api/shopee-referrals'
     | '/dashboard/create-doa-list'
     | '/dashboard/doa-image'
@@ -394,13 +350,9 @@ export interface FileRouteTypes {
     | '/lists'
     | '/login'
     | '/onboarding'
-    | '/pricing'
     | '/privacy'
-    | '/refund'
     | '/terms'
-    | '/admin/subscribers'
     | '/api/doa'
-    | '/api/razorpay-webhook'
     | '/api/shopee-referrals'
     | '/dashboard/create-doa-list'
     | '/dashboard/doa-image'
@@ -424,18 +376,15 @@ export interface RootRouteChildren {
   DashboardRouteRoute: typeof DashboardRouteRouteWithChildren
   DoaRouteRoute: typeof DoaRouteRouteWithChildren
   AboutRoute: typeof AboutRoute
-  AdminRoute: typeof AdminRouteWithChildren
+  AdminRoute: typeof AdminRoute
   ContactRoute: typeof ContactRoute
   LeaderboardRoute: typeof LeaderboardRoute
   ListsRoute: typeof ListsRoute
   LoginRoute: typeof LoginRoute
   OnboardingRoute: typeof OnboardingRoute
-  PricingRoute: typeof PricingRoute
   PrivacyRoute: typeof PrivacyRoute
-  RefundRoute: typeof RefundRoute
   TermsRoute: typeof TermsRoute
   ApiDoaRoute: typeof ApiDoaRouteWithChildren
-  ApiRazorpayWebhookRoute: typeof ApiRazorpayWebhookRoute
   ApiShopeeReferralsRoute: typeof ApiShopeeReferralsRoute
   ListListIdRoute: typeof ListListIdRoute
   UserUserIdRoute: typeof UserUserIdRoute
@@ -453,25 +402,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof TermsRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/refund': {
-      id: '/refund'
-      path: '/refund'
-      fullPath: '/refund'
-      preLoaderRoute: typeof RefundRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/privacy': {
       id: '/privacy'
       path: '/privacy'
       fullPath: '/privacy'
       preLoaderRoute: typeof PrivacyRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/pricing': {
-      id: '/pricing'
-      path: '/pricing'
-      fullPath: '/pricing'
-      preLoaderRoute: typeof PricingRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/onboarding': {
@@ -628,26 +563,12 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiShopeeReferralsRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/api/razorpay-webhook': {
-      id: '/api/razorpay-webhook'
-      path: '/api/razorpay-webhook'
-      fullPath: '/api/razorpay-webhook'
-      preLoaderRoute: typeof ApiRazorpayWebhookRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/api/doa': {
       id: '/api/doa'
       path: '/api/doa'
       fullPath: '/api/doa'
       preLoaderRoute: typeof ApiDoaRouteImport
       parentRoute: typeof rootRouteImport
-    }
-    '/admin/subscribers': {
-      id: '/admin/subscribers'
-      path: '/subscribers'
-      fullPath: '/admin/subscribers'
-      preLoaderRoute: typeof AdminSubscribersRouteImport
-      parentRoute: typeof AdminRoute
     }
     '/api/shopee-og/$': {
       id: '/api/shopee-og/$'
@@ -718,16 +639,6 @@ const DoaRouteRouteWithChildren = DoaRouteRoute._addFileChildren(
   DoaRouteRouteChildren,
 )
 
-interface AdminRouteChildren {
-  AdminSubscribersRoute: typeof AdminSubscribersRoute
-}
-
-const AdminRouteChildren: AdminRouteChildren = {
-  AdminSubscribersRoute: AdminSubscribersRoute,
-}
-
-const AdminRouteWithChildren = AdminRoute._addFileChildren(AdminRouteChildren)
-
 interface ApiDoaRouteChildren {
   ApiDoaRandomRoute: typeof ApiDoaRandomRoute
 }
@@ -744,18 +655,15 @@ const rootRouteChildren: RootRouteChildren = {
   DashboardRouteRoute: DashboardRouteRouteWithChildren,
   DoaRouteRoute: DoaRouteRouteWithChildren,
   AboutRoute: AboutRoute,
-  AdminRoute: AdminRouteWithChildren,
+  AdminRoute: AdminRoute,
   ContactRoute: ContactRoute,
   LeaderboardRoute: LeaderboardRoute,
   ListsRoute: ListsRoute,
   LoginRoute: LoginRoute,
   OnboardingRoute: OnboardingRoute,
-  PricingRoute: PricingRoute,
   PrivacyRoute: PrivacyRoute,
-  RefundRoute: RefundRoute,
   TermsRoute: TermsRoute,
   ApiDoaRoute: ApiDoaRouteWithChildren,
-  ApiRazorpayWebhookRoute: ApiRazorpayWebhookRoute,
   ApiShopeeReferralsRoute: ApiShopeeReferralsRoute,
   ListListIdRoute: ListListIdRoute,
   UserUserIdRoute: UserUserIdRoute,

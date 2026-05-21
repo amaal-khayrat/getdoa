@@ -1,12 +1,21 @@
-import { useEffect, useState } from 'react'
 import { createFileRoute, redirect } from '@tanstack/react-router'
+import type { ShopeeReferralItem } from '@/components/shopee/shopee-referrals-section'
 import { getSessionFromServer } from '@/server-functions/dashboard'
-import { getImageLimitInfo } from '@/server-functions/dashboard/image-generator'
 import { getAllDoas, getDoaCategories } from '@/server-functions/dashboard/doa'
 import { DoaImageGenerator } from '@/components/doa-image'
 import { ShopeeReferralsSection } from '@/components/shopee/shopee-referrals-section'
 import { Skeleton } from '@/components/ui/skeleton'
-import type { ShopeeOgData } from '@/types/shopee.types'
+import { fetchShopeeReferrals } from '@/utils/shopee-fetch.server'
+
+async function loadShopeeReferrals(): Promise<Array<ShopeeReferralItem>> {
+  try {
+    const referrals = await fetchShopeeReferrals({ count: 8 })
+    return referrals.map(({ url, ogData }) => ({ url, ogData }))
+  } catch (error) {
+    console.error('Failed to fetch shopee referrals:', error)
+    return []
+  }
+}
 
 export const Route = createFileRoute('/dashboard/doa-image')({
   loader: async () => {
@@ -14,16 +23,16 @@ export const Route = createFileRoute('/dashboard/doa-image')({
     if (!session?.user) throw redirect({ to: '/login' })
 
     // Fetch all data in parallel for optimal performance
-    const [limitInfo, doasResult, categories] = await Promise.all([
-      getImageLimitInfo({ data: { userId: session.user.id } }),
+    const [doasResult, categories, shopeeReferrals] = await Promise.all([
       getAllDoas({ data: { limit: 100 } }),
       getDoaCategories(),
+      loadShopeeReferrals(),
     ])
 
     return {
-      limitInfo,
       prayers: doasResult.data,
       categories,
+      shopeeReferrals,
     }
   },
   component: DoaImagePage,
@@ -54,72 +63,14 @@ function DoaImagePageSkeleton() {
 }
 
 function DoaImagePage() {
-  const { limitInfo, prayers, categories } = Route.useLoaderData()
-
-  // Shopee referrals state management
-  const [shopeeReferrals, setShopeeReferrals] = useState<
-    Array<{ url: string; ogData?: ShopeeOgData }>
-  >([])
-  const [shopeeError, setShopeeError] = useState<Error | null>(null)
-  const [isShopeeLoading, setIsShopeeLoading] = useState(true)
-
-  // Fetch shopee referrals when component mounts
-  useEffect(() => {
-    const fetchShopeeReferrals = async () => {
-      setIsShopeeLoading(true)
-      setShopeeError(null)
-
-      try {
-        const response = await fetch('/api/shopee-referrals?count=8')
-        if (!response.ok) {
-          throw new Error('Failed to fetch shopee referrals')
-        }
-        const data = await response.json()
-        setShopeeReferrals(data.items || [])
-      } catch (error) {
-        console.error('Failed to fetch shopee referrals:', error)
-        setShopeeError(
-          error instanceof Error ? error : new Error('Unknown error'),
-        )
-      } finally {
-        setIsShopeeLoading(false)
-      }
-    }
-
-    fetchShopeeReferrals()
-  }, [])
-
-  const handleShopeeRetry = () => {
-    setShopeeReferrals([])
-    setShopeeError(null)
-    setIsShopeeLoading(true)
-    fetch('/api/shopee-referrals?count=8')
-      .then((res) => res.json())
-      .then((data) => {
-        setShopeeReferrals(data.items || [])
-        setIsShopeeLoading(false)
-      })
-      .catch((err) => {
-        setShopeeError(
-          err instanceof Error ? err : new Error('Unknown error'),
-        )
-        setIsShopeeLoading(false)
-      })
-  }
+  const { prayers, categories, shopeeReferrals } = Route.useLoaderData()
 
   return (
     <div className="p-4 md:p-6">
-      <DoaImageGenerator
-        initialLimitInfo={limitInfo}
-        prayers={prayers}
-        categories={categories}
-      />
-      <ShopeeReferralsSection
-        referrals={shopeeReferrals}
-        isLoading={isShopeeLoading}
-        error={shopeeError || undefined}
-        onRetry={handleShopeeRetry}
-      />
+      <DoaImageGenerator prayers={prayers} categories={categories} />
+      <div className="mx-auto max-w-5xl">
+        <ShopeeReferralsSection referrals={shopeeReferrals} />
+      </div>
     </div>
   )
 }

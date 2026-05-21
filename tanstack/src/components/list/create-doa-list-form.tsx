@@ -1,14 +1,14 @@
 import { useState, useTransition } from 'react'
 import { useNavigate } from '@tanstack/react-router'
+import { Loader2 } from 'lucide-react'
+import { toast } from 'sonner'
+import { ListTemplateCard } from './list-template-card'
+import type { PrayerReference } from '@/types/doa-list.types'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import { ListTemplateCard } from './list-template-card'
 import { LIST_TEMPLATES, getTemplateById } from '@/lib/list-templates'
-import { Loader2 } from 'lucide-react'
 import { createDoaList } from '@/server-functions/dashboard'
-import type { PrayerReference } from '@/types/doa-list.types'
-import { toast } from 'sonner'
 
 interface CreateDoaListFormProps {
   userId: string
@@ -46,7 +46,7 @@ export function CreateDoaListForm({
     startTransition(async () => {
       try {
         // Convert template slugs to prayer references with order
-        const prayers: PrayerReference[] =
+        const prayers: Array<PrayerReference> =
           selectedTemplate?.doaSlugs.map((slug, index) => ({
             slug,
             order: index,
@@ -63,18 +63,8 @@ export function CreateDoaListForm({
           },
         })
 
-        // Handle result
         if (!result.success) {
-          if (result.error.code === 'LIST_LIMIT_REACHED') {
-            toast.error(result.error.message, {
-              action: {
-                label: 'Invite Friends',
-                onClick: () => navigate({ to: '/dashboard/referrals' }),
-              },
-            })
-          } else {
-            toast.error(result.error.message)
-          }
+          toast.error(result.error.message)
           return
         }
 

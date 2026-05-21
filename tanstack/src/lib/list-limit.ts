@@ -6,53 +6,32 @@ import type { userListBonus } from '@/db/schema'
  * Centralized so it's easy to change.
  */
 export const LIST_LIMIT_CONFIG = {
-  /** Base number of lists every user gets for free */
-  BASE_LIMIT: 1,
+  /** Practical ceiling used for UI/math now that list creation is free. */
+  BASE_LIMIT: 999_999,
 
-  /** Maximum bonus from referrals */
-  MAX_REFERRAL_BONUS: 10,
+  /** Referrals no longer unlock limits; kept for legacy bonus records. */
+  MAX_REFERRAL_BONUS: 0,
 
-  /** Bonus amount per referral */
-  BONUS_PER_REFERRAL: 1,
+  /** Referrals no longer unlock limits; kept for legacy bonus records. */
+  BONUS_PER_REFERRAL: 0,
 
-  /** Bonus for active subscription (future) */
-  SUBSCRIPTION_BONUS: 50,
-
-  /** Maximum prayers per list for free users */
-  MAX_PRAYERS_PER_LIST_FREE: 15,
-
-  /** Maximum prayers per list for premium users */
-  MAX_PRAYERS_PER_LIST_PREMIUM: 30,
-
-  // Future purchase tiers (for reference)
-  PURCHASE_TIERS: {
-    PACK_5: { amount: 5, price: 'TBD' },
-    PACK_10: { amount: 10, price: 'TBD' },
-    PACK_25: { amount: 25, price: 'TBD' },
-  },
+  /** Practical ceiling above the current library size. */
+  MAX_PRAYERS_PER_LIST_FREE: 999,
 } as const
 
 export const BONUS_TYPES = {
-  /** Bonus from referring other users */
+  /** Legacy bonus type from older referral records */
   REFERRAL: 'referral',
-
-  /** Bonus from one-time purchases */
-  PURCHASE: 'purchase',
-
-  /** Bonus from active subscription */
-  SUBSCRIPTION: 'subscription',
 } as const
 
 export type BonusType = (typeof BONUS_TYPES)[keyof typeof BONUS_TYPES]
 export type UserListBonusRecord = InferSelectModel<typeof userListBonus>
 
 /**
- * Get the maximum prayers allowed per list based on premium status.
+ * Get the maximum prayers allowed per list.
  */
-export function getMaxPrayersPerList(isPremium: boolean): number {
-  return isPremium
-    ? LIST_LIMIT_CONFIG.MAX_PRAYERS_PER_LIST_PREMIUM
-    : LIST_LIMIT_CONFIG.MAX_PRAYERS_PER_LIST_FREE
+export function getMaxPrayersPerList(): number {
+  return LIST_LIMIT_CONFIG.MAX_PRAYERS_PER_LIST_FREE
 }
 
 /**
@@ -69,9 +48,9 @@ export function calculateReferralBonus(referralCount: number): number {
  * Extracted for reusability and testability.
  */
 export function filterActiveBonuses(
-  bonuses: UserListBonusRecord[],
+  bonuses: Array<UserListBonusRecord>,
   now: Date = new Date(),
-): UserListBonusRecord[] {
+): Array<UserListBonusRecord> {
   return bonuses.filter((b) => {
     if (!b.isActive) return false
     if (b.expiresAt && b.expiresAt < now) return false
@@ -99,8 +78,6 @@ export interface ListLimitInfo {
   breakdown: {
     base: number
     referral: number
-    purchase: number
-    subscription: number
   }
 
   /** Raw referral count (before cap) */
@@ -109,38 +86,22 @@ export interface ListLimitInfo {
   /** Additional referral bonuses available (before hitting cap) */
   referralPotential: number
 
-  /** Whether user has active subscription */
-  hasSubscription: boolean
 }
 
 /**
- * Calculate list limit from bonuses.
+ * Calculate list limit.
  *
- * @param referralCount - Number of successful referrals
- * @param bonuses - Active bonus records from database
+ * @param referralCount - Legacy referral count, ignored
+ * @param bonuses - Legacy bonus records, ignored
  * @returns Total list limit
  */
 export function calculateListLimit(
   referralCount: number,
-  bonuses: UserListBonusRecord[],
+  bonuses: Array<UserListBonusRecord>,
 ): number {
-  const { BASE_LIMIT } = LIST_LIMIT_CONFIG
-
-  // Calculate referral bonus (capped)
-  const referralBonus = calculateReferralBonus(referralCount)
-
-  // Sum up other active bonuses by type
-  const activeBonuses = filterActiveBonuses(bonuses)
-
-  const purchaseBonus = activeBonuses
-    .filter((b) => b.bonusType === BONUS_TYPES.PURCHASE)
-    .reduce((sum, b) => sum + Math.max(0, b.amount), 0)
-
-  const subscriptionBonus = activeBonuses
-    .filter((b) => b.bonusType === BONUS_TYPES.SUBSCRIPTION)
-    .reduce((sum, b) => sum + Math.max(0, b.amount), 0)
-
-  return BASE_LIMIT + referralBonus + purchaseBonus + subscriptionBonus
+  void referralCount
+  void bonuses
+  return LIST_LIMIT_CONFIG.BASE_LIMIT
 }
 
 /**
@@ -149,41 +110,25 @@ export function calculateListLimit(
 export function getListLimitInfo(
   currentListCount: number,
   referralCount: number,
-  bonuses: UserListBonusRecord[],
+  bonuses: Array<UserListBonusRecord>,
 ): ListLimitInfo {
-  const { BASE_LIMIT, MAX_REFERRAL_BONUS } = LIST_LIMIT_CONFIG
+  void bonuses
 
-  // Filter active bonuses
-  const activeBonuses = filterActiveBonuses(bonuses)
-
-  // Calculate each bonus type
-  const referralBonus = calculateReferralBonus(referralCount)
-
-  const purchaseBonus = activeBonuses
-    .filter((b) => b.bonusType === BONUS_TYPES.PURCHASE)
-    .reduce((sum, b) => sum + Math.max(0, b.amount), 0)
-
-  const subscriptionBonus = activeBonuses
-    .filter((b) => b.bonusType === BONUS_TYPES.SUBSCRIPTION)
-    .reduce((sum, b) => sum + Math.max(0, b.amount), 0)
-
-  const limit = BASE_LIMIT + referralBonus + purchaseBonus + subscriptionBonus
+  const { BASE_LIMIT } = LIST_LIMIT_CONFIG
+  const limit = BASE_LIMIT
   const remaining = Math.max(0, limit - currentListCount)
 
   return {
     current: currentListCount,
     limit,
     remaining,
-    canCreate: currentListCount < limit,
+    canCreate: true,
     breakdown: {
-      base: BASE_LIMIT,
-      referral: referralBonus,
-      purchase: purchaseBonus,
-      subscription: subscriptionBonus,
+      base: limit,
+      referral: 0,
     },
     referralCount,
-    referralPotential: Math.max(0, MAX_REFERRAL_BONUS - referralBonus),
-    hasSubscription: subscriptionBonus > 0,
+    referralPotential: 0,
   }
 }
 
@@ -193,8 +138,10 @@ export function getListLimitInfo(
 export function canCreateList(
   currentListCount: number,
   referralCount: number,
-  bonuses: UserListBonusRecord[],
+  bonuses: Array<UserListBonusRecord>,
 ): boolean {
-  const limit = calculateListLimit(referralCount, bonuses)
-  return currentListCount < limit
+  void currentListCount
+  void referralCount
+  void bonuses
+  return true
 }

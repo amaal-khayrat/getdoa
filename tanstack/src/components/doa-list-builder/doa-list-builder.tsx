@@ -1,30 +1,32 @@
 import React, {
   use,
   useCallback,
+  useEffect,
   useMemo,
   useReducer,
-  useState,
-  useEffect,
   useRef,
+  useState,
 } from 'react'
-import { useNavigate, useBlocker } from '@tanstack/react-router'
+import { useBlocker, useNavigate } from '@tanstack/react-router'
 import {
+  AlertCircle,
+  ArrowLeft,
+  CheckCircle,
   Download,
   Eye,
-  AlertCircle,
-  CheckCircle,
-  X,
-  Save,
   Loader2,
-  ArrowLeft,
+  Save,
+  X,
 } from 'lucide-react'
 import { ResponsiveDoaLayout } from './responsive-layout'
+import { PreviewModal } from './preview-modal'
 import type { DoaItem, DoaList, PreviewSettings } from '@/types/doa.types'
 import type {
   ListStatus,
   ListVisibility,
   PrayerReference,
 } from '@/types/doa-list.types'
+import type { BuilderInitialState } from '@/routes/dashboard.create-doa-list'
 import { useSession } from '@/lib/auth-client'
 import { useLanguage } from '@/contexts/language-context'
 import { useDoaData } from '@/hooks/use-doa-data'
@@ -36,11 +38,6 @@ import {
 import { downloadImage, generateDoaImage } from '@/utils/image-generator'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipTrigger,
-} from '@/components/ui/tooltip'
 import { cn } from '@/lib/utils'
 import { DEFAULT_PREVIEW_SETTINGS } from '@/types/doa.types'
 import {
@@ -53,9 +50,10 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog'
-import { createDoaList, updateDoaList, getSavedDoas } from '@/server-functions/dashboard'
-import type { BuilderInitialState } from '@/routes/dashboard.create-doa-list'
-import { getMaxPrayersPerList, type ListLimitInfo } from '@/lib/list-limit'
+import { createDoaList, getSavedDoas, updateDoaList } from '@/server-functions/dashboard'
+import { getMaxPrayersPerList } from '@/lib/list-limit'
+
+// Import components where needed - NO LAZY LOADING to prevent flash
 // Components will be imported where needed to avoid circular dependencies
 
 // Simple notification system for better error handling
@@ -141,7 +139,7 @@ const NotificationContext = React.createContext<{
 })
 
 function NotificationProvider({ children }: { children: React.ReactNode }) {
-  const [notifications, setNotifications] = useState<Notification[]>([])
+  const [notifications, setNotifications] = useState<Array<Notification>>([])
 
   const addNotification = useCallback(
     (type: NotificationType, message: string, duration?: number) => {
@@ -172,11 +170,7 @@ function NotificationProvider({ children }: { children: React.ReactNode }) {
 }
 
 function useNotifications() {
-  const context = React.useContext(NotificationContext)
-  if (!context) {
-    throw new Error('useNotifications must be used within NotificationProvider')
-  }
-  return context
+  return React.useContext(NotificationContext)
 }
 
 // Type definitions for useReducer
@@ -212,7 +206,7 @@ type DoaListState = {
   itemsPerPage: number
   // Mode from props
   mode: 'create' | 'edit'
-  // Premium feature: max prayers per list
+  // Practical ceiling for a single exported list.
   maxPrayers: number
 }
 
@@ -365,7 +359,7 @@ const DoaListStateContext = React.createContext<DoaListState>({
   currentPage: 1,
   itemsPerPage: 10,
   mode: 'create',
-  maxPrayers: 15, // Default for free users
+  maxPrayers: 999,
 })
 
 const DoaListActionsContext = React.createContext<{
@@ -396,8 +390,6 @@ const DoaListActionsContext = React.createContext<{
 interface DoaListBuilderProps {
   mode: 'create' | 'edit'
   initialState: BuilderInitialState
-  listLimitInfo?: ListLimitInfo
-  isPremium?: boolean
 }
 
 // Inner provider with access to notifications
@@ -438,7 +430,7 @@ function DoaListProviderWithNotifications({
     isDirty: false,
     saveStatus: 'idle',
     mode,
-    // Premium feature: max prayers per list
+    // Practical ceiling for a single exported list.
     maxPrayers,
     // Local state
     searchQuery: '',
@@ -451,8 +443,8 @@ function DoaListProviderWithNotifications({
     isPreviewLoading: false,
     user: {
       isAuthenticated: !!session?.user,
-      username: session?.user?.name,
-      userId: session?.user?.id,
+      username: session?.user.name,
+      userId: session?.user.id,
     },
     availablePrayers: prayers,
     currentPage: 1,
@@ -477,7 +469,7 @@ function DoaListProviderWithNotifications({
       }
       dispatch({ type: 'ADD_PRAYER', payload: prayer })
     },
-    [state.selectedPrayers.length, addNotification],
+    [state.selectedPrayers.length, state.maxPrayers, addNotification],
   )
 
   const removePrayer = useCallback((slug: string) => {
@@ -561,7 +553,7 @@ function DoaListProviderWithNotifications({
       // Use ref to get current state (avoids stale closure)
       const currentState = stateRef.current
 
-      const userId = session?.user?.id
+      const userId = session?.user.id
       if (!userId) {
         addNotification('error', 'Please sign in to save your list.')
         return
@@ -581,12 +573,11 @@ function DoaListProviderWithNotifications({
       dispatch({ type: 'SET_SAVE_STATUS', payload: 'saving' })
 
       try {
-        const prayers: PrayerReference[] = currentState.selectedPrayers.map(
-          (p, index) => ({
+        const prayerReferences: Array<PrayerReference> =
+          currentState.selectedPrayers.map((p, index) => ({
             slug: p.slug,
             order: index,
-          }),
-        )
+          }))
 
         if (currentState.listId) {
           // Update existing list
@@ -596,7 +587,7 @@ function DoaListProviderWithNotifications({
               userId,
               input: {
                 name: currentState.listName,
-                prayers,
+              prayers: prayerReferences,
                 showTranslations: currentState.previewSettings.showTranslations,
                 translationLayout: currentState.previewSettings.translationLayout,
                 language: currentState.language,
@@ -624,7 +615,7 @@ function DoaListProviderWithNotifications({
               userId,
               input: {
                 name: currentState.listName,
-                prayers,
+                prayers: prayerReferences,
                 showTranslations: currentState.previewSettings.showTranslations,
                 translationLayout: currentState.previewSettings.translationLayout,
                 language: currentState.language,
@@ -635,11 +626,6 @@ function DoaListProviderWithNotifications({
           })
 
           if (!result.success) {
-            if (result.error.code === 'LIST_LIMIT_REACHED') {
-              addNotification('error', result.error.message)
-              dispatch({ type: 'SET_SAVE_STATUS', payload: 'error' })
-              return
-            }
             throw new Error(result.error.message)
           }
 
@@ -660,7 +646,7 @@ function DoaListProviderWithNotifications({
         isSavingRef.current = false
       }
     },
-    [session?.user?.id, addNotification, navigate],
+    [session?.user.id, addNotification, navigate],
   )
 
   // Handle external data updates with useEffect to avoid render-time state updates
@@ -673,7 +659,7 @@ function DoaListProviderWithNotifications({
   useEffect(() => {
     const currentUser = {
       isAuthenticated: !!session?.user,
-      username: session?.user?.name,
+      username: session?.user.name,
     }
     if (JSON.stringify(state.user) !== JSON.stringify(currentUser)) {
       dispatch({ type: 'UPDATE_STATE', payload: { user: currentUser } })
@@ -708,7 +694,7 @@ function DoaListProviderWithNotifications({
   // Fetch user's saved doas for favorites filter
   useEffect(() => {
     const fetchSavedDoas = async () => {
-      if (!session?.user?.id) {
+      if (!session?.user.id) {
         dispatch({ type: 'UPDATE_STATE', payload: { savedDoaSlugs: new Set() } })
         return
       }
@@ -723,7 +709,7 @@ function DoaListProviderWithNotifications({
     }
 
     fetchSavedDoas()
-  }, [session?.user?.id])
+  }, [session?.user.id])
 
   return (
     <DoaListStateContext.Provider value={state}>
@@ -749,20 +735,12 @@ function DoaListProviderWithNotifications({
 
 // Hook to use the state context
 function useDoaListState() {
-  const context = use(DoaListStateContext)
-  if (!context) {
-    throw new Error('useDoaListState must be used within DoaListProvider')
-  }
-  return context
+  return use(DoaListStateContext)
 }
 
 // Hook to use the actions context
 function useDoaListActions() {
-  const context = use(DoaListActionsContext)
-  if (!context) {
-    throw new Error('useDoaListActions must be used within DoaListProvider')
-  }
-  return context
+  return use(DoaListActionsContext)
 }
 
 // Combined hook for convenience
@@ -776,22 +754,19 @@ function useDoaListBuilder() {
 // Export the hooks so other components can use them
 export { useDoaListState, useDoaListActions, useDoaListBuilder }
 
-// Import components where needed - NO LAZY LOADING to prevent flash
-import { PreviewModal } from './preview-modal'
-
-export function DoaListBuilder({ mode, initialState, listLimitInfo, isPremium = false }: DoaListBuilderProps) {
-  const maxPrayers = getMaxPrayersPerList(isPremium)
+export function DoaListBuilder({ mode, initialState }: DoaListBuilderProps) {
+  const maxPrayers = getMaxPrayersPerList()
 
   return (
     <NotificationProvider>
       <DoaListProviderWithNotifications mode={mode} initialState={initialState} maxPrayers={maxPrayers}>
-        <DoaListBuilderContent listLimitInfo={listLimitInfo} />
+        <DoaListBuilderContent />
       </DoaListProviderWithNotifications>
     </NotificationProvider>
   )
 }
 
-function DoaListBuilderContent({ listLimitInfo }: { listLimitInfo?: ListLimitInfo }) {
+function DoaListBuilderContent() {
   const {
     searchQuery,
     selectedCategory,
@@ -807,15 +782,9 @@ function DoaListBuilderContent({ listLimitInfo }: { listLimitInfo?: ListLimitInf
     listName,
     isDirty,
     saveStatus,
-    listId,
     language,
     user,
-    maxPrayers,
   } = useDoaListState()
-
-  // Check if user can save: edit mode always allowed, create mode only if within limit
-  const isNewList = !listId
-  const canSave = !isNewList || (listLimitInfo?.canCreate ?? true)
 
   const {
     updateState,
@@ -902,7 +871,7 @@ function DoaListBuilderContent({ listLimitInfo }: { listLimitInfo?: ListLimitInf
 
   // Get all unique categories
   const categories = useMemo(() => {
-    const allCategories = availablePrayers.flatMap((p) => p.categoryNames || [])
+    const allCategories = availablePrayers.flatMap((p) => p.categoryNames)
     return ['All Categories', ...Array.from(new Set(allCategories))].sort()
   }, [availablePrayers])
 
@@ -934,7 +903,7 @@ function DoaListBuilderContent({ listLimitInfo }: { listLimitInfo?: ListLimitInf
                 className="text-lg font-bold border-0 border-b border-transparent hover:border-border focus:border-primary bg-transparent px-1 h-auto py-1 flex-1"
               />
               <div className="text-sm text-muted-foreground font-medium shrink-0">
-                {selectedPrayers.length}/{maxPrayers}
+                {selectedPrayers.length} selected
               </div>
             </div>
             <div className="flex items-center gap-2">
@@ -1000,40 +969,29 @@ function DoaListBuilderContent({ listLimitInfo }: { listLimitInfo?: ListLimitInf
                 <Download className="w-4 h-4 mr-1" />
                 <span className="text-xs">Export</span>
               </Button>
-              <Tooltip>
-                <TooltipTrigger
-                  render={
-                    <Button
-                      size="sm"
-                      onClick={() => handleSave()}
-                      disabled={!canSave || saveStatus === 'saving' || (!isDirty && saveStatus === 'saved')}
-                      className="flex-1"
-                    />
-                  }
-                >
-                  {saveStatus === 'saving' ? (
-                    <>
-                      <Loader2 className="w-4 h-4 mr-1 animate-spin" />
-                      <span className="text-xs">Saving</span>
-                    </>
-                  ) : saveStatus === 'saved' && !isDirty ? (
-                    <>
-                      <CheckCircle className="w-4 h-4 mr-1" />
-                      <span className="text-xs">Saved</span>
-                    </>
-                  ) : (
-                    <>
-                      <Save className="w-4 h-4 mr-1" />
-                      <span className="text-xs">Save</span>
-                    </>
-                  )}
-                </TooltipTrigger>
-                {!canSave && (
-                  <TooltipContent>
-                    List limit reached. Invite friends to unlock more slots.
-                  </TooltipContent>
+              <Button
+                size="sm"
+                onClick={() => handleSave()}
+                disabled={saveStatus === 'saving' || (!isDirty && saveStatus === 'saved')}
+                className="flex-1"
+              >
+                {saveStatus === 'saving' ? (
+                  <>
+                    <Loader2 className="w-4 h-4 mr-1 animate-spin" />
+                    <span className="text-xs">Saving</span>
+                  </>
+                ) : saveStatus === 'saved' && !isDirty ? (
+                  <>
+                    <CheckCircle className="w-4 h-4 mr-1" />
+                    <span className="text-xs">Saved</span>
+                  </>
+                ) : (
+                  <>
+                    <Save className="w-4 h-4 mr-1" />
+                    <span className="text-xs">Save</span>
+                  </>
                 )}
-              </Tooltip>
+              </Button>
             </div>
           </div>
 
@@ -1056,7 +1014,7 @@ function DoaListBuilderContent({ listLimitInfo }: { listLimitInfo?: ListLimitInf
                   className="text-xl md:text-2xl font-bold border-0 border-b border-transparent hover:border-border focus:border-primary bg-transparent px-0 h-auto py-1"
                 />
                 <p className="text-sm text-muted-foreground mt-1">
-                  {selectedPrayers.length} of {maxPrayers} prayers selected
+                  {selectedPrayers.length} prayers selected
                   {isDirty && <span className="ml-2 text-primary">• Unsaved changes</span>}
                 </p>
               </div>
@@ -1121,38 +1079,27 @@ function DoaListBuilderContent({ listLimitInfo }: { listLimitInfo?: ListLimitInf
                 <Download className="w-4 h-4 mr-2" />
                 {isGeneratingImage ? 'Generating...' : 'Export'}
               </Button>
-              <Tooltip>
-                <TooltipTrigger
-                  render={
-                    <Button
-                      onClick={() => handleSave()}
-                      disabled={!canSave || saveStatus === 'saving' || (!isDirty && saveStatus === 'saved')}
-                    />
-                  }
-                >
-                  {saveStatus === 'saving' ? (
-                    <>
-                      <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                      Saving...
-                    </>
-                  ) : saveStatus === 'saved' && !isDirty ? (
-                    <>
-                      <CheckCircle className="w-4 h-4 mr-2" />
-                      Saved
-                    </>
-                  ) : (
-                    <>
-                      <Save className="w-4 h-4 mr-2" />
-                      Save
-                    </>
-                  )}
-                </TooltipTrigger>
-                {!canSave && (
-                  <TooltipContent>
-                    List limit reached. Invite friends to unlock more slots.
-                  </TooltipContent>
+              <Button
+                onClick={() => handleSave()}
+                disabled={saveStatus === 'saving' || (!isDirty && saveStatus === 'saved')}
+              >
+                {saveStatus === 'saving' ? (
+                  <>
+                    <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                    Saving...
+                  </>
+                ) : saveStatus === 'saved' && !isDirty ? (
+                  <>
+                    <CheckCircle className="w-4 h-4 mr-2" />
+                    Saved
+                  </>
+                ) : (
+                  <>
+                    <Save className="w-4 h-4 mr-2" />
+                    Save
+                  </>
                 )}
-              </Tooltip>
+              </Button>
             </div>
           </div>
         </div>

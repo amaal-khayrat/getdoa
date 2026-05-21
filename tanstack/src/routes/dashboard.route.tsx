@@ -1,9 +1,11 @@
-import { createFileRoute, Outlet, redirect } from '@tanstack/react-router'
+import { Outlet, createFileRoute, redirect } from '@tanstack/react-router'
+import type { DoaListRecord } from '@/types/doa-list.types'
+import type { ListLimitInfo } from '@/lib/list-limit'
 import { LanguageProvider } from '@/contexts/language-context'
 import { AppSidebar } from '@/components/sidebar/app-sidebar'
 import {
-  SidebarProvider,
   SidebarInset,
+  SidebarProvider,
   SidebarTrigger,
 } from '@/components/ui/sidebar'
 import { Separator } from '@/components/ui/separator'
@@ -17,12 +19,9 @@ import {
   getSessionFromServer,
   getUserDoaLists,
   getUserListLimitInfo,
-  checkPremiumAccess,
 } from '@/server-functions/dashboard'
 import { ReferralProcessor } from '@/components/referral-processor'
 import { isAdminEmail } from '@/lib/admin'
-import type { DoaListRecord } from '@/types/doa-list.types'
-import type { ListLimitInfo } from '@/lib/list-limit'
 
 // Extend route context type
 declare module '@tanstack/react-router' {
@@ -33,10 +32,9 @@ declare module '@tanstack/react-router' {
       email: string
       image: string | null
     }
-    lists?: DoaListRecord[]
+    lists?: Array<DoaListRecord>
     listLimitInfo?: ListLimitInfo
     isAdmin?: boolean
-    isPremium?: boolean
   }
 }
 
@@ -56,18 +54,15 @@ export const Route = createFileRoute('/dashboard')({
       image: session.user.image ?? null,
     }
 
-    // Fetch list limit and premium status in parallel
-    const [listLimitInfo, premiumResult] = await Promise.all([
-      getUserListLimitInfo({ data: { userId: user.id } }),
-      checkPremiumAccess({ data: { userId: user.id } }),
-    ])
+    const listLimitInfo = await getUserListLimitInfo({
+      data: { userId: user.id },
+    })
 
     // Check admin status server-side
     const isAdmin = isAdminEmail(user.email)
-    const isPremium = premiumResult.isPremium
 
     // Return data to be available in context for child routes
-    return { user, listLimitInfo, isAdmin, isPremium }
+    return { user, listLimitInfo, isAdmin }
   },
   // loader fetches data needed for this route's component
   loader: async ({ context }) => {

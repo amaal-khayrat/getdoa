@@ -1,14 +1,32 @@
 import { createFileRoute, redirect } from '@tanstack/react-router'
 import {
+  CheckCircle2,
+  ChevronDown,
+  Copy,
+  ExternalLink,
+  Eye,
+  EyeOff,
+  Gift,
+  Loader2,
+  Mail,
+  MessageCircle,
+  Share2,
+  Trophy,
+  Users,
+} from 'lucide-react'
+import { useCallback, useState } from 'react'
+import { toast } from 'sonner'
+import type {
+  LeaderboardSettings,
+  ReferralStats,
+} from '@/server-functions/dashboard/referral'
+import {
+  getLeaderboardSettings,
   getReferralStats,
   getUserReferralCode,
-  getLeaderboardSettings,
   updateLeaderboardSettings,
-  type ReferralStats,
-  type LeaderboardSettings,
 } from '@/server-functions/dashboard/referral'
-import { getSessionFromServer, getUserListLimitInfo } from '@/server-functions/dashboard'
-import { LIST_LIMIT_CONFIG, type ListLimitInfo } from '@/lib/list-limit'
+import { getSessionFromServer } from '@/server-functions/dashboard'
 import {
   Card,
   CardContent,
@@ -24,10 +42,10 @@ import {
 } from '@/components/ui/accordion'
 import {
   Empty,
+  EmptyDescription,
   EmptyHeader,
   EmptyMedia,
   EmptyTitle,
-  EmptyDescription,
 } from '@/components/ui/empty'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Button } from '@/components/ui/button'
@@ -43,36 +61,16 @@ import {
 } from '@/components/ui/select'
 import { Switch } from '@/components/ui/switch'
 import { Label } from '@/components/ui/label'
-import {
-  Copy,
-  Users,
-  Gift,
-  Share2,
-  CheckCircle2,
-  MessageCircle,
-  Mail,
-  Loader2,
-  ChevronDown,
-  Trophy,
-  Eye,
-  EyeOff,
-  ExternalLink,
-  Crown,
-  Sparkles,
-} from 'lucide-react'
-import { useState, useCallback } from 'react'
-import { toast } from 'sonner'
 
 export const Route = createFileRoute('/dashboard/referrals')({
   loader: async () => {
     const session = await getSessionFromServer()
     if (!session?.user) throw redirect({ to: '/login' })
 
-    const [codeResult, stats, leaderboardSettings, listLimitInfo] = await Promise.all([
+    const [codeResult, stats, leaderboardSettings] = await Promise.all([
       getUserReferralCode({ data: { userId: session.user.id } }),
       getReferralStats({ data: { userId: session.user.id, limit: 10 } }),
       getLeaderboardSettings({ data: { userId: session.user.id } }),
-      getUserListLimitInfo({ data: { userId: session.user.id } }),
     ])
 
     return {
@@ -80,7 +78,6 @@ export const Route = createFileRoute('/dashboard/referrals')({
       code: codeResult?.code ?? null,
       initialStats: stats,
       initialLeaderboardSettings: leaderboardSettings,
-      listLimitInfo,
     }
   },
   component: ReferralsPage,
@@ -118,7 +115,10 @@ function ReferralsPageSkeleton() {
 // ============================================
 async function copyToClipboard(text: string): Promise<boolean> {
   // Modern API
-  if (navigator.clipboard?.writeText) {
+  if (
+    'clipboard' in navigator &&
+    typeof navigator.clipboard.writeText === 'function'
+  ) {
     try {
       await navigator.clipboard.writeText(text)
       return true
@@ -152,19 +152,24 @@ async function copyToClipboard(text: string): Promise<boolean> {
 function ReferralsPage() {
   const loaderData = Route.useLoaderData()
   const code = loaderData.code
-  const initialStats = loaderData.initialStats as ReferralStats
-  const initialLeaderboardSettings = loaderData.initialLeaderboardSettings as LeaderboardSettings | null
-  const user = loaderData.user as { id: string; name: string; email: string; image: string | null }
-  const listLimitInfo = loaderData.listLimitInfo as ListLimitInfo
+  const initialStats = loaderData.initialStats
+  const initialLeaderboardSettings = loaderData.initialLeaderboardSettings
+  const user = loaderData.user as {
+    id: string
+    name: string
+    email: string
+    image: string | null
+  }
 
   const [copied, setCopied] = useState(false)
   const [stats, setStats] = useState<ReferralStats>(initialStats)
   const [isLoadingMore, setIsLoadingMore] = useState(false)
 
   // Build referral URL (safe for SSR)
-  const baseUrl = typeof window !== 'undefined'
-    ? window.location.origin
-    : 'https://getdoa.com'
+  const baseUrl =
+    typeof window !== 'undefined'
+      ? window.location.origin
+      : 'https://getdoa.com'
   const referralUrl = code ? `${baseUrl}?ref=${code}` : ''
 
   // Handle copy with toast feedback
@@ -216,12 +221,14 @@ function ReferralsPage() {
   const handleShareEmail = useCallback(() => {
     const subject = 'Check out GetDoa - Prayer Companion App'
     const body = `Assalamualaikum!\n\nI've been using GetDoa to organize my daily prayers and create beautiful prayer lists. I thought you might like it too!\n\nJoin here: ${referralUrl}\n\nMay Allah bless you.`
-    window.open(`mailto:?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`)
+    window.open(
+      `mailto:?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`,
+    )
   }, [referralUrl])
 
   // Handle Web Share API (mobile)
   const handleNativeShare = useCallback(async () => {
-    if (!navigator.share) {
+    if (!('share' in navigator) || typeof navigator.share !== 'function') {
       handleCopy()
       return
     }
@@ -246,7 +253,8 @@ function ReferralsPage() {
       <div>
         <h1 className="text-3xl font-serif font-semibold">Invite Friends</h1>
         <p className="text-muted-foreground mt-2 text-lg">
-          Share GetDoa with friends and family. When they join using your link, you'll see them here!
+          Share GetDoa with friends and family. When they join using your link,
+          you'll see them here!
         </p>
       </div>
 
@@ -377,7 +385,9 @@ function ReferralsPage() {
 
           {/* Code Display - More subtle */}
           <div className="flex items-center justify-between pt-2 border-t">
-            <span className="text-sm text-muted-foreground">Your referral code</span>
+            <span className="text-sm text-muted-foreground">
+              Your referral code
+            </span>
             <Badge variant="outline" className="font-mono">
               {code ?? 'Loading...'}
             </Badge>
@@ -400,7 +410,9 @@ function ReferralsPage() {
           {/* Total Count - Highlighted */}
           <div className="flex items-center justify-center p-6 rounded-xl bg-linear-to-br from-primary/10 to-accent/10 mb-6">
             <div className="text-center">
-              <span className="text-5xl font-bold text-primary">{stats.totalReferrals}</span>
+              <span className="text-5xl font-bold text-primary">
+                {stats.totalReferrals}
+              </span>
               <p className="text-muted-foreground mt-1">
                 {stats.totalReferrals === 1 ? 'friend' : 'friends'} joined
               </p>
@@ -422,7 +434,7 @@ function ReferralsPage() {
                     <Avatar className="h-10 w-10 ring-2 ring-primary/20">
                       <AvatarImage src={r.referredUserImage || ''} />
                       <AvatarFallback className="bg-primary/10 text-primary font-medium">
-                        {r.referredUserName?.charAt(0) || 'U'}
+                        {r.referredUserName.charAt(0) || 'U'}
                       </AvatarFallback>
                     </Avatar>
                     <div className="flex-1 min-w-0">
@@ -430,7 +442,8 @@ function ReferralsPage() {
                         {r.referredUserName}
                       </p>
                       <p className="text-sm text-muted-foreground">
-                        Joined {new Date(r.createdAt).toLocaleDateString('en-US', {
+                        Joined{' '}
+                        {new Date(r.createdAt).toLocaleDateString('en-US', {
                           month: 'short',
                           day: 'numeric',
                           year: 'numeric',
@@ -476,8 +489,8 @@ function ReferralsPage() {
                 </EmptyMedia>
                 <EmptyTitle>No friends yet</EmptyTitle>
                 <EmptyDescription>
-                  Share your link above with friends and family. When they sign up
-                  for GetDoa, they'll appear here!
+                  Share your link above with friends and family. When they sign
+                  up for GetDoa, they'll appear here!
                 </EmptyDescription>
               </EmptyHeader>
               <Button onClick={handleCopy} variant="outline">
@@ -489,11 +502,11 @@ function ReferralsPage() {
         </CardContent>
       </Card>
 
-      {/* List Limit Bonus Breakdown */}
-      <ListBonusBreakdownCard limitInfo={listLimitInfo} />
-
       {/* Leaderboard Settings */}
-      <LeaderboardSettingsCard settings={initialLeaderboardSettings} userId={user.id} />
+      <LeaderboardSettingsCard
+        settings={initialLeaderboardSettings}
+        userId={user.id}
+      />
 
       {/* FAQ Section */}
       <Card>
@@ -506,35 +519,42 @@ function ReferralsPage() {
               <AccordionTrigger>How do I share my link?</AccordionTrigger>
               <AccordionContent>
                 <p className="text-muted-foreground">
-                  Copy the link above and send it via WhatsApp, email, or any messaging app.
-                  You can also share it on social media!
+                  Copy the link above and send it via WhatsApp, email, or any
+                  messaging app. You can also share it on social media!
                 </p>
               </AccordionContent>
             </AccordionItem>
             <AccordionItem value="count">
-              <AccordionTrigger>When does someone count as my referral?</AccordionTrigger>
+              <AccordionTrigger>
+                When does someone count as my referral?
+              </AccordionTrigger>
               <AccordionContent>
                 <p className="text-muted-foreground">
-                  When someone clicks your link and signs up for a GetDoa account, they'll
-                  automatically be counted as your referral.
+                  When someone clicks your link and signs up for a GetDoa
+                  account, they'll automatically be counted as your referral.
                 </p>
               </AccordionContent>
             </AccordionItem>
             <AccordionItem value="limit">
-              <AccordionTrigger>Is there a limit to how many people I can invite?</AccordionTrigger>
+              <AccordionTrigger>
+                Is there a limit to how many people I can invite?
+              </AccordionTrigger>
               <AccordionContent>
                 <p className="text-muted-foreground">
-                  No limit! Invite as many friends as you'd like. The more people using
-                  GetDoa, the better for our community.
+                  No limit! Invite as many friends as you'd like. The more
+                  people using GetDoa, the better for our community.
                 </p>
               </AccordionContent>
             </AccordionItem>
             <AccordionItem value="missing">
-              <AccordionTrigger>My friend signed up but they're not showing here?</AccordionTrigger>
+              <AccordionTrigger>
+                My friend signed up but they're not showing here?
+              </AccordionTrigger>
               <AccordionContent>
                 <p className="text-muted-foreground">
-                  Make sure they used your specific link when signing up. If they went
-                  directly to the website without your link, we won't be able to connect you.
+                  Make sure they used your specific link when signing up. If
+                  they went directly to the website without your link, we won't
+                  be able to connect you.
                 </p>
               </AccordionContent>
             </AccordionItem>
@@ -542,103 +562,6 @@ function ReferralsPage() {
         </CardContent>
       </Card>
     </div>
-  )
-}
-
-// ============================================
-// List Bonus Breakdown Card
-// ============================================
-function ListBonusBreakdownCard({ limitInfo }: { limitInfo: ListLimitInfo }) {
-  const { MAX_REFERRAL_BONUS } = LIST_LIMIT_CONFIG
-  const {
-    breakdown,
-    referralCount,
-    referralPotential,
-    hasSubscription,
-  } = limitInfo
-
-  return (
-    <Card>
-      <CardHeader>
-        <CardTitle className="flex items-center gap-2">
-          <Sparkles className="h-5 w-5 text-primary" />
-          Your List Limit
-        </CardTitle>
-        <CardDescription>How your list limit is calculated</CardDescription>
-      </CardHeader>
-      <CardContent className="space-y-4">
-        {/* Current Limit */}
-        <div className="text-center p-4 rounded-lg bg-primary/5">
-          <p className="text-sm text-muted-foreground">Total Lists Allowed</p>
-          <p className="text-4xl font-bold mt-1">{limitInfo.limit}</p>
-        </div>
-
-        {/* Breakdown */}
-        <div className="space-y-3">
-          {/* Base */}
-          <div className="flex items-center justify-between py-2 border-b">
-            <span className="text-muted-foreground">Base allowance</span>
-            <Badge variant="secondary">{breakdown.base}</Badge>
-          </div>
-
-          {/* Referrals */}
-          <div className="flex items-center justify-between py-2 border-b">
-            <div>
-              <span className="text-muted-foreground">Referral bonus</span>
-              <p className="text-xs text-muted-foreground">
-                {referralCount} referral{referralCount === 1 ? '' : 's'}
-                {referralCount >= MAX_REFERRAL_BONUS ? ' (max reached)' : ''}
-              </p>
-            </div>
-            <Badge variant="default" className="bg-green-600">
-              +{breakdown.referral}
-            </Badge>
-          </div>
-
-          {/* Purchases (if any) */}
-          {breakdown.purchase > 0 && (
-            <div className="flex items-center justify-between py-2 border-b">
-              <span className="text-muted-foreground">Purchased packs</span>
-              <Badge variant="default" className="bg-blue-600">
-                +{breakdown.purchase}
-              </Badge>
-            </div>
-          )}
-
-          {/* Subscription */}
-          {hasSubscription ? (
-            <div className="flex items-center justify-between py-2 border-b">
-              <div className="flex items-center gap-2">
-                <Crown className="h-4 w-4 text-primary" />
-                <span>Subscription bonus</span>
-              </div>
-              <Badge variant="default">+{breakdown.subscription}</Badge>
-            </div>
-          ) : (
-            <div className="flex items-center justify-between py-2 border-b text-muted-foreground">
-              <div className="flex items-center gap-2">
-                <Crown className="h-4 w-4" />
-                <span>Subscription bonus</span>
-              </div>
-              <span className="text-xs">Coming soon</span>
-            </div>
-          )}
-        </div>
-
-        {/* Potential */}
-        {referralPotential > 0 && (
-          <div className="p-3 rounded-lg border border-dashed">
-            <p className="text-sm text-center">
-              <span className="text-muted-foreground">You can still earn </span>
-              <span className="font-semibold text-primary">
-                +{referralPotential} more
-              </span>
-              <span className="text-muted-foreground"> from referrals</span>
-            </p>
-          </div>
-        )}
-      </CardContent>
-    </Card>
   )
 }
 
@@ -652,8 +575,12 @@ function LeaderboardSettingsCard({
   settings: LeaderboardSettings | null
   userId: string
 }) {
-  const [isVisible, setIsVisible] = useState(settings?.leaderboardVisible ?? true)
-  const [displayPref, setDisplayPref] = useState(settings?.displayPreference ?? 'censored')
+  const [isVisible, setIsVisible] = useState(
+    settings?.leaderboardVisible ?? true,
+  )
+  const [displayPref, setDisplayPref] = useState(
+    settings?.displayPreference ?? 'censored',
+  )
   const [previewName, setPreviewName] = useState(settings?.previewName ?? '')
   const [isSaving, setIsSaving] = useState(false)
 
@@ -669,7 +596,10 @@ function LeaderboardSettingsCard({
     await saveSettings(isVisible, pref)
   }
 
-  const saveSettings = async (visible: boolean, pref: 'full' | 'censored' | 'anonymous') => {
+  const saveSettings = async (
+    visible: boolean,
+    pref: 'full' | 'censored' | 'anonymous',
+  ) => {
     setIsSaving(true)
     try {
       await updateLeaderboardSettings({
@@ -734,7 +664,11 @@ function LeaderboardSettingsCard({
         {isVisible && (
           <div className="space-y-3">
             <Label>Display Name Style</Label>
-            <Select value={displayPref} onValueChange={handleDisplayPrefChange} disabled={isSaving}>
+            <Select
+              value={displayPref}
+              onValueChange={handleDisplayPrefChange}
+              disabled={isSaving}
+            >
               <SelectTrigger className="w-full">
                 <SelectValue />
               </SelectTrigger>
@@ -766,7 +700,9 @@ function LeaderboardSettingsCard({
               <div className="flex items-center gap-3">
                 <Avatar className="h-8 w-8">
                   <AvatarFallback className="bg-primary/10 text-primary text-sm">
-                    {previewName === 'Anonymous' ? '?' : previewName[0]?.toUpperCase()}
+                    {previewName === 'Anonymous'
+                      ? '?'
+                      : previewName.charAt(0).toUpperCase()}
                   </AvatarFallback>
                 </Avatar>
                 <span className="font-medium">{previewName}</span>

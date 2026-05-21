@@ -3,6 +3,7 @@ import { useState } from 'react'
 import { z } from 'zod'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
+import { ArrowRight, Sparkles } from 'lucide-react'
 import {
   Card,
   CardContent,
@@ -17,8 +18,6 @@ import { LANDING_CONTENT } from '@/lib/constants'
 import { getSessionFromServer, getUserListLimitInfo } from '@/server-functions/dashboard'
 import { ListTemplateCard } from '@/components/list/list-template-card'
 import { LIST_TEMPLATES, getTemplateById } from '@/lib/list-templates'
-import { ArrowRight, Sparkles } from 'lucide-react'
-import type { ListLimitInfo } from '@/lib/list-limit'
 
 // Form validation schema
 const onboardingSchema = z.object({
@@ -37,7 +36,6 @@ export const Route = createFileRoute('/onboarding')({
       throw redirect({ to: '/login', search: { ref: '/onboarding' } })
     }
 
-    // 2. Get list limit info (no redirect - builder will disable save if at limit)
     const listLimitInfo = await getUserListLimitInfo({
       data: { userId: session.user.id },
     })
@@ -65,10 +63,7 @@ export const Route = createFileRoute('/onboarding')({
 
 function OnboardingPage() {
   const navigate = useNavigate()
-  const loaderData = Route.useLoaderData() as {
-    user: { id: string; name: string }
-    listLimitInfo: ListLimitInfo
-  }
+  const loaderData = Route.useLoaderData()
   const { user, listLimitInfo } = loaderData
 
   const [selectedTemplateId, setSelectedTemplateId] =
@@ -144,13 +139,13 @@ function OnboardingPage() {
           </div>
           <h1 className="text-3xl md:text-4xl font-serif font-semibold mb-2">
             {listLimitInfo.current === 0
-              ? `Welcome, ${user?.name?.split(' ')[0] || 'Friend'}!`
+              ? `Welcome, ${user.name.split(' ')[0] || 'Friend'}!`
               : 'Create a New List'}
           </h1>
           <p className="text-muted-foreground text-lg">
             {listLimitInfo.current === 0
               ? "Let's set up your first prayer list"
-              : `You have ${listLimitInfo.remaining} list slot${listLimitInfo.remaining === 1 ? '' : 's'} remaining`}
+              : 'Build another doa collection for the moments that matter'}
           </p>
         </div>
 

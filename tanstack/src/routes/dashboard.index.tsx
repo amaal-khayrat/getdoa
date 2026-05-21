@@ -1,18 +1,18 @@
-import { createFileRoute, getRouteApi, Link, useNavigate } from '@tanstack/react-router'
+import { Link, createFileRoute, getRouteApi, useNavigate } from '@tanstack/react-router'
 import { useState, useTransition } from 'react'
 import {
-  Plus,
   BookOpen,
-  MoreHorizontal,
-  Eye,
   Download,
-  Heart,
-  Pencil,
-  Trash2,
+  Eye,
   Globe,
+  Heart,
   Lock,
-  Gift,
+  MoreHorizontal,
+  Pencil,
+  Plus,
+  Trash2,
 } from 'lucide-react'
+import type { DoaListRecord } from '@/types/doa-list.types'
 import { Button, buttonVariants } from '@/components/ui/button'
 import {
   Card,
@@ -23,8 +23,8 @@ import { Badge } from '@/components/ui/badge'
 import { Switch } from '@/components/ui/switch'
 import {
   Tooltip,
-  TooltipTrigger,
   TooltipContent,
+  TooltipTrigger,
 } from '@/components/ui/tooltip'
 import {
   DropdownMenu,
@@ -45,16 +45,14 @@ import {
 } from '@/components/ui/alert-dialog'
 import {
   Empty,
+  EmptyDescription,
   EmptyHeader,
   EmptyMedia,
   EmptyTitle,
-  EmptyDescription,
 } from '@/components/ui/empty'
 import { cn } from '@/lib/utils'
 import { deleteDoaList, updateDoaList } from '@/server-functions/dashboard'
-import type { DoaListRecord } from '@/types/doa-list.types'
 import { useSession } from '@/lib/auth-client'
-import { ListLimitIndicator } from '@/components/list/list-limit-indicator'
 
 export const Route = createFileRoute('/dashboard/')({
   component: DashboardIndex,
@@ -64,12 +62,10 @@ export const Route = createFileRoute('/dashboard/')({
 const dashboardRoute = getRouteApi('/dashboard')
 
 function DashboardIndex() {
-  // lists comes from parent's loader, listLimitInfo comes from parent's context (beforeLoad)
+  // lists comes from parent's loader
   const { lists } = dashboardRoute.useLoaderData()
-  const { listLimitInfo } = dashboardRoute.useRouteContext()
   const { data: session } = useSession()
   const user = session?.user
-  const canCreateMore = listLimitInfo?.canCreate ?? true
   const navigate = useNavigate()
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false)
   const [listToDelete, setListToDelete] = useState<DoaListRecord | null>(null)
@@ -149,54 +145,16 @@ function DashboardIndex() {
                 ? 'Create your first prayer list to get started'
                 : `${lists.length} list${lists.length === 1 ? '' : 's'}`}
             </p>
-            {listLimitInfo && (
-              <ListLimitIndicator limitInfo={listLimitInfo} variant="compact" />
-            )}
           </div>
         </div>
-        {canCreateMore ? (
-          <Link
-            to="/onboarding"
-            className={cn(buttonVariants(), 'gap-2')}
-          >
-            <Plus className="h-4 w-4" />
-            Create List
-          </Link>
-        ) : (
-          <Button
-            variant="outline"
-            className="gap-2"
-            render={<Link to="/dashboard/referrals" />}
-          >
-            <Gift className="h-4 w-4" />
-            Invite to Unlock
-          </Button>
-        )}
+        <Link
+          to="/onboarding"
+          className={cn(buttonVariants(), 'gap-2')}
+        >
+          <Plus className="h-4 w-4" />
+          Create List
+        </Link>
       </div>
-
-      {/* Limit reached banner */}
-      {listLimitInfo && !listLimitInfo.canCreate && (
-        <div className="mb-6 p-4 rounded-r-lg bg-background border border-border border-l-4 border-l-primary">
-          <div className="flex items-center justify-between gap-4">
-            <div className="flex items-center gap-3">
-              <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center">
-                <Gift className="h-5 w-5 text-primary" />
-              </div>
-              <div>
-                <p className="font-medium">List limit reached</p>
-                <p className="text-sm text-muted-foreground">
-                  {listLimitInfo.referralPotential > 0
-                    ? `Invite ${listLimitInfo.referralPotential} more friend${listLimitInfo.referralPotential === 1 ? '' : 's'} to unlock more lists`
-                    : 'Consider upgrading for more lists'}
-                </p>
-              </div>
-            </div>
-            <Button render={<Link to="/dashboard/referrals" />}>
-              Invite Friends
-            </Button>
-          </div>
-        </div>
-      )}
 
       {/* Lists Grid */}
       {isEmpty ? (
