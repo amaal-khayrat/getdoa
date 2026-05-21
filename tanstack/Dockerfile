@@ -1,11 +1,14 @@
 # Use consistent Node.js version for all stages
+ARG PNPM_VERSION=10.25.0
 FROM node:24-alpine AS base
 
 # Set working directory
 WORKDIR /app
 
+ARG PNPM_VERSION
+
 # Install pnpm
-RUN corepack enable && corepack prepare pnpm@latest --activate
+RUN corepack enable && corepack prepare pnpm@${PNPM_VERSION} --activate
 
 # Install dependencies only when needed
 FROM base AS deps
@@ -36,6 +39,8 @@ RUN pnpm build
 FROM node:24-alpine AS runner
 WORKDIR /app
 
+ARG PNPM_VERSION
+
 # Set environment to production
 ENV NODE_ENV=production
 ENV HOSTNAME=0.0.0.0
@@ -46,7 +51,7 @@ ENV NITRO_PORT=3230
 # Install necessary runtime packages + fontconfig and fonts for Sharp SVG text rendering
 RUN apk add --no-cache curl tzdata fontconfig ttf-dejavu font-noto font-noto-arabic && \
     corepack enable && \
-    corepack prepare pnpm@latest --activate
+    corepack prepare pnpm@${PNPM_VERSION} --activate
 
 # Set timezone
 ENV TZ=Asia/Kuala_Lumpur
