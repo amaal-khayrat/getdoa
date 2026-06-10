@@ -1,0 +1,25 @@
+# Postgres only — for `pnpm dev` in tanstack/ (not the full production stack).
+# Managed from the repo-root `local/` folder after running dev-setup/init.ps1
+
+services:
+  db:
+    image: postgres:18
+    container_name: getdoa-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+    ports:
+      - "${POSTGRES_PORT}:5432"
+    volumes:
+      - getdoa_db_data:/var/lib/postgresql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+      start_period: 10s
+
+volumes:
+  getdoa_db_data:

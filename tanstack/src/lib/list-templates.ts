@@ -3,7 +3,7 @@ import type { ListTemplate } from '@/types/doa-list.types'
 export const LIST_TEMPLATES: ListTemplate[] = [
   {
     id: 'morning-azkar',
-    name: 'Morning Azkar',
+    name: 'Morning Dzikir',
     nameMs: 'Zikir Pagi',
     description: 'Essential morning supplications to start your day',
     descriptionMs: 'Doa-doa penting untuk memulakan hari anda',
@@ -18,7 +18,7 @@ export const LIST_TEMPLATES: ListTemplate[] = [
   },
   {
     id: 'evening-azkar',
-    name: 'Evening Azkar',
+    name: 'Evening Dzikir',
     nameMs: 'Zikir Petang',
     description: 'Essential evening supplications to end your day',
     descriptionMs: 'Doa-doa penting untuk mengakhiri hari anda',
@@ -26,6 +26,24 @@ export const LIST_TEMPLATES: ListTemplate[] = [
     doaSlugs: [
       'petang-doa-ditetapkan-islam',
       'penghulu-bagi-doa-keampunan',
+      'doa-keampunan',
+      'doa-ditetapkan-hati',
+    ],
+  },
+  {
+    id: 'daily-dzikir',
+    name: 'Daily Dzikir',
+    nameMs: 'Zikir Harian',
+    description: 'Morning and evening supplications for your daily routine',
+    descriptionMs: 'Zikir pagi dan petang untuk amalan harian anda',
+    icon: 'Orbit',
+    doaSlugs: [
+      'pagi-doa-ditetapkan-islam',
+      'penghulu-bagi-doa-keampunan',
+      'doa-mohon-keampunan',
+      'doa-mohon-taqwa',
+      'doa-keluar-dari-rumah',
+      'petang-doa-ditetapkan-islam',
       'doa-keampunan',
       'doa-ditetapkan-hati',
     ],
@@ -49,7 +67,7 @@ export const LIST_TEMPLATES: ListTemplate[] = [
     nameMs: 'Amalan Harian',
     description: 'Core daily prayers and supplications',
     descriptionMs: 'Doa-doa asas untuk amalan harian',
-    icon: 'Calendar',
+    icon: 'Layers',
     doaSlugs: [
       'doa-keluar-dari-rumah',
       'doa-petunjuk-ketaqwaan-iffah-dan-kekayaan',

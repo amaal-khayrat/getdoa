@@ -155,7 +155,7 @@ function MeaningSection({
   return (
     <Card className="p-6 bg-blue-50 dark:bg-blue-950/20 border-blue-200 dark:border-blue-800">
       <h3 className="text-lg font-semibold text-foreground mb-3">{title}</h3>
-      <p className="text-muted-foreground leading-relaxed">{meaning}</p>
+      <p className="font-reading text-muted-foreground leading-relaxed">{meaning}</p>
     </Card>
   )
 }
@@ -180,12 +180,12 @@ function ContextSection({
     <Card className="p-6 bg-purple-50 dark:bg-purple-950/20 border-purple-200 dark:border-purple-800">
       <h3 className="text-lg font-semibold text-foreground mb-3">{title}</h3>
       {description && (
-        <p className="text-muted-foreground leading-relaxed mb-4">
+        <p className="font-reading text-muted-foreground leading-relaxed mb-4">
           {description}
         </p>
       )}
       {context && (
-        <p className="text-muted-foreground leading-relaxed">{context}</p>
+        <p className="font-reading text-muted-foreground leading-relaxed">{context}</p>
       )}
     </Card>
   )

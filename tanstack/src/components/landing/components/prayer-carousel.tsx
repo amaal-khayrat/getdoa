@@ -79,7 +79,7 @@ export function PrayerCarousel({ className = '' }: PrayerCarouselProps) {
                         <p className="text-xs text-muted-foreground uppercase tracking-widest font-medium">
                           Meanings
                         </p>
-                        <p className="font-serif text-lg text-muted-foreground italic max-w-2xl mx-auto">
+                        <p className="font-reading text-lg text-muted-foreground italic max-w-2xl mx-auto">
                           "{prayer.translation}"
                         </p>
                       </div>

@@ -8,6 +8,7 @@ import { useState, useTransition } from 'react'
 import {
   BookOpen,
   Braces,
+  ChevronDown,
   Copy,
   Download,
   Eye,
@@ -654,7 +655,7 @@ function PublicListView({
                           <span className="font-medium">{name}</span>
                         )}
                       </p>
-                      <p className="text-foreground leading-relaxed">
+                      <p className="font-reading text-foreground leading-relaxed">
                         {meaning}
                       </p>
                     </div>
@@ -743,6 +744,9 @@ function PrayerCard({
   const name = language === 'my' ? prayer.nameMy : prayer.nameEn
   const meaning = language === 'my' ? prayer.meaningMy : prayer.meaningEn
   const reference = language === 'my' ? prayer.referenceMy : prayer.referenceEn
+  const context = language === 'my' ? prayer.contextMy : prayer.contextEn
+
+  const [isChainExpanded, setIsChainExpanded] = useState(false)
 
   const copyToClipboard = () => {
     const text = `${name}\n${prayer.content}\n${meaning}`
@@ -777,7 +781,7 @@ function PrayerCard({
 
         {/* Translation - only if showTranslations and not arabicOnly */}
         {showTranslations && !arabicOnly && (
-          <p className="text-muted-foreground leading-relaxed text-sm">
+          <p className="font-reading text-muted-foreground leading-relaxed text-sm">
             {meaning}
           </p>
         )}
@@ -801,7 +805,23 @@ function PrayerCard({
             >
               {name}
             </Link>
-            <p className="text-sm text-muted-foreground">{reference}</p>
+            {context ? (
+              <button
+                onClick={() => setIsChainExpanded((v) => !v)}
+                className="flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground transition-colors mt-0.5"
+              >
+                <BookOpen className="h-3.5 w-3.5 shrink-0" />
+                <span>{reference}</span>
+                <ChevronDown
+                  className={cn(
+                    'h-3.5 w-3.5 shrink-0 transition-transform duration-200',
+                    isChainExpanded && 'rotate-180',
+                  )}
+                />
+              </button>
+            ) : (
+              <p className="text-sm text-muted-foreground">{reference}</p>
+            )}
           </div>
         </div>
         <Button variant="ghost" size="icon" onClick={copyToClipboard}>
@@ -822,7 +842,7 @@ function PrayerCard({
 
       {/* Translation - only if showTranslations and not arabicOnly */}
       {showTranslations && !arabicOnly && (
-        <p className="text-muted-foreground leading-relaxed">{meaning}</p>
+        <p className="font-reading text-muted-foreground leading-relaxed">{meaning}</p>
       )}
 
       {/* Categories */}
@@ -833,6 +853,13 @@ function PrayerCard({
           </Badge>
         ))}
       </div>
+
+      {/* Hadith chain — collapsed by default */}
+      {context && isChainExpanded && (
+        <div className="mt-4 rounded-lg border border-border bg-muted/40 px-4 py-3">
+          <p className="text-sm text-muted-foreground leading-relaxed">{context}</p>
+        </div>
+      )}
     </Card>
   )
 }

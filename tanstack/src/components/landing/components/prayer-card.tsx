@@ -42,7 +42,7 @@ export function PrayerCard({ className = '' }: PrayerCardProps) {
           </p>
 
           {/* Translation */}
-          <p className="font-serif text-muted-foreground italic">
+          <p className="font-reading text-muted-foreground italic">
             {LANDING_CONTENT.prayerCard.translation}
           </p>
         </div>
