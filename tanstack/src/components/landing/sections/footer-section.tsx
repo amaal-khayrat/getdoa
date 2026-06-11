@@ -140,8 +140,8 @@ export function FooterSection() {
               {LANDING_CONTENT.footer.columns.explore.title}
             </h4>
             <ul className="space-y-2 text-sm text-muted-foreground">
-              {exploreLinks.map((link, index) => (
-                <li key={index}>
+              {exploreLinks.map((link) => (
+                <li key={link.href}>
                   <a
                     href={link.href}
                     className="hover:text-primary transition-colors"
@@ -159,8 +159,8 @@ export function FooterSection() {
               {LANDING_CONTENT.footer.columns.features.title}
             </h4>
             <ul className="space-y-2 text-sm text-muted-foreground">
-              {featuresLinks.map((link, index) => (
-                <li key={index} className="flex items-center gap-2">
+              {featuresLinks.map((link) => (
+                <li key={link.href} className="flex items-center gap-2">
                   <a
                     href={link.href}
                     className="hover:text-primary transition-colors"
@@ -183,18 +183,16 @@ export function FooterSection() {
               {LANDING_CONTENT.footer.columns.company.title}
             </h4>
             <ul className="space-y-2 text-sm text-muted-foreground">
-              {LANDING_CONTENT.footer.columns.company.links.map(
-                (link, index) => (
-                  <li key={index}>
-                    <a
-                      href={link.href}
-                      className="hover:text-primary transition-colors"
-                    >
-                      {link.label}
-                    </a>
-                  </li>
-                ),
-              )}
+              {LANDING_CONTENT.footer.columns.company.links.map((link) => (
+                <li key={link.href}>
+                  <a
+                    href={link.href}
+                    className="hover:text-primary transition-colors"
+                  >
+                    {link.label}
+                  </a>
+                </li>
+              ))}
             </ul>
           </div>
 
@@ -204,8 +202,8 @@ export function FooterSection() {
               {LANDING_CONTENT.footer.columns.legal.title}
             </h4>
             <ul className="space-y-2 text-sm text-muted-foreground">
-              {LANDING_CONTENT.footer.columns.legal.links.map((link, index) => (
-                <li key={index}>
+              {LANDING_CONTENT.footer.columns.legal.links.map((link) => (
+                <li key={link.href}>
                   <a
                     href={link.href}
                     className="hover:text-primary transition-colors"

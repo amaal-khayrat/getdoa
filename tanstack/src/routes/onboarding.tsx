@@ -1,5 +1,5 @@
 import { createFileRoute, redirect, useNavigate } from '@tanstack/react-router'
-import { useEffect, useState } from 'react'
+import { useEffect } from 'react'
 import { z } from 'zod'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
@@ -70,9 +70,6 @@ function OnboardingPage() {
   const loaderData = Route.useLoaderData()
   const { user, listLimitInfo } = loaderData
 
-  const [selectedTemplateId, setSelectedTemplateId] =
-    useState<string>('morning-azkar')
-
   const {
     register,
     handleSubmit,
@@ -88,6 +85,7 @@ function OnboardingPage() {
   })
 
   const listName = watch('listName')
+  const selectedTemplateId = watch('templateId') ?? 'morning-azkar'
 
   useEffect(() => {
     const prefs = getSignupOnboardingPrefs()
@@ -109,7 +107,6 @@ function OnboardingPage() {
   // When template changes, suggest a name if field is empty
   const handleTemplateSelect = (templateId: string) => {
     const previousTemplate = getTemplateById(selectedTemplateId)
-    setSelectedTemplateId(templateId)
     setValue('templateId', templateId)
 
     // Only suggest name if current name is empty or matches previous template name

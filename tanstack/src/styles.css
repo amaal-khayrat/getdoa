@@ -272,7 +272,23 @@
 }
 
 @layer utilities {
-  
+
+  .hero-cta-primary {
+    background-color: #cd9c54;
+    transition: background-color 0.2s ease;
+  }
+  .hero-cta-primary:hover {
+    background-color: #b8893e;
+  }
+
+  .hero-cta-secondary {
+    background-color: rgba(255, 255, 255, 0.08);
+    transition: background-color 0.2s ease;
+  }
+  .hero-cta-secondary:hover {
+    background-color: rgba(255, 255, 255, 0.12);
+  }
+
   .blob {
     position: absolute;
     filter: blur(60px);

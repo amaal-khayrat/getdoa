@@ -847,8 +847,8 @@ function PrayerCard({
 
       {/* Categories */}
       <div className="flex flex-wrap gap-1 mt-4">
-        {prayer.categoryNames.slice(0, 3).map((category, i) => (
-          <Badge key={i} variant="secondary" className="text-xs">
+        {prayer.categoryNames.slice(0, 3).map((category) => (
+          <Badge key={category} variant="secondary" className="text-xs">
             {category}
           </Badge>
         ))}
