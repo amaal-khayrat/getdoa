@@ -1,8 +1,8 @@
-@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,500;0,600;0,700;1,500&display=swap');
+/* Change 3 fonts: DM Serif Display, Noto Sans JP, Lora (+ Simpo local) */
+@import url('https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Lora:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family=Noto+Sans+JP:wght@400;500;600;700&display=swap');
 @import 'tailwindcss';
 @import 'tw-animate-css';
 @import 'shadcn/tailwind.css';
-@import '@fontsource-variable/roboto';
 
 @font-face {
   font-family: 'Simpo';
@@ -198,10 +198,27 @@
 }
 
 @theme inline {
-  --font-sans: 'Roboto', sans-serif;
-  --font-serif: 'Playfair Display', serif;
+  /* Change 3 (active) */
+  --font-sans: 'Noto Sans JP', sans-serif;
+  --font-serif: 'DM Serif Display', serif;
+  --font-reading: 'Lora', serif;
   --font-arabic: 'Simpo', serif;
-  --font-display: 'Playfair Display', serif;
+  --font-display: 'DM Serif Display', serif;
+
+  /* Change 2 rollback:
+     --font-sans: 'DM Sans', sans-serif;
+     --font-serif: 'Playfair Display', serif;
+     --font-display: 'Playfair Display', serif;
+     --font-reading: 'Lora', serif;
+     Google import: DM+Sans, Lora, Playfair+Display
+  */
+  /* Change 1 rollback:
+     --font-sans: 'Roboto', sans-serif;
+     --font-serif: 'Playfair Display', serif;
+     --font-display: 'Playfair Display', serif;
+     @import '@fontsource-variable/roboto';
+     Google import: Playfair+Display
+  */
   --color-sidebar-ring: var(--sidebar-ring);
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
@@ -255,7 +272,23 @@
 }
 
 @layer utilities {
-  
+
+  .hero-cta-primary {
+    background-color: #cd9c54;
+    transition: background-color 0.2s ease;
+  }
+  .hero-cta-primary:hover {
+    background-color: #b8893e;
+  }
+
+  .hero-cta-secondary {
+    background-color: rgba(255, 255, 255, 0.08);
+    transition: background-color 0.2s ease;
+  }
+  .hero-cta-secondary:hover {
+    background-color: rgba(255, 255, 255, 0.12);
+  }
+
   .blob {
     position: absolute;
     filter: blur(60px);
@@ -374,5 +407,22 @@
   .dark .glass-nav {
     background: rgba(15, 23, 42, 0.85);
     border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  }
+
+  .bg-page-gradient {
+    background: linear-gradient(205deg, #fdfcf3 0%, #eef5ee 60%, #cde8d8 100%);
+  }
+
+  @keyframes heroGradientBreath {
+    0%   { background-position: 0% 50%; }
+    50%  { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+  }
+
+  .hero-gradient-animate {
+    background: linear-gradient(205deg, #fdfcf3 0%, #eef5ee 60%, #cde8d8 100%);
+    background-size: 300% 300%;
+    animation: heroGradientBreath 12s ease infinite;
+    animation-play-state: paused;
   }
 }

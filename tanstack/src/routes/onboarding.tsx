@@ -1,5 +1,4 @@
 import { createFileRoute, redirect, useNavigate } from '@tanstack/react-router'
-import { useState } from 'react'
 import { z } from 'zod'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
@@ -15,7 +14,10 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { LANDING_CONTENT } from '@/lib/constants'
-import { getSessionFromServer, getUserListLimitInfo } from '@/server-functions/dashboard'
+import {
+  getSessionFromServer,
+  getUserListLimitInfo,
+} from '@/server-functions/dashboard'
 import { ListTemplateCard } from '@/components/list/list-template-card'
 import { LIST_TEMPLATES, getTemplateById } from '@/lib/list-templates'
 
@@ -66,9 +68,6 @@ function OnboardingPage() {
   const loaderData = Route.useLoaderData()
   const { user, listLimitInfo } = loaderData
 
-  const [selectedTemplateId, setSelectedTemplateId] =
-    useState<string>('morning-azkar')
-
   const {
     register,
     handleSubmit,
@@ -84,11 +83,11 @@ function OnboardingPage() {
   })
 
   const listName = watch('listName')
+  const selectedTemplateId = watch('templateId') ?? 'morning-azkar'
 
   // When template changes, suggest a name if field is empty
   const handleTemplateSelect = (templateId: string) => {
     const previousTemplate = getTemplateById(selectedTemplateId)
-    setSelectedTemplateId(templateId)
     setValue('templateId', templateId)
 
     // Only suggest name if current name is empty or matches previous template name

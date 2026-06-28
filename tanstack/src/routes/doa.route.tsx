@@ -1,6 +1,5 @@
 import { Outlet, createFileRoute } from '@tanstack/react-router'
 import { LandingLayout } from '@/components/landing/layout/landing-layout'
-import { LanguageProvider } from '@/contexts/language-context'
 
 export const Route = createFileRoute('/doa')({
   component: DoaLayout,
@@ -18,10 +17,8 @@ export const Route = createFileRoute('/doa')({
 
 function DoaLayout() {
   return (
-    <LanguageProvider>
-      <LandingLayout navbarVariant="doa">
-        <Outlet />
-      </LandingLayout>
-    </LanguageProvider>
+    <LandingLayout navbarVariant="doa" bgClassName="bg-page-gradient">
+      <Outlet />
+    </LandingLayout>
   )
 }

@@ -138,3 +138,6 @@ dist
 vite.config.js.timestamp-*
 vite.config.ts.timestamp-*
 .DS_Store
+
+# Local dev environment (Docker DB, secrets, personal notes) — kept on disk only
+/local/

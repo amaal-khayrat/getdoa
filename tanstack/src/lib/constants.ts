@@ -8,9 +8,9 @@ export const LANDING_CONTENT = {
     title: 'Find Inner Peace:',
     subtitle: 'Create Your Personalized Prayer',
     description:
-      'Immerse yourself in a sanctuary of digital serenity. Access authentic Doa and curate your daily supplications.',
-    primaryCTA: 'Create Your Doa List',
-    secondaryCTA: 'See Doa Library',
+      'Because some duas deserve to be remembered. Build your collection and carry them wherever you go.',
+    primaryCTA: 'Browse Doa Library',
+    secondaryCTA: 'Create Your List',
   },
 
   features: {
@@ -86,16 +86,16 @@ export const LANDING_CONTENT = {
       },
       {
         icon: 'auto_awesome',
-        title: 'AI Doa Assistant',
+        title: 'Generate Doa Images',
         description:
-          'Receive intelligent suggestions and verification for your prayer compositions.',
+          'Turn your prayer lists into beautiful, shareable image cards in just a few taps.',
         color: 'indigo',
       },
       {
         icon: 'download_for_offline',
-        title: 'Download & Offline',
+        title: 'Download Your Cards',
         description:
-          'Securely download your customized prayers to access them offline.',
+          'Save your generated prayer image cards directly to your device to keep and share anytime.',
         color: 'teal',
       },
       {
@@ -107,9 +107,9 @@ export const LANDING_CONTENT = {
       },
       {
         icon: 'qr_code_2',
-        title: 'Share Instantly via QR',
+        title: 'Give via Mosque QR',
         description:
-          'Share your unique prayers effortlessly using generated QR codes.',
+          'Each prayer page features a randomly selected local mosque — give back effortlessly using SedekahJe QR codes.',
         color: 'cyan',
       },
       {
@@ -203,9 +203,27 @@ export const LANDING_CONTENT = {
   },
 
   footer: {
-    tagline: 'Crafting digital experiences for the modern soul.',
+    tagline:
+      'Your daily companion for authentic doa. In one place, in your language.',
     copyright: `© ${new Date().getFullYear()} GetDoa App. All rights reserved.`,
     columns: {
+      explore: {
+        title: 'Explore',
+        links: [
+          { label: 'Doa Library', href: '/doa' },
+          { label: 'Community Lists', href: '/lists' },
+          { label: 'Leaderboard', href: '/leaderboard' },
+        ],
+      },
+      features: {
+        title: 'Features',
+        links: [
+          { label: 'AI Doa Assistant', href: '/dashboard', badge: 'New' },
+          { label: 'Create a List', href: '/dashboard/create-doa-list' },
+          { label: 'Doa Image Generator', href: '/dashboard/doa-image' },
+          { label: 'Download Offline', href: '/download' },
+        ],
+      },
       company: {
         title: 'Company',
         links: [
@@ -221,7 +239,6 @@ export const LANDING_CONTENT = {
         ],
       },
     },
-    github: 'GitHub',
   },
 
   pages: {

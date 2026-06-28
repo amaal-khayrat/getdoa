@@ -2,6 +2,7 @@ import { useCallback, useMemo, useState } from 'react'
 import { Link } from '@tanstack/react-router'
 import {
   BookOpen,
+  ChevronDown,
   ChevronLeft,
   ChevronRight,
   Copy,
@@ -38,170 +39,248 @@ function PrayerCard({
   isSaving,
   onToggleSave,
 }: PrayerCardProps) {
-  // Get localized content
+  const [isChainExpanded, setIsChainExpanded] = useState(false)
+  const [isReferenceHovered, setIsReferenceHovered] = useState(false)
+
   const getTitle = () => {
     if (language === 'my') {
-      return doa.nameMy
-        .replace(/^\[PAGI\]|\[PETANG\]|\[JEMA'AH\]\s*/i, '')
-        .trim()
+      return doa.nameMy.replace(/^\[PAGI\]|\[PETANG\]|\[JEMA'AH\]\s*/i, '').trim()
     }
-    return doa.nameEn
-      .replace(/^(MORNING|EVENING|JEMA'AH)\s*[-:]?\s*/i, '')
-      .trim()
+    return doa.nameEn.replace(/^(MORNING|EVENING|JEMA'AH)\s*[-:]?\s*/i, '').trim()
   }
 
-  const getMeaning = () => {
-    return language === 'my' ? doa.meaningMy : doa.meaningEn
-  }
-
-  const getReference = () => {
-    return language === 'my' ? doa.referenceMy : doa.referenceEn
-  }
+  const getMeaning = () => (language === 'my' ? doa.meaningMy : doa.meaningEn)
+  const getReference = () => (language === 'my' ? doa.referenceMy : doa.referenceEn)
+  const getContext = () => (language === 'my' ? doa.contextMy : doa.contextEn)
 
   const getCategories = () => {
-    // Return categories that match the current language
     const malayCategories = ['Bacaan Pagi', 'Bacaan Petang', 'Bacaan Harian']
     const englishCategories = ['Morning Supplication', 'Evening Supplication']
-
     return doa.categoryNames.filter((cat) => {
       if (language === 'my') {
-        return (
-          malayCategories.some((mc) => cat.includes(mc)) ||
-          !englishCategories.some((ec) => cat.includes(ec))
-        )
-      } else {
-        return (
-          englishCategories.some((ec) => cat.includes(ec)) ||
-          !malayCategories.some((mc) => cat.includes(mc))
-        )
+        return malayCategories.some((mc) => cat.includes(mc)) || !englishCategories.some((ec) => cat.includes(ec))
       }
+      return englishCategories.some((ec) => cat.includes(ec)) || !malayCategories.some((mc) => cat.includes(mc))
     })
   }
 
+  const reference = getReference()
+  const categories = getCategories().slice(0, 2)
+
   return (
-    <Link to="/doa/$slug" params={{ slug: doa.slug }} className="p-2">
-      <article className="bg-card rounded-3xl p-6 md:p-8 shadow-green-sm hover:shadow-green-lg border border-transparent hover:border-border transition-all duration-300 group cursor-pointer">
-        <div className="flex justify-between items-start mb-6">
-          <div className="flex flex-col gap-1">
-            <h2 className="text-xl md:text-2xl font-bold text-foreground font-sans tracking-tight">
+    <Link to="/doa/$slug" params={{ slug: doa.slug }}>
+      <article style={{ background: '#fdfcf8', borderRadius: 16, overflow: 'hidden', border: '1px solid #e5e0d5', boxShadow: '0 2px 12px rgba(0,0,0,0.06)' }}>
+
+        {/* Header */}
+        <div style={{ padding: '20px 20px 14px' }}>
+          <div className="flex justify-between items-start">
+            <h2
+              className="font-serif"
+              style={{ fontSize: 20, fontWeight: 700, color: '#153830', lineHeight: 1.35, flex: 1, marginRight: 12 }}
+            >
               {getTitle()}
             </h2>
-          </div>
-          <div className="flex items-center gap-1 opacity-100 transition-opacity duration-200 md:opacity-0 md:group-hover:opacity-100">
-            <button
-              className="p-2 rounded-full text-muted-foreground hover:text-primary hover:bg-secondary transition-colors"
-              title={language === 'my' ? 'Salin' : 'Copy'}
-              onClick={(e) => {
-                e.preventDefault()
-                navigator.clipboard.writeText(doa.content)
-                toast.success(
-                  language === 'my'
-                    ? 'Disalin ke papan klip'
-                    : 'Copied to clipboard',
-                )
-              }}
-            >
-              <Copy className="w-5 h-5" />
-            </button>
-            <button
-              className={`p-2 rounded-full transition-colors ${
-                isSaved
-                  ? 'text-red-500 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-950/30'
-                  : 'text-muted-foreground hover:text-red-500 hover:bg-secondary'
-              } ${isSaving ? 'opacity-50 cursor-not-allowed' : ''}`}
-              title={
-                !isAuthenticated
-                  ? language === 'my'
-                    ? 'Log masuk untuk simpan'
-                    : 'Sign in to save'
-                  : isSaved
-                    ? language === 'my'
-                      ? 'Buang dari simpanan'
-                      : 'Remove from saved'
-                    : language === 'my'
-                      ? 'Simpan doa'
-                      : 'Save prayer'
-              }
-              onClick={(e) => {
-                e.preventDefault()
-                onToggleSave(doa.slug)
-              }}
-              disabled={isSaving}
-            >
-              <Heart className={`w-5 h-5 ${isSaved ? 'fill-current' : ''}`} />
-            </button>
-            <button
-              className="p-2 rounded-full text-muted-foreground hover:text-primary hover:bg-secondary transition-colors"
-              title={language === 'my' ? 'Kongsi' : 'Share'}
-              onClick={(e) => {
-                e.preventDefault()
-                const shareUrl = `${window.location.origin}/doa/${doa.slug}`
-                const shareText =
-                  language === 'my'
-                    ? `${doa.nameMy} - ${doa.meaningMy?.slice(0, 100) || ''}...`
-                    : `${doa.nameEn} - ${doa.meaningEn?.slice(0, 100) || ''}...`
-
-                if ('share' in navigator && typeof navigator.share === 'function') {
-                  navigator.share({
-                    title: language === 'my' ? doa.nameMy : doa.nameEn,
-                    text: shareText,
-                    url: shareUrl,
-                  })
-                } else {
-                  navigator.clipboard.writeText(shareUrl)
-                  toast.success(
-                    language === 'my'
-                      ? 'Pautan disalin ke papan klip'
-                      : 'Link copied to clipboard',
-                  )
+            <div className="flex items-center shrink-0" style={{ gap: 2 }}>
+              <button
+                style={{ color: '#888780', background: 'none', border: 'none', padding: 4, cursor: 'pointer' }}
+                title={language === 'my' ? 'Salin' : 'Copy'}
+                onClick={(e) => {
+                  e.preventDefault()
+                  navigator.clipboard.writeText(doa.content)
+                  toast.success(language === 'my' ? 'Disalin ke papan klip' : 'Copied to clipboard')
+                }}
+              >
+                <Copy style={{ width: 17, height: 17 }} />
+              </button>
+              <button
+                style={{
+                  color: isSaved ? '#cd9c54' : '#888780',
+                  background: 'none',
+                  border: 'none',
+                  padding: 4,
+                  cursor: isSaving ? 'not-allowed' : 'pointer',
+                  opacity: isSaving ? 0.5 : 1,
+                }}
+                title={
+                  !isAuthenticated
+                    ? language === 'my' ? 'Log masuk untuk simpan' : 'Sign in to save'
+                    : isSaved
+                      ? language === 'my' ? 'Buang dari simpanan' : 'Remove from saved'
+                      : language === 'my' ? 'Simpan doa' : 'Save prayer'
                 }
-              }}
-            >
-              <Share className="w-5 h-5" />
-            </button>
+                onClick={(e) => {
+                  e.preventDefault()
+                  onToggleSave(doa.slug)
+                }}
+                disabled={isSaving}
+              >
+                <Heart style={{ width: 17, height: 17 }} className={isSaved ? 'fill-current' : ''} />
+              </button>
+              <button
+                style={{ color: '#888780', background: 'none', border: 'none', padding: 4, cursor: 'pointer' }}
+                title={language === 'my' ? 'Kongsi' : 'Share'}
+                onClick={(e) => {
+                  e.preventDefault()
+                  const shareUrl = `${window.location.origin}/doa/${doa.slug}`
+                  const shareText =
+                    language === 'my'
+                      ? `${doa.nameMy} - ${doa.meaningMy?.slice(0, 100) || ''}...`
+                      : `${doa.nameEn} - ${doa.meaningEn?.slice(0, 100) || ''}...`
+                  if (navigator.share) {
+                    navigator.share({ title: language === 'my' ? doa.nameMy : doa.nameEn, text: shareText, url: shareUrl })
+                  } else {
+                    navigator.clipboard.writeText(shareUrl)
+                    toast.success(language === 'my' ? 'Pautan disalin ke papan klip' : 'Link copied to clipboard')
+                  }
+                }}
+              >
+                <Share style={{ width: 17, height: 17 }} />
+              </button>
+            </div>
           </div>
-        </div>
 
-        <div className="space-y-6">
-          <div className="relative bg-secondary/50 dark:bg-muted/50 rounded-2xl p-8 flex items-center justify-center min-h-[160px] border border-border">
-            <p
-              className="text-center font-arabic text-foreground text-2xl md:text-3xl leading-relaxed"
-              dir="rtl"
-              lang="ar"
-            >
-              {doa.content}
-            </p>
-          </div>
-
-          <div className="px-2 md:px-4">
-            <h3 className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-muted-foreground mb-2">
-              <span className="w-1.5 h-1.5 rounded-full bg-primary"></span>
-              {language === 'my' ? 'Maksud' : 'Meaning'}
-            </h3>
-            <p className="text-muted-foreground leading-relaxed text-base md:text-lg">
-              {getMeaning()}
-            </p>
-          </div>
-        </div>
-
-        <div className="mt-8 pt-6 border-t border-border flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-          <div className="flex items-center gap-2 text-muted-foreground">
-            <BookOpen className="w-4 h-4" />
-            <span className="text-sm font-medium italic">{getReference()}</span>
-          </div>
-          <div className="flex flex-wrap gap-2">
-            {getCategories()
-              .slice(0, 2)
-              .map((cat, idx) => (
+          {categories.length > 0 && (
+            <div className="flex flex-wrap" style={{ gap: 6, marginTop: 7 }}>
+              {categories.map((cat, idx) => (
                 <span
                   key={idx}
-                  className="inline-flex items-center px-2.5 py-1 rounded-md text-xs font-medium bg-secondary text-secondary-foreground border border-border"
+                  style={{
+                    background: 'transparent',
+                    color: '#0f5f50',
+                    border: '0.5px solid rgba(30,138,116,0.4)',
+                    borderRadius: 20,
+                    padding: '3px 10px',
+                    fontSize: 11,
+                    lineHeight: 1.5,
+                  }}
                 >
                   {cat}
                 </span>
               ))}
-          </div>
+            </div>
+          )}
         </div>
+
+        {/* Arabic block */}
+        <div
+          style={{
+            background: 'rgba(30, 138, 116, 0.06)',
+            borderTop: '0.5px solid #d8d4c8',
+            borderBottom: '0.5px solid #d8d4c8',
+            padding: 20,
+          }}
+        >
+          <p
+            dir="rtl"
+            lang="ar"
+            className="font-arabic text-center"
+            style={{ fontSize: 21, color: '#153830', lineHeight: 2.1 }}
+          >
+            {doa.content}
+          </p>
+        </div>
+
+        {/* Meaning */}
+        <div style={{ padding: '16px 20px 12px' }}>
+          <div className="flex items-center" style={{ gap: 8, marginBottom: 8 }}>
+            <span
+              style={{
+                fontFamily: "'Noto Sans JP', sans-serif",
+                fontSize: 10,
+                fontWeight: 700,
+                textTransform: 'uppercase',
+                letterSpacing: '0.08em',
+                color: '#1e8a74',
+                whiteSpace: 'nowrap',
+              }}
+            >
+              {language === 'my' ? 'Maksud' : 'Meaning'}
+            </span>
+            <div style={{ flex: 1, height: '2px', background: 'rgba(30,138,116,0.2)' }} />
+          </div>
+          <p className="font-serif italic" style={{ fontSize: 14, color: '#5F5E5A', lineHeight: 1.75 }}>
+            {getMeaning()}
+          </p>
+        </div>
+
+        {/* Context & Explanation (collapsible) */}
+        {getContext() && (
+          <div style={{ padding: '0 20px 14px' }}>
+            <button
+              type="button"
+              className="flex items-center w-full"
+              style={{ gap: 8, marginBottom: isChainExpanded ? 8 : 0, background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}
+              onClick={(e) => {
+                e.preventDefault()
+                e.stopPropagation()
+                setIsChainExpanded((v) => !v)
+              }}
+            >
+              <span
+                style={{
+                  fontFamily: "'Noto Sans JP', sans-serif",
+                  fontSize: 10,
+                  fontWeight: 700,
+                  textTransform: 'uppercase',
+                  letterSpacing: '0.08em',
+                  color: '#1e8a74',
+                  whiteSpace: 'nowrap',
+                }}
+              >
+                {language === 'my' ? 'Konteks & Penjelasan' : 'Context & Explanation'}
+              </span>
+              <div style={{ flex: 1, height: '2px', background: 'rgba(30,138,116,0.2)' }} />
+              <ChevronDown
+                style={{
+                  width: 14,
+                  height: 14,
+                  color: '#1e8a74',
+                  flexShrink: 0,
+                  transform: isChainExpanded ? 'rotate(180deg)' : 'rotate(0deg)',
+                  transition: 'transform 0.15s ease',
+                }}
+              />
+            </button>
+            {isChainExpanded && (
+              <p className="font-serif italic" style={{ fontSize: 14, color: '#5F5E5A', lineHeight: 1.75 }}>
+                {getContext()}
+              </p>
+            )}
+          </div>
+        )}
+
+        {/* Hadith reference row */}
+        {reference && (
+          <div
+            style={{
+              background: isReferenceHovered ? '#f5e9d4' : '#faf3e8',
+              padding: '11px 20px',
+              display: 'flex',
+              alignItems: 'center',
+              gap: 10,
+            }}
+            onMouseEnter={() => setIsReferenceHovered(true)}
+            onMouseLeave={() => setIsReferenceHovered(false)}
+          >
+            <div
+              style={{
+                width: 30,
+                height: 30,
+                borderRadius: 7,
+                background: '#cd9c54',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                flexShrink: 0,
+              }}
+            >
+              <BookOpen style={{ width: 15, height: 15, color: '#fff' }} />
+            </div>
+            <span className="font-serif" style={{ fontSize: 13, fontWeight: 500, color: '#8a6830' }}>
+              {reference}
+            </span>
+          </div>
+        )}
       </article>
     </Link>
   )
@@ -469,7 +548,7 @@ export function DoaLibraryContent({
           t={t}
         />
 
-        <div className="space-y-16">
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
           {currentDoas.map((doa) => (
             <PrayerCard
               key={doa.slug}

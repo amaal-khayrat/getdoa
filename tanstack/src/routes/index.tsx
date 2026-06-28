@@ -18,7 +18,7 @@ export const Route = createFileRoute('/')({
 
 function App() {
   return (
-    <LandingLayout>
+    <LandingLayout bgClassName="bg-white">
       <LandingPage />
     </LandingLayout>
   )
