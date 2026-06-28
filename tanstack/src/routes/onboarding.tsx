@@ -1,5 +1,4 @@
 import { createFileRoute, redirect, useNavigate } from '@tanstack/react-router'
-import { useEffect } from 'react'
 import { z } from 'zod'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
@@ -15,13 +14,12 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { LANDING_CONTENT } from '@/lib/constants'
-import { getSessionFromServer, getUserListLimitInfo } from '@/server-functions/dashboard'
+import {
+  getSessionFromServer,
+  getUserListLimitInfo,
+} from '@/server-functions/dashboard'
 import { ListTemplateCard } from '@/components/list/list-template-card'
 import { LIST_TEMPLATES, getTemplateById } from '@/lib/list-templates'
-import {
-  clearSignupOnboardingPrefs,
-  getSignupOnboardingPrefs,
-} from '@/lib/signup-onboarding'
 
 // Form validation schema
 const onboardingSchema = z.object({
@@ -86,23 +84,6 @@ function OnboardingPage() {
 
   const listName = watch('listName')
   const selectedTemplateId = watch('templateId') ?? 'morning-azkar'
-
-  useEffect(() => {
-    const prefs = getSignupOnboardingPrefs()
-    if (!prefs) return
-
-    const template = getTemplateById(prefs.templateId)
-    clearSignupOnboardingPrefs()
-
-    navigate({
-      to: '/dashboard/create-doa-list',
-      search: {
-        name: template?.name ?? 'My Prayer List',
-        template:
-          prefs.templateId !== 'empty' ? prefs.templateId : undefined,
-      },
-    })
-  }, [navigate])
 
   // When template changes, suggest a name if field is empty
   const handleTemplateSelect = (templateId: string) => {

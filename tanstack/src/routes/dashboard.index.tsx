@@ -1,26 +1,32 @@
-import { Link, createFileRoute, getRouteApi, useNavigate } from '@tanstack/react-router'
+import {
+  Link,
+  createFileRoute,
+  getRouteApi,
+  useNavigate,
+} from '@tanstack/react-router'
 import { useState, useTransition } from 'react'
 import {
+  Award,
   BookOpen,
+  Crown,
   Download,
   Eye,
+  Gift,
   Globe,
   Heart,
   Lock,
+  Medal,
   MoreHorizontal,
   Pencil,
   Plus,
   Trash2,
-  Gift,
   Trophy,
-  Crown,
-  Medal,
-  Award,
   Users,
 } from 'lucide-react'
 import type { DoaListRecord } from '@/types/doa-list.types'
+import type { LeaderboardEntry } from '@/server-functions/dashboard/referral'
 import { Button, buttonVariants } from '@/components/ui/button'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { Card, CardContent, CardTitle } from '@/components/ui/card'
 import { Switch } from '@/components/ui/switch'
 import {
   Tooltip,
@@ -55,13 +61,13 @@ import { Avatar, AvatarFallback } from '@/components/ui/avatar'
 import { Badge } from '@/components/ui/badge'
 import { cn } from '@/lib/utils'
 import { deleteDoaList, updateDoaList } from '@/server-functions/dashboard'
-import { getLeaderboard, type LeaderboardEntry } from '@/server-functions/dashboard/referral'
+import { getLeaderboard } from '@/server-functions/dashboard/referral'
 import { useSession } from '@/lib/auth-client'
 
 export const Route = createFileRoute('/dashboard/')({
   loader: async () => {
     const leaderboard = await getLeaderboard({ data: { limit: 10 } })
-    return { leaderboard: (leaderboard ?? []) as LeaderboardEntry[] }
+    return { leaderboard }
   },
   component: DashboardIndex,
 })
@@ -73,7 +79,6 @@ function DashboardIndex() {
   // lists comes from parent's loader
   const { lists } = dashboardRoute.useLoaderData()
   const { leaderboard } = Route.useLoaderData()
-  const { listLimitInfo } = dashboardRoute.useRouteContext()
   const { data: session } = useSession()
   const user = session?.user
   const navigate = useNavigate()
@@ -81,7 +86,7 @@ function DashboardIndex() {
   const [listToDelete, setListToDelete] = useState<DoaListRecord | null>(null)
   const [isPending, startTransition] = useTransition()
 
-  const handleDeleteList = async () => {
+  const handleDeleteList = () => {
     if (!listToDelete || !user) return
 
     startTransition(async () => {
@@ -99,7 +104,7 @@ function DashboardIndex() {
     })
   }
 
-  const handleToggleVisibility = async (list: DoaListRecord) => {
+  const handleToggleVisibility = (list: DoaListRecord) => {
     if (!user) return
 
     startTransition(async () => {
@@ -120,7 +125,7 @@ function DashboardIndex() {
     })
   }
 
-  const handlePublish = async (list: DoaListRecord) => {
+  const handlePublish = (list: DoaListRecord) => {
     if (!user) return
 
     startTransition(async () => {
@@ -157,10 +162,7 @@ function DashboardIndex() {
             </p>
           </div>
         </div>
-        <Link
-          to="/onboarding"
-          className={cn(buttonVariants(), 'gap-2')}
-        >
+        <Link to="/onboarding" className={cn(buttonVariants(), 'gap-2')}>
           <Plus className="h-4 w-4" />
           Create List
         </Link>
@@ -178,10 +180,7 @@ function DashboardIndex() {
               Create your first prayer list to start organizing your duas.
             </EmptyDescription>
           </EmptyHeader>
-          <Link
-            to="/onboarding"
-            className={buttonVariants()}
-          >
+          <Link to="/onboarding" className={buttonVariants()}>
             Create Your First List
           </Link>
         </Empty>
@@ -210,8 +209,12 @@ function DashboardIndex() {
             <Trophy className="h-4 w-4" />
           </div>
           <div>
-            <h2 className="text-xl font-serif font-semibold text-foreground">Referral Leaderboard</h2>
-            <p className="text-sm text-muted-foreground">Top community members spreading the word</p>
+            <h2 className="text-xl font-serif font-semibold text-foreground">
+              Referral Leaderboard
+            </h2>
+            <p className="text-sm text-muted-foreground">
+              Top community members spreading the word
+            </p>
           </div>
         </div>
 
@@ -302,7 +305,7 @@ function ListStatusPill({ status }: { status: 'published' | 'draft' }) {
   )
 }
 
-/** Horizontal rule only — same #E5E5E5 fade as before */
+/** Horizontal rule only, same #E5E5E5 fade as before */
 function ListCardOrnamentalDivider() {
   return (
     <div className="px-4" role="presentation" aria-hidden>
@@ -332,7 +335,7 @@ function ListCard({
     <Card className="group gap-0 overflow-hidden border border-border bg-background py-0 shadow-sm ring-0 transition-shadow hover:shadow-md">
       {/* Style 2: solid upper content (no gradient) */}
       <div className="px-4 pt-4 pb-3">
-        {/* Row 1 — primary: title leads, then globe/lock + status pill; actions flush right */}
+        {/* Row 1: title leads, then globe/lock + status pill; actions flush right */}
         <div className="flex items-start justify-between gap-3">
           <div className="flex min-w-0 flex-1 flex-wrap items-center gap-x-2 gap-y-1.5">
             <Link
@@ -372,7 +375,9 @@ function ListCard({
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
               <DropdownMenuItem
-                render={<Link to="/list/$listId" params={{ listId: list.id }} />}
+                render={
+                  <Link to="/list/$listId" params={{ listId: list.id }} />
+                }
                 className="focus:text-primary"
               >
                 <Eye className="h-4 w-4 mr-2" />
@@ -391,16 +396,16 @@ function ListCard({
                 Edit
               </DropdownMenuItem>
               {list.status === 'draft' && (
-                <DropdownMenuItem onClick={onPublish} className="focus:text-primary">
+                <DropdownMenuItem
+                  onClick={onPublish}
+                  className="focus:text-primary"
+                >
                   <Eye className="h-4 w-4 mr-2 text-primary" />
                   Publish
                 </DropdownMenuItem>
               )}
               <DropdownMenuSeparator />
-              <DropdownMenuItem
-                onClick={onDelete}
-                variant="destructive"
-              >
+              <DropdownMenuItem onClick={onDelete} variant="destructive">
                 <Trash2 className="h-4 w-4 mr-2" />
                 Delete
               </DropdownMenuItem>
@@ -408,10 +413,10 @@ function ListCard({
           </DropdownMenu>
         </div>
 
-        {/* Row 2 — secondary meta (single line, lighter than title) */}
+        {/* Row 2: secondary meta (single line, lighter than title) */}
         <p className="mt-2.5 text-xs leading-relaxed text-[#6B7280]">
           <span className="font-medium">{prayerCount} duas</span>
-          <span className="mx-1.5 text-[#9CA3AF]">·</span>
+          <span className="mx-1.5 text-[#9CA3AF]">|</span>
           <span>
             Updated:{' '}
             {new Date(list.updatedAt).toLocaleDateString('en-US', {
@@ -422,7 +427,7 @@ function ListCard({
           </span>
         </p>
 
-        {/* Row 3 — optional body copy (tertiary, below meta, above divider) */}
+        {/* Row 3: optional body copy (tertiary, below meta, above divider) */}
         {list.description ? (
           <p className="mt-2 line-clamp-2 text-sm leading-relaxed text-[#6B7280]">
             {list.description}
@@ -432,7 +437,7 @@ function ListCard({
 
       <ListCardOrnamentalDivider />
 
-      {/* Row 4 — engagement stats (left) · visibility control (right), same band as Style 2 */}
+      {/* Row 4: engagement stats (left), visibility control (right), same band as Style 2 */}
       <div className="flex flex-wrap items-center justify-between gap-3 px-[16px] pb-[16px] pt-[8px]">
         <div className="flex flex-wrap items-center gap-4 text-xs text-[#6B7280]">
           <span className="flex items-center gap-1">
@@ -459,8 +464,8 @@ function ListCard({
               </TooltipTrigger>
               <TooltipContent side="top" className="max-w-xs">
                 {list.visibility === 'public'
-                  ? "This list is public — anyone on GetDoa can view it. The Copy List ID button is available for use in your website or app."
-                  : "This list is private — only you can see it. Toggle to make it public and share it with others."}
+                  ? 'This list is public. Anyone on GetDoa can view it. The Copy List ID button is available for use in your website or app.'
+                  : 'This list is private. Only you can see it. Toggle to make it public and share it with others.'}
               </TooltipContent>
             </Tooltip>
             <span className="text-xs text-muted-foreground">Public</span>
@@ -502,10 +507,14 @@ function LeaderboardRow({ entry }: { entry: LeaderboardEntry }) {
 
   const getRankIcon = () => {
     switch (rank) {
-      case 1: return <Crown className="h-5 w-5 text-yellow-500" />
-      case 2: return <Medal className="h-5 w-5 text-gray-400" />
-      case 3: return <Award className="h-5 w-5 text-amber-600" />
-      default: return null
+      case 1:
+        return <Crown className="h-5 w-5 text-yellow-500" />
+      case 2:
+        return <Medal className="h-5 w-5 text-gray-400" />
+      case 3:
+        return <Award className="h-5 w-5 text-amber-600" />
+      default:
+        return null
     }
   }
 
@@ -516,7 +525,12 @@ function LeaderboardRow({ entry }: { entry: LeaderboardEntry }) {
   }
 
   return (
-    <Card className={cn('transition-shadow hover:shadow-md', rank <= 3 && `border-2 ${topRankStyles[rank]}`)}>
+    <Card
+      className={cn(
+        'transition-shadow hover:shadow-md',
+        rank <= 3 && `border-2 ${topRankStyles[rank]}`,
+      )}
+    >
       <CardContent className="flex items-center gap-3 py-3">
         <div className="flex w-10 items-center justify-center">
           {getRankIcon() ?? (
@@ -533,7 +547,9 @@ function LeaderboardRow({ entry }: { entry: LeaderboardEntry }) {
         <p className="flex-1 truncate text-sm font-medium">{displayName}</p>
         <div className="text-right">
           <p className="text-lg font-bold leading-none">{referralCount}</p>
-          <p className="text-xs text-muted-foreground">{referralCount === 1 ? 'referral' : 'referrals'}</p>
+          <p className="text-xs text-muted-foreground">
+            {referralCount === 1 ? 'referral' : 'referrals'}
+          </p>
         </div>
       </CardContent>
     </Card>

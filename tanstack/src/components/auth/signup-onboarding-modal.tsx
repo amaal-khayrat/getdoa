@@ -3,35 +3,29 @@ import {
   BookOpen,
   Calendar,
   Check,
-  Heart,
   Languages,
+  Layers,
   List,
+  Orbit,
   Plus,
   Repeat,
   SkipForward,
   Sparkles,
-  Layers,
-  Orbit,
   Sunrise,
   Sunset,
   X,
-  type LucideIcon,
 } from 'lucide-react'
-import {
-  Dialog,
-  DialogContent,
-  DialogTitle,
-} from '@/components/ui/dialog'
+import type { LucideIcon } from 'lucide-react'
+import type { ListTemplate } from '@/types/doa-list.types'
+import type { SignupGoalId } from '@/lib/signup-onboarding'
+import { Dialog, DialogContent, DialogTitle } from '@/components/ui/dialog'
 import { Button } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
 import { getTemplateById } from '@/lib/list-templates'
 import {
   SIGNUP_GOALS,
   SIGNUP_LIST_TEMPLATE_IDS,
-  saveSignupOnboardingPrefs,
   getSignupGoalLabel,
-  type SignupGoalId,
-  type SignupOnboardingPrefs,
 } from '@/lib/signup-onboarding'
 
 const STEPS = [
@@ -59,7 +53,7 @@ const WELCOME_FEATURES = [
   },
 ]
 
-const templateIconMap: Record<string, LucideIcon> = {
+const templateIconMap: Partial<Record<string, LucideIcon>> = {
   Sunrise,
   Sunset,
   Calendar,
@@ -67,6 +61,10 @@ const templateIconMap: Record<string, LucideIcon> = {
   Orbit,
   Layers,
 }
+
+const SIGNUP_LIST_TEMPLATES = SIGNUP_LIST_TEMPLATE_IDS.map((id) =>
+  getTemplateById(id),
+).filter((template): template is ListTemplate => Boolean(template))
 
 function GoogleIcon({ className }: { className?: string }) {
   return (
@@ -210,7 +208,7 @@ function SelectableCard({
 interface SignupOnboardingModalProps {
   open: boolean
   onOpenChange: (open: boolean) => void
-  onSignUp: () => void
+  onSignUp: (templateId: string) => void
   isSigningUp: boolean
 }
 
@@ -234,15 +232,10 @@ export function SignupOnboardingModal({
   }
 
   const handleFinish = () => {
-    const prefs: SignupOnboardingPrefs = { goal: goal ?? 'skip', templateId }
-    saveSignupOnboardingPrefs(prefs)
-    onSignUp()
+    onSignUp(templateId)
   }
 
   const selectedTemplate = getTemplateById(templateId)
-  const listTemplates = SIGNUP_LIST_TEMPLATE_IDS.map((id) =>
-    getTemplateById(id),
-  ).filter(Boolean)
 
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>
@@ -262,10 +255,7 @@ export function SignupOnboardingModal({
             </button>
           </div>
           <div className="mt-1 flex justify-center">
-            <SignupStepper
-              currentStep={step}
-              onStepClick={(s) => setStep(s)}
-            />
+            <SignupStepper currentStep={step} onStepClick={(s) => setStep(s)} />
           </div>
         </div>
 
@@ -371,13 +361,12 @@ export function SignupOnboardingModal({
                 Start with a ready-made list
               </h2>
               <p className="mt-2 text-sm text-muted-foreground">
-                We will create this for you after sign in. You can edit,
-                rename, or delete it anytime.
+                We will create this for you after sign in. You can edit, rename,
+                or delete it anytime.
               </p>
             </div>
             <div className="space-y-3">
-              {listTemplates.map((template) => {
-                if (!template) return null
+              {SIGNUP_LIST_TEMPLATES.map((template) => {
                 const Icon = templateIconMap[template.icon] || Plus
                 return (
                   <SelectableCard

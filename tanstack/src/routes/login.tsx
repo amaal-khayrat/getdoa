@@ -1,11 +1,12 @@
-import { createFileRoute, Link } from '@tanstack/react-router'
+import { Link, createFileRoute } from '@tanstack/react-router'
 import { useState } from 'react'
 import { X } from 'lucide-react'
 import { z } from 'zod'
-import { signIn, signUp } from '@/lib/auth-client'
+import { signIn } from '@/lib/auth-client'
 import { Button } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
 import { LANDING_CONTENT } from '@/lib/constants'
+import { getTemplateById } from '@/lib/list-templates'
 import { SignupOnboardingModal } from '@/components/auth/signup-onboarding-modal'
 
 const loginSearchSchema = z.object({
@@ -71,18 +72,39 @@ function LoadingSpinner() {
   )
 }
 
+function getCreateListCallbackURL(templateId: string) {
+  const template = getTemplateById(templateId)
+  const search = new URLSearchParams()
+
+  search.set(
+    'name',
+    template?.id === 'empty'
+      ? 'My Prayer List'
+      : (template?.name ?? 'My Prayer List'),
+  )
+
+  if (template && template.id !== 'empty') {
+    search.set('template', template.id)
+  }
+
+  return `/dashboard/create-doa-list?${search.toString()}`
+}
 
 function LoginPage() {
   const [error, setError] = useState('')
   const [signupModalOpen, setSignupModalOpen] = useState(false)
-  const [loadingAction, setLoadingAction] = useState<'signin' | 'signup' | null>(
-    null,
-  )
+  const [loadingAction, setLoadingAction] = useState<
+    'signin' | 'signup' | null
+  >(null)
   const search = Route.useSearch()
 
   const getCallbackURL = (override?: string) => {
     if (override) return override
-    if (search.ref && search.ref.startsWith('/') && !search.ref.startsWith('//')) {
+    if (
+      search.ref &&
+      search.ref.startsWith('/') &&
+      !search.ref.startsWith('//')
+    ) {
       return search.ref
     }
     return '/dashboard'
@@ -97,17 +119,10 @@ function LoginPage() {
 
     try {
       const callbackURL = getCallbackURL(callbackOverride)
-      if (action === 'signup') {
-        await signUp.social({
-          provider: 'google',
-          callbackURL,
-        })
-      } else {
-        await signIn.social({
-          provider: 'google',
-          callbackURL,
-        })
-      }
+      await signIn.social({
+        provider: 'google',
+        callbackURL,
+      })
     } catch {
       setError('Failed to connect with Google. Please try again.')
       setLoadingAction(null)
@@ -177,11 +192,7 @@ function LoginPage() {
             onClick={() => handleGoogleAuth('signin')}
             disabled={isLoading}
           >
-            {loadingAction === 'signin' ? (
-              <LoadingSpinner />
-            ) : (
-              <GoogleIcon />
-            )}
+            {loadingAction === 'signin' ? <LoadingSpinner /> : <GoogleIcon />}
             Continue with Google
           </Button>
 
@@ -211,7 +222,9 @@ function LoginPage() {
       <SignupOnboardingModal
         open={signupModalOpen}
         onOpenChange={setSignupModalOpen}
-        onSignUp={() => handleGoogleAuth('signup', '/onboarding')}
+        onSignUp={(templateId) =>
+          handleGoogleAuth('signup', getCreateListCallbackURL(templateId))
+        }
         isSigningUp={loadingAction === 'signup'}
       />
     </div>
